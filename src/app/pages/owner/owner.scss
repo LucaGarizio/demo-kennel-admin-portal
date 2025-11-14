@@ -1,0 +1,34 @@
+:host ::ng-deep .p-card-body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+p-table {
+  padding: 0;
+  margin: 0;
+}
+
+:host ::ng-deep .p-button.create,
+:host ::ng-deep .p-button.view,
+:host ::ng-deep .p-button.edit {
+  background-color: var(--surface-300) !important;
+  color: white !important;
+
+  transition: border-color 0.25s ease-out;
+
+  &:hover {
+    background-color: var(--surface-300) !important;
+    color: white !important;
+    border-color: white !important;
+  }
+}
+
+:host ::ng-deep .p-button.delete {
+  color: white !important;
+  background-color: red;
+  &:hover {
+    color: white !important;
+    border-color: white !important;
+  }
+}

@@ -1,0 +1,58 @@
+@if (showCreate) {
+<div class="table-header my-3 text-right">
+  <button pButton icon="pi pi-plus" label="Aggiungi Record" (click)="create.emit()"></button>
+</div>
+}
+
+<p-table
+  [value]="data"
+  [paginator]="true"
+  [rowsPerPageOptions]="[25, 50, 75]"
+  [rows]="25"
+  stripedRows
+  [loading]="loading"
+>
+  <!-- ===== HEADER ===== -->
+  <ng-template pTemplate="header">
+    <tr>
+      @for (c of columns; track c) {
+      <th>{{ columnLabels[c] || c }}</th>
+      }
+      <th style="width: 10rem">Azioni</th>
+    </tr>
+  </ng-template>
+
+  <!-- ===== BODY ===== -->
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      @for (c of columns; track c) { @if (c === 'owner_id') {
+      <td
+        (click)="cellClick.emit({ column: c, value: row[c], row: row })"
+        [ngStyle]="{ cursor: 'pointer', color: '#42A5F5' }"
+      >
+        {{ row.owner_id }}
+      </td>
+      } @else {
+      <td>{{ row[c] }}</td>
+      } }
+
+      <td style="display: flex; justify-content: flex-start; padding: 12px 3px">
+        <button
+          pButton
+          icon="pi pi-pencil"
+          (click)="edit.emit(row)"
+          text
+          style="margin-right: 10px; padding: 0"
+        ></button>
+
+        <button
+          pButton
+          icon="pi pi-trash"
+          class="p-button-danger"
+          (click)="delete.emit(row)"
+          text
+        ></button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

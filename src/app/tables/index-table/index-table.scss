@@ -1,0 +1,12 @@
+:host ::ng-deep .p-datatable {
+  animation: fadeInTable 0.5s ease-in;
+}
+
+@keyframes fadeInTable {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

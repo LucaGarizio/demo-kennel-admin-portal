@@ -1,0 +1,41 @@
+<div class="filters">
+  <input
+    pInputText
+    type="text"
+    placeholder="Filtra per nome"
+    [(ngModel)]="filters.nome"
+    (input)="onChange()"
+  />
+
+  <input
+    pInputText
+    type="text"
+    placeholder="Filtra per razza"
+    [(ngModel)]="filters.razza"
+    (input)="onChange()"
+  />
+
+  <p-dropdown
+    [options]="booleanOptions"
+    [(ngModel)]="filters.vaccinato"
+    placeholder="Vaccinato"
+    (onChange)="onChange()"
+    style="width: 150px"
+  ></p-dropdown>
+
+  <p-dropdown
+    [options]="booleanOptions"
+    [(ngModel)]="filters.adottato"
+    placeholder="Adottato"
+    (onChange)="onChange()"
+    style="width: 150px"
+  ></p-dropdown>
+
+  <button
+    pButton
+    label="Reset"
+    icon="pi pi-times"
+    class="p-button-outlined"
+    (click)="reset()"
+  ></button>
+</div>

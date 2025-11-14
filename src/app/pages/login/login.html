@@ -1,0 +1,41 @@
+<p-card class="p-4 w-full max-w-sm mx-auto mt-8">
+  <h2 class="text-center mb-4">Login</h2>
+
+  <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="p-fluid">
+    <div class="p-field mb-3">
+      <p-floatLabel>
+        <input id="email" pInputText type="email" [(ngModel)]="email" name="email" required />
+        <label for="email">Email</label>
+      </p-floatLabel>
+    </div>
+
+    <div class="p-field mb-4">
+      <p-floatLabel>
+        <input
+          id="password"
+          pInputText
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+        />
+        <label for="password">Password</label>
+      </p-floatLabel>
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <button
+        pButton
+        type="submit"
+        label="Accedi"
+        icon="pi pi-sign-in"
+        class="create"
+        [disabled]="loginForm.invalid"
+      ></button>
+    </div>
+
+    <p class="text-center mt-3 text-sm" style="color: var(--text-color-secondary)">
+      Inserisci le credenziali admin di PocketBase
+    </p>
+  </form>
+</p-card>

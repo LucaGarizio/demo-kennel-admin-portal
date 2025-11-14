@@ -1,0 +1,6 @@
+<div class="page-container">
+  <h2>Aggiungi Nuovo Proprietario</h2>
+
+  <!-- <app-index-form type="owner" [model]="model" (ngSubmit)="onSubmit()"></app-index-form> -->
+  <app-index-form type="owner" [model]="model" (save)="onSubmit($event)"></app-index-form>
+</div>

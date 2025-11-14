@@ -1,0 +1,12 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+
+  input,
+  p-dropdown {
+    min-width: 180px;
+  }
+}

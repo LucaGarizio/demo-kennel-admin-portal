@@ -1,0 +1,16 @@
+::ng-deep .p-dialog-header {
+  justify-content: center !important;
+}
+
+::ng-deep .p-dialog-title {
+  text-align: center;
+  width: 100%;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-header {
+  margin-bottom: 0.5rem;
+}
+
+:host ::ng-deep p {
+  margin-top: 0;
+}

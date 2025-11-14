@@ -1,0 +1,95 @@
+<p-dialog
+  [header]="dialogTitle"
+  [(visible)]="showDialog"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '35rem', borderRadius: '12px' }"
+  contentStyle="padding: 2rem; background: #1e1e1e; color: #fff"
+>
+  <div class="p-fluid flex flex-column gap-4">
+    <div>
+      <label class="font-semibold mb-2 block">Box</label>
+      <p-select
+        [options]="availableBoxes"
+        [(ngModel)]="pendingBox"
+        optionLabel="number"
+        dataKey="id"
+        placeholder="Seleziona un box"
+        class="w-full"
+      />
+    </div>
+
+    <div>
+      <label class="font-semibold mb-2 block">Cane</label>
+      <p-select
+        *ngIf="!pendingBox?.double"
+        [options]="availableDogs"
+        [(ngModel)]="selectedDog"
+        optionLabel="name"
+        placeholder="Seleziona un cane"
+        class="w-full"
+      ></p-select>
+
+      <p-multiSelect
+        *ngIf="pendingBox?.double"
+        [options]="availableDogs"
+        [(ngModel)]="selectedDogs"
+        optionLabel="name"
+        display="chip"
+        placeholder="Seleziona fino a 2 cani"
+        class="w-full"
+      ></p-multiSelect>
+    </div>
+
+    <div>
+      <label class="font-semibold mb-2 block">Data di arrivo</label>
+      <p-datePicker
+        [(ngModel)]="startDate"
+        dateFormat="dd/mm/yy"
+        showIcon="true"
+        locale="it"
+        appendTo="body"
+        class="w-full"
+      />
+    </div>
+
+    <div>
+      <label class="font-semibold mb-2 block">Data di partenza</label>
+      <p-datePicker
+        [(ngModel)]="endDate"
+        dateFormat="dd/mm/yy"
+        showIcon="true"
+        appendTo="body"
+        class="w-full"
+      />
+    </div>
+
+    <div class="flex justify-content-end gap-3 mt-4">
+      <button
+        *ngIf="editingOccupationId"
+        pButton
+        label="Elimina"
+        icon="pi pi-trash"
+        class="p-button-danger"
+        (click)="deleteAssignment()"
+      ></button>
+
+      <button
+        pButton
+        label="Annulla"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="close.emit()"
+      ></button>
+
+      <button
+        pButton
+        label="Conferma"
+        icon="pi pi-check"
+        class="p-button-success"
+        (click)="confirmDialog()"
+        [disabled]="!canConfirm()"
+      ></button>
+    </div>
+  </div>
+</p-dialog>

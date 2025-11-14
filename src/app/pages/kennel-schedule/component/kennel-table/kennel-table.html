@@ -1,0 +1,36 @@
+<p-table
+  [value]="rows"
+  scrollable
+  scrollHeight="75vh"
+  styleClass="p-datatable-sm p-datatable-gridlines kennel-table"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Data</th>
+      @for (box of boxes; track box.id) {
+      <th [ngStyle]="getHeaderStyle(box)">{{ box.number }}</th>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-row>
+    @if (row.kind === 'month') {
+    <tr class="month-sep">
+      <td [attr.colspan]="boxes.length + 1">{{ row.label }}</td>
+    </tr>
+    } @else {
+    <tr [ngStyle]="getRowStyle(row)">
+      <td>{{ row.display }}</td>
+      @for (box of boxes; track box.id) {
+      <td
+        [ngStyle]="getCellStyle(row, box)"
+        (click)="onCellClick(row.key, box)"
+        class="cursor-pointer"
+      >
+        {{ data[row.key]?.[box.number] || '' }}
+      </td>
+      }
+    </tr>
+    }
+  </ng-template>
+</p-table>

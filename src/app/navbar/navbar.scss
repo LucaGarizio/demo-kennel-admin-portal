@@ -1,0 +1,23 @@
+:host ::ng-deep .p-menubar {
+  border-radius: 0;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: medium;
+  background-color: #212121;
+}
+
+.nav-link {
+  color: #26a69a;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.active-link {
+  color: #fff;
+  transform: scale(1.1);
+  font-size: 18px;
+}

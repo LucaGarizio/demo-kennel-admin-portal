@@ -1,0 +1,25 @@
+:host ::ng-deep .p-datatable th,
+:host ::ng-deep .p-datatable td {
+  font-size: 1rem !important;
+  padding: 0.9rem 0.5rem !important;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  background: #1e1e1e;
+  color: #00e676;
+  z-index: 2;
+}
+
+td {
+  min-width: 6rem;
+}
+
+.month-sep td {
+  background: #9e9e9e !important;
+  color: #111;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+}
