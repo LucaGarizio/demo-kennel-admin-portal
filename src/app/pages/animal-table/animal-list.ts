@@ -21,29 +21,17 @@ export class List implements OnInit {
   selectedRecord: any = null;
   confirmVisible = false;
   confirmMessage = '';
-  columns = [
-    'name',
-    'race',
-    'size',
-    'boarding_fee',
-    'microchip',
-    'arrival_date',
-    'departure_date',
-    'vax',
-    'scared',
-    'owner_id',
-  ];
+  columns = ['name', 'race', 'sex', 'size', 'microchip', 'vax', 'scared', 'extra', 'owner_id'];
 
   columnLabels: Record<string, string> = {
     name: 'Nome',
     race: 'Razza',
+    sex: 'Sesso',
     size: 'Taglia',
-    boarding_fee: 'Retta (€)',
-    arrival_date: 'Data e ora di arrivo',
-    departure_date: 'Data e ora di uscita',
     microchip: 'Microchip',
     vax: 'Vaccinato',
     scared: 'Spaventato',
+    extra: 'extra',
     owner_id: 'Proprietario',
   };
 
@@ -55,8 +43,10 @@ export class List implements OnInit {
 
   async loadRecords() {
     this.loading = true;
+
     try {
       const data = await this.pb.getAll('dogs', 200, { expand: 'owner_id' });
+      data.sort((a: any, b: any) => Date.parse(b.created) - Date.parse(a.created));
 
       this.records = data.map((r: any) => ({
         ...r,

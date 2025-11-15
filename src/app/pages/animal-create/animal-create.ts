@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IndexFormComponent } from '../../index-form/index-form';
 import { PocketbaseService } from '../../../services/pocketbase.service';
 import { Router } from '@angular/router';
-import { fromBackendOwner, toBackendDog } from '../../shared/utils/owner-mapper';
+import { fromBackendOwner, toBackendDog } from '../../shared/utils/mapper';
 
 @Component({
   selector: 'app-animal-create',
@@ -15,10 +15,10 @@ import { fromBackendOwner, toBackendDog } from '../../shared/utils/owner-mapper'
 export class AnimalCreateComponent implements OnInit {
   model: any = {};
   tagliaOptions = ['Piccola', 'Media', 'Grande'];
-  rettaOptions = [15, 18, 25, 30];
   ownerOptions: any[] = [];
   vaxOptions = ['Si', 'No'];
   pauraOptions = ['Si', 'No'];
+  sexOptions = ['M', 'F'];
 
   constructor(private pb: PocketbaseService, private router: Router) {}
   async ngOnInit() {

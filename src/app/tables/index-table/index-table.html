@@ -4,55 +4,126 @@
 </div>
 }
 
-<p-table
-  [value]="data"
-  [paginator]="true"
-  [rowsPerPageOptions]="[25, 50, 75]"
-  [rows]="25"
-  stripedRows
-  [loading]="loading"
->
-  <!-- ===== HEADER ===== -->
-  <ng-template pTemplate="header">
-    <tr>
-      @for (c of columns; track c) {
-      <th>{{ columnLabels[c] || c }}</th>
+<div class="table-wrapper">
+  <p-table
+    [value]="data"
+    [loading]="loading"
+    [rows]="25"
+    [paginator]="true"
+    [rowsPerPageOptions]="[25, 50, 75]"
+    [tableStyle]="{ 'min-width': '1000px' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem"></th>
+
+        <th style="white-space: nowrap" *ngFor="let col of columns">
+          {{ columnLabels[col] || col }}
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-row>
+      <tr>
+        <td>
+          <button
+            pButton
+            icon="{{ isRowExpanded(row) ? 'pi pi-chevron-down' : 'pi pi-chevron-right' }}"
+            class="p-button-text p-button-sm"
+            (click)="toggleRow(row)"
+          ></button>
+        </td>
+
+        @for (c of columns; track c) { @if (isOwnerColumn(c)) {
+        <td (click)="handleCellClick(c, row)" [ngStyle]="getClickableStyle()">
+          {{ getCellValue(row, c) }}
+        </td>
+        }
+        <!-- @else if (isDocumentsColumn(c)) {
+        <td style="white-space: nowrap">
+          <ng-container *ngIf="getDocuments(row).length; else noDocs">
+            <div *ngFor="let doc of getDocuments(row); let i = index">
+              {{ getFileLabel(i, doc) }}
+            </div>
+          </ng-container>
+
+          <ng-template #noDocs> Nessun documento </ng-template>
+        </td>
+        }  -->
+
+        @else if (isDocumentsColumn(c)) {
+        <td style="white-space: nowrap; cursor: pointer" (click)="openDocumentsDialog(row)">
+          <ng-container *ngIf="getDocuments(row).length; else noDocs">
+            <div *ngFor="let doc of getDocuments(row); let i = index" style="color: #42a5f5">
+              {{ getFileLabel(i, doc) }}
+            </div>
+          </ng-container>
+
+          <ng-template #noDocs> Nessun documento </ng-template>
+        </td>
+        } @else {
+        <td style="white-space: nowrap">
+          @if (isCurrencyColumn(c)) {
+          {{ getCellValue(row, c) | currency : 'EUR' : 'symbol' : '1.2-2' : 'it-IT' }}
+          } @else {
+          {{ getCellValue(row, c) }}
+          }
+        </td>
+        } }
+      </tr>
+
+      @if (isRowExpanded(row)) {
+      <tr>
+        <td [attr.colspan]="columns.length + 1">
+          <div class="flex gap-2 ml-5 pl-4 justify-content-start">
+            <button
+              pButton
+              icon="pi pi-eye"
+              label="Visualizza"
+              class="p-button-text p-button-sm p-button-info"
+              (click)="view.emit(row)"
+            ></button>
+
+            <button
+              pButton
+              icon="pi pi-pencil"
+              label="Modifica"
+              class="p-button-text p-button-sm p-button-warning"
+              (click)="edit.emit(row)"
+            ></button>
+
+            <button
+              pButton
+              icon="pi pi-trash"
+              label="Elimina"
+              class="p-button-text p-button-sm p-button-danger"
+              (click)="delete.emit(row)"
+            ></button>
+          </div>
+        </td>
+      </tr>
       }
-      <th style="width: 10rem">Azioni</th>
-    </tr>
-  </ng-template>
+    </ng-template>
+  </p-table>
 
-  <!-- ===== BODY ===== -->
-  <ng-template pTemplate="body" let-row>
-    <tr>
-      @for (c of columns; track c) { @if (c === 'owner_id') {
-      <td
-        (click)="cellClick.emit({ column: c, value: row[c], row: row })"
-        [ngStyle]="{ cursor: 'pointer', color: '#42A5F5' }"
-      >
-        {{ row.owner_id }}
-      </td>
-      } @else {
-      <td>{{ row[c] }}</td>
-      } }
-
-      <td style="display: flex; justify-content: flex-start; padding: 12px 3px">
-        <button
-          pButton
-          icon="pi pi-pencil"
-          (click)="edit.emit(row)"
-          text
-          style="margin-right: 10px; padding: 0"
-        ></button>
-
-        <button
-          pButton
-          icon="pi pi-trash"
-          class="p-button-danger"
-          (click)="delete.emit(row)"
-          text
-        ></button>
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
+  <p-dialog
+    header="Documenti"
+    [(visible)]="showDocsDialog"
+    [modal]="true"
+    [style]="{ width: '70vw' }"
+  >
+    <p-carousel
+      [value]="currentDocs"
+      [numVisible]="1"
+      [numScroll]="1"
+      [circular]="true"
+      [autoplayInterval]="0"
+    >
+      <ng-template pTemplate="item" let-doc>
+        <div class="text-center">
+          <img class="img" [src]="getDocumentUrl(currentRow, doc)" />
+        </div>
+      </ng-template>
+    </p-carousel>
+  </p-dialog>
+</div>

@@ -6,13 +6,14 @@
   align-items: center;
   font-size: medium;
   background-color: #212121;
+  height: 70px;
 }
 
 .nav-link {
   color: #26a69a;
   text-decoration: none;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all 0.1s ease;
   display: inline-block;
 }
 
@@ -20,4 +21,5 @@
   color: #fff;
   transform: scale(1.1);
   font-size: 18px;
+  border-bottom: 4px solid var(--p-tabs-tab-active-color);
 }

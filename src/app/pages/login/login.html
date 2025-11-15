@@ -1,16 +1,28 @@
-<p-card class="p-4 w-full max-w-sm mx-auto mt-8">
-  <h2 class="text-center mb-4">Login</h2>
+<div class="flex align-items-center justify-content-center h-95">
+  <p-card class="py-5 w-4">
+    <h2 class="text-center mb-5 mt-0">Accedi</h2>
 
-  <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="p-fluid">
-    <div class="p-field mb-3">
-      <p-floatLabel>
-        <input id="email" pInputText type="email" [(ngModel)]="email" name="email" required />
-        <label for="email">Email</label>
-      </p-floatLabel>
-    </div>
+    <form
+      (ngSubmit)="onLogin()"
+      #loginForm="ngForm"
+      class="flex flex-column align-items-center gap-4"
+    >
+      <div class="p-field w-full flex flex-column">
+        <label for="email" class="mb-3 w-6 mx-auto">Email</label>
+        <input
+          id="email"
+          pInputText
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          required
+          class="w-6 mx-auto"
+        />
+      </div>
 
-    <div class="p-field mb-4">
-      <p-floatLabel>
+      <div class="p-field w-full flex flex-column">
+        <label for="password" class="mb-3 w-6 mx-auto">Password</label>
+
         <input
           id="password"
           pInputText
@@ -18,24 +30,21 @@
           [(ngModel)]="password"
           name="password"
           required
+          class="w-6 mx-auto"
         />
-        <label for="password">Password</label>
-      </p-floatLabel>
-    </div>
+      </div>
 
-    <div class="flex justify-end gap-2">
-      <button
-        pButton
-        type="submit"
-        label="Accedi"
-        icon="pi pi-sign-in"
-        class="create"
-        [disabled]="loginForm.invalid"
-      ></button>
-    </div>
-
-    <p class="text-center mt-3 text-sm" style="color: var(--text-color-secondary)">
-      Inserisci le credenziali admin di PocketBase
-    </p>
-  </form>
-</p-card>
+      <div class="w-full flex justify-content-center mt-4">
+        <button
+          pButton
+          type="submit"
+          label="Accedi"
+          icon="pi pi-sign-in"
+          class="create"
+          [disabled]="loginForm.invalid"
+          class="w-6"
+        ></button>
+      </div>
+    </form>
+  </p-card>
+</div>

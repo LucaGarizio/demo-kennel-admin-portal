@@ -5,13 +5,22 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { PasswordModule } from 'primeng/password';
 import { Router } from '@angular/router';
 import { PocketbaseService } from '../../../services/pocketbase.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, ButtonModule, CardModule, FloatLabelModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InputTextModule,
+    ButtonModule,
+    CardModule,
+    FloatLabelModule,
+    PasswordModule,
+  ],
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
 })
@@ -19,6 +28,7 @@ export class Login {
   email = '';
   password = '';
   loading = false;
+  showPassword = false;
 
   constructor(private pb: PocketbaseService, private router: Router) {}
 
@@ -27,7 +37,7 @@ export class Login {
     this.loading = true;
     try {
       await this.pb.login(this.email, this.password);
-      this.router.navigate(['/lista-cani']);
+      this.router.navigate(['/lista-proprietari']);
     } catch (err) {
       console.error('Errore login:', err);
     } finally {
