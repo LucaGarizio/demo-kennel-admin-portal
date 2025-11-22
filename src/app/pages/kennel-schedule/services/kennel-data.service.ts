@@ -12,17 +12,26 @@ export class KennelDataService {
   }
 
   async loadAreaData(areaId: string, rows: KennelRow[]) {
-    const boxes = await this.pb.getAll('box', 200, { filter: `area.id = "${areaId}"` });
+    const boxes = await this.pb.getAll('box', 200, {
+      filter: `area.id = "${areaId}"`,
+      expand: 'area',
+    });
+
+    for (const b of boxes) {
+      b['area'] = b.expand?.['area'] || null;
+    }
     const occupations = await this.pb.getAll('occupations', 200, {
       filter: `box.area.id = "${areaId}"`,
       expand: 'dog,box,box.area',
     });
-
     const data: Record<string, Record<string, string>> = {};
+
     for (const row of rows) {
       if (row.kind === 'day') {
         data[row.key] = {};
-        for (const box of boxes) data[row.key][box['number']] = '';
+        for (const box of boxes) {
+          data[row.key][box['number']] = '';
+        }
       }
     }
 
@@ -30,7 +39,6 @@ export class KennelDataService {
       const boxNum = occ.expand?.['box']?.['number'];
       const dogName = occ.expand?.['dog']?.['name'] || '';
       if (!boxNum || !dogName) continue;
-
       const start = new Date(occ['arrival_date']);
       const end = new Date(occ['departure_date'] || occ['arrival_date']);
       start.setHours(0, 0, 0, 0);
@@ -44,6 +52,7 @@ export class KennelDataService {
 
         if (r >= start && r <= end) {
           const existing = data[row.key][boxNum];
+
           if (existing && existing.length > 0) {
             const parts = existing.split(/,\s*/);
             if (!parts.includes(dogName)) {
@@ -55,12 +64,23 @@ export class KennelDataService {
         }
       }
     }
-
-    return { area: { id: areaId }, boxes, data };
+    return {
+      area: { id: areaId },
+      boxes,
+      data,
+    };
   }
 
   async getDogs() {
     return await this.pb.getAll('dogs', 200);
+  }
+
+  async getAllBoxes() {
+    const boxes = await this.pb.getAll('box', 500, { expand: 'area' });
+    for (const b of boxes) {
+      b['area'] = b.expand?.['area'] || null;
+    }
+    return boxes;
   }
 
   async getOccupationsForBox(boxId: string, localKey: string) {

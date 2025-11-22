@@ -18,7 +18,6 @@ export class App {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: any) => {
-        // nascondi solo su path esatto '/'
         this.isLoginPage = event.urlAfterRedirects === '/' || event.url === '/';
       });
   }

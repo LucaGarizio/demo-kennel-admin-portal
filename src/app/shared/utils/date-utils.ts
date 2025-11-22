@@ -8,7 +8,6 @@ export function toPocketDate(value?: string | Date): string | null {
   return `${year}-${month}-${day}`;
 }
 
-// === Già esistenti ===
 export function formatDateTime(value?: string | Date): string {
   if (!value) return '';
   const d = new Date(value);

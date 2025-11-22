@@ -16,9 +16,9 @@
           #nome="ngModel"
           class="w-full"
         />
-        <small *ngIf="nome.invalid && nome.touched" class="p-error"
-          >Questo campo è obbligatorio</small
-        >
+        @if(nome.invalid && nome.touched){
+        <small class="p-error"> Questo campo è obbligatorio</small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
@@ -31,9 +31,9 @@
           #cognome="ngModel"
           class="w-full"
         />
-        <small *ngIf="cognome.invalid && cognome.touched" class="p-error"
-          >Questo campo è obbligatorio</small
-        >
+        <small *ngIf="cognome.invalid && cognome.touched" class="p-error">
+          Questo campo è obbligatorio
+        </small>
       </div>
 
       <div class="col-12 md:col-6">
@@ -46,9 +46,9 @@
           #codice_fiscale="ngModel"
           class="w-full"
         />
-        <small *ngIf="codice_fiscale.invalid && codice_fiscale.touched" class="p-error"
-          >Questo campo è obbligatorio</small
-        >
+        <small *ngIf="codice_fiscale.invalid && codice_fiscale.touched" class="p-error">
+          Questo campo è obbligatorio
+        </small>
       </div>
 
       <div class="col-12 md:col-6">
@@ -61,9 +61,9 @@
           #luogo_di_nascita="ngModel"
           class="w-full"
         />
-        <small *ngIf="luogo_di_nascita.invalid && luogo_di_nascita.touched" class="p-error"
-          >Questo campo è obbligatorio</small
-        >
+        @if(luogo_di_nascita.invalid && luogo_di_nascita.touched){
+        <small class="p-error"> Questo campo è obbligatorio</small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
@@ -76,9 +76,9 @@
           dateFormat="dd/mm/yy"
           style="width: 100%"
         />
-        <small *ngIf="data_di_nascita.invalid && data_di_nascita.touched" class="p-error"
-          >Questo campo è obbligatorio</small
-        >
+        @if (data_di_nascita.invalid && data_di_nascita.touched){
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
@@ -106,9 +106,9 @@
           #residenza="ngModel"
           class="w-full"
         />
-        <small *ngIf="residenza.invalid && residenza.touched" class="p-error"
-          >Questo campo è obbligatorio</small
-        >
+        @if (residenza.invalid && residenza.touched) {
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
@@ -121,9 +121,9 @@
           #indirizzo="ngModel"
           class="w-full"
         />
-        <small *ngIf="indirizzo.invalid && indirizzo.touched" class="p-error">
-          Questo campo è obbligatorio
-        </small>
+        @if (indirizzo.invalid && indirizzo.touched) {
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
@@ -387,24 +387,11 @@
     </div>
     }
 
-    <!-- stay form -->
+    <!-- ===== STAY FORM ===== -->
     @if (type === 'stay') {
-
     <div class="grid justify-content-start">
       <div class="col-12 md:col-6">
         <label>Proprietario</label>
-        <!-- <p-select
-          [options]="ownerOptions"
-          optionLabel="nomeCompleto"
-          optionValue="id"
-          [(ngModel)]="model.owner_id"
-          name="owner_id"
-          required
-          #owner_id="ngModel"
-          placeholder="Seleziona Proprietario"
-          class="w-full"
-        ></p-select> -->
-
         <p-select
           [options]="ownerOptions"
           optionLabel="nomeCompleto"
@@ -423,7 +410,6 @@
         </small>
       </div>
 
-      <!-- Cani multipli -->
       <div class="col-12 md:col-6">
         <label>Cani</label>
         <p-multiSelect
@@ -443,7 +429,7 @@
           Devi selezionare almeno un cane
         </small>
       </div>
-      <!-- Date arrivo -->
+
       <div class="col-12 md:col-6">
         <label>Data arrivo</label>
         <p-datePicker
@@ -458,7 +444,6 @@
         </small>
       </div>
 
-      <!-- Date uscita -->
       <div class="col-12 md:col-6">
         <label>Data uscita</label>
         <p-datePicker
@@ -473,7 +458,6 @@
         </small>
       </div>
 
-      <!-- Prezzi -->
       <div class="col-12 md:col-6">
         <label>Retta (€)</label>
         <input
@@ -519,7 +503,6 @@
         />
       </div>
 
-      <!-- Note -->
       <div class="col-12">
         <label>Note</label>
         <textarea

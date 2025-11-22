@@ -38,20 +38,7 @@
         <td (click)="handleCellClick(c, row)" [ngStyle]="getClickableStyle()">
           {{ getCellValue(row, c) }}
         </td>
-        }
-        <!-- @else if (isDocumentsColumn(c)) {
-        <td style="white-space: nowrap">
-          <ng-container *ngIf="getDocuments(row).length; else noDocs">
-            <div *ngFor="let doc of getDocuments(row); let i = index">
-              {{ getFileLabel(i, doc) }}
-            </div>
-          </ng-container>
-
-          <ng-template #noDocs> Nessun documento </ng-template>
-        </td>
-        }  -->
-
-        @else if (isDocumentsColumn(c)) {
+        } @else if (isDocumentsColumn(c)) {
         <td style="white-space: nowrap; cursor: pointer" (click)="openDocumentsDialog(row)">
           <ng-container *ngIf="getDocuments(row).length; else noDocs">
             <div *ngFor="let doc of getDocuments(row); let i = index" style="color: #42a5f5">

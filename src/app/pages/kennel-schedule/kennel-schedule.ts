@@ -4,7 +4,8 @@ import { TabsModule } from 'primeng/tabs';
 import { TableModule } from 'primeng/table';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { KennelTableComponent } from './component/kennel-table/kennel-table.component';
-import { KennelDialogComponent } from './component/kennel-dialog/kennel-dialog.component';
+import { KennelDialogComponent } from './component/kennel-stay-dialog/kennel-stay-dialog';
+import { KennelMoveDialogComponent } from './component/kennel-move-dialog/kennel-move-dialog';
 import { KennelCalendarService } from './services/kennel-calendar.service';
 import { KennelDataService } from './services/kennel-data.service';
 import { KennelRow } from './types';
@@ -19,6 +20,7 @@ import { KennelRow } from './types';
     ProgressSpinnerModule,
     KennelTableComponent,
     KennelDialogComponent,
+    KennelMoveDialogComponent,
   ],
   templateUrl: './kennel-schedule.html',
   styleUrls: ['./kennel-schedule.scss'],
@@ -31,17 +33,16 @@ export class KennelScheduleComponent implements OnInit {
   boxes: any[] = [];
   data: Record<string, Record<string, string>> = {};
   loading = false;
-  editingOccupationId: string | null = null;
-
-  // 👇 aggiungi questi campi
+  allBoxes: any[] = [];
   availableBoxes: any[] = [];
   availableDogs: any[] = [];
 
   showDialog = false;
   pendingBox: any = null;
   pendingDay = '';
-  selectedDog: any = null;
-  selectedDogs: any[] = [];
+
+  showMoveDialog = false;
+  moveDialogData: any = null;
 
   constructor(private calendar: KennelCalendarService, private dataService: KennelDataService) {}
 
@@ -49,6 +50,7 @@ export class KennelScheduleComponent implements OnInit {
     this.loading = true;
     this.rows = this.calendar.generateRowsForYear(new Date().getFullYear());
     this.areas = await this.dataService.getAreas();
+    this.allBoxes = await this.dataService.getAllBoxes();
     if (this.areas.length) await this.loadAreaData(this.areas[0]);
     this.loading = false;
   }
@@ -79,6 +81,17 @@ export class KennelScheduleComponent implements OnInit {
   }
 
   async onConfirmDialog() {
+    this.showDialog = false;
+    await this.loadAreaData(this.selectedArea);
+  }
+
+  openMoveDialog(payload: any) {
+    this.moveDialogData = payload;
+    this.showMoveDialog = true;
+  }
+
+  async onMoveCompleted() {
+    this.showMoveDialog = false;
     this.showDialog = false;
     await this.loadAreaData(this.selectedArea);
   }

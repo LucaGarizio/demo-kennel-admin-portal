@@ -9,7 +9,7 @@
 
   @if (loading) {
   <div class="flex justify-content-center align-items-center" style="height: 75vh">
-    <p-progressSpinner styleClass="w-4rem h-4rem" strokeWidth="4" animationDuration=".8s" />
+    <p-progressSpinner styleClass="w-4rem h-4rem" strokeWidth="8" animationDuration=".8s" />
   </div>
   } @else {
   <div class="legend flex align-items-center gap-3 my-3">
@@ -35,9 +35,25 @@
     [showDialog]="showDialog"
     [pendingBox]="pendingBox"
     [pendingDay]="pendingDay"
-    [availableBoxes]="availableBoxes"
+    [availableAreas]="areas"
+    [availableBoxes]="allBoxes"
     [availableDogs]="availableDogs"
     (confirm)="onConfirmDialog()"
     (close)="showDialog = false"
+    (requestMove)="openMoveDialog($event)"
   />
+
+  <app-kennel-move-dialog
+    [show]="showMoveDialog"
+    [conflictOccupation]="moveDialogData?.conflictOccupation"
+    [conflictDog]="moveDialogData?.conflictDog"
+    [availableBoxes]="allBoxes"
+    [availableAreas]="areas"
+    [targetBox]="moveDialogData?.targetBox"
+    [targetDog]="moveDialogData?.targetDog"
+    [targetStart]="moveDialogData?.targetStart"
+    [targetEnd]="moveDialogData?.targetEnd"
+    (close)="showMoveDialog = false"
+    (moved)="onMoveCompleted()"
+  ></app-kennel-move-dialog>
 </div>

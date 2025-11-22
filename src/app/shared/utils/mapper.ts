@@ -15,9 +15,6 @@ export function toBackendOwner(front: any) {
     tax_code: front.codice_fiscale,
     phone_number: front.cell,
     email: front.email,
-    // deposit: front.deposito,
-    // total_due: front.totale_dovuto,
-    // amount_paid: front.importo_pagato,
   };
 }
 
@@ -37,9 +34,6 @@ export function fromBackendOwner(back: any) {
     codice_fiscale: back.tax_code,
     cell: back.phone_number,
     email: back.email,
-    // deposito: back.deposit,
-    // totale_dovuto: back.total_due,
-    // importo_pagato: back.amount_paid,
   };
 }
 
@@ -89,6 +83,8 @@ export function toBackendStay(front: any) {
   return {
     owner_id: front.owner_id,
     dog_ids: front.dog_ids || [],
+    area_id: front.area_id || null,
+    box_id: front.box_id || null,
     arrival_date: toPocketDate(front.arrival_date),
     departure_date: toPocketDate(front.departure_date),
     boarding_fee: Number(front.boarding_fee) || 0,
@@ -105,6 +101,8 @@ export function fromBackendStay(back: any) {
     id: back.id,
     owner_id: back.owner_id,
     dog_ids: back.dog_ids || [],
+    area_id: back.area_id || null,
+    box_id: back.box_id || null,
     arrival_date: back.arrival_date ? new Date(back.arrival_date) : null,
     departure_date: back.departure_date ? new Date(back.departure_date) : null,
     boarding_fee: back.boarding_fee,

@@ -7,10 +7,22 @@
   contentStyle="padding: 2rem; background: #1e1e1e; color: #fff"
 >
   <div class="p-fluid flex flex-column gap-4">
+    <div *ngIf="editingOccupationId">
+      <label class="font-semibold mb-2 block">Area</label>
+      <p-select
+        [options]="availableAreas"
+        [(ngModel)]="selectedArea"
+        (onChange)="filterBoxes()"
+        optionLabel="nome_area"
+        dataKey="id"
+        placeholder="Seleziona area"
+        class="w-full"
+      ></p-select>
+    </div>
     <div>
       <label class="font-semibold mb-2 block">Box</label>
       <p-select
-        [options]="availableBoxes"
+        [options]="filteredBoxes"
         [(ngModel)]="pendingBox"
         optionLabel="number"
         dataKey="id"
@@ -26,8 +38,8 @@
         [options]="availableDogs"
         [(ngModel)]="selectedDog"
         optionLabel="name"
-        placeholder="Seleziona un cane"
         class="w-full"
+        placeholder="Seleziona un cane"
       ></p-select>
 
       <p-multiSelect
@@ -36,8 +48,8 @@
         [(ngModel)]="selectedDogs"
         optionLabel="name"
         display="chip"
-        placeholder="Seleziona fino a 2 cani"
         class="w-full"
+        placeholder="Seleziona fino a 2 cani"
       ></p-multiSelect>
     </div>
 
@@ -93,3 +105,11 @@
     </div>
   </div>
 </p-dialog>
+
+<app-confirm-dialog
+  [visible]="showConflictDialog"
+  [title]="'Box occupato'"
+  [message]="conflictMessage"
+  (confirmed)="onConflictChoice($event)"
+  (visibleChange)="showConflictDialog = $event"
+></app-confirm-dialog>
