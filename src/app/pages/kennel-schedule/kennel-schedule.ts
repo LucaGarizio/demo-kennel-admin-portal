@@ -58,6 +58,7 @@ export class KennelScheduleComponent implements OnInit {
   async loadAreaData(area: any) {
     this.loading = true;
     const result = await this.dataService.loadAreaData(area.id, this.rows);
+    console.log('KENNEL → OCCUPAZIONI CARICATE:', result.data);
     this.selectedArea = result.area;
     this.boxes = result.boxes;
     this.data = result.data;

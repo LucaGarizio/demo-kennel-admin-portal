@@ -33,23 +33,27 @@
             (click)="toggleRow(row)"
           ></button>
         </td>
-
         @for (c of columns; track c) { @if (isOwnerColumn(c)) {
-        <td (click)="handleCellClick(c, row)" [ngStyle]="getClickableStyle()">
+        <td
+          (mouseenter)="handleCellHover(c, row)"
+          (mouseleave)="handleCellLeave(c, row)"
+          (click)="handleCellClick(c, row)"
+          [ngStyle]="getClickableStyle()"
+        >
           {{ getCellValue(row, c) }}
         </td>
         } @else if (isDocumentsColumn(c)) {
         <td style="white-space: nowrap; cursor: pointer" (click)="openDocumentsDialog(row)">
-          <ng-container *ngIf="getDocuments(row).length; else noDocs">
-            <div *ngFor="let doc of getDocuments(row); let i = index" style="color: #42a5f5">
-              {{ getFileLabel(i, doc) }}
-            </div>
-          </ng-container>
-
-          <ng-template #noDocs> Nessun documento </ng-template>
+          @let docs = getDocuments(row); @if (docs.length > 0) { @for (doc of docs; track $index) {
+          <div style="color: #42a5f5">
+            {{ getFileLabel($index, doc) }}
+          </div>
+          } } @else {
+          <span>Nessun documento</span>
+          }
         </td>
         } @else {
-        <td style="white-space: nowrap">
+        <td style="white-space: nowrap" [ngClass]="{ 'paid-cell': isPaidCell(c, row) }">
           @if (isCurrencyColumn(c)) {
           {{ getCellValue(row, c) | currency : 'EUR' : 'symbol' : '1.2-2' : 'it-IT' }}
           } @else {
@@ -65,27 +69,19 @@
           <div class="flex gap-2 ml-5 pl-4 justify-content-start">
             <button
               pButton
-              icon="pi pi-eye"
-              label="Visualizza"
-              class="p-button-text p-button-sm p-button-info"
-              (click)="view.emit(row)"
-            ></button>
-
-            <button
-              pButton
               icon="pi pi-pencil"
               label="Modifica"
               class="p-button-text p-button-sm p-button-warning"
               (click)="edit.emit(row)"
             ></button>
 
-            <button
+            <!-- <button
               pButton
               icon="pi pi-trash"
               label="Elimina"
               class="p-button-text p-button-sm p-button-danger"
               (click)="delete.emit(row)"
-            ></button>
+            ></button> -->
           </div>
         </td>
       </tr>

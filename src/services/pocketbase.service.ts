@@ -47,9 +47,9 @@ export class PocketbaseService {
     return await this.pb.collection(collection).getFullList({ batch, ...options });
   }
 
-  async getOne(collection: string, id: string) {
+  async getOne(collection: string, id: string, options: any = {}) {
     try {
-      return await this.pb.collection(collection).getOne(id);
+      return await this.pb.collection(collection).getOne(id, options);
     } catch (err) {
       console.error(`Errore getOne su ${collection}:`, err);
       throw err;
@@ -78,6 +78,15 @@ export class PocketbaseService {
       return await this.pb.collection(collection).getOne(id);
     } catch (err) {
       console.error(`Errore nel recupero record ${id} da ${collection}:`, err);
+      throw err;
+    }
+  }
+
+  async getById(collection: string, id: string, options: any = {}) {
+    try {
+      return await this.pb.collection(collection).getOne(id, options);
+    } catch (err) {
+      console.error(`Errore getById su ${collection}:`, err);
       throw err;
     }
   }

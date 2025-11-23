@@ -4,11 +4,12 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { CarouselModule } from 'primeng/carousel';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-index-table',
   standalone: true,
-  imports: [CommonModule, TableModule, ButtonModule, CarouselModule, DialogModule],
+  imports: [CommonModule, TableModule, ButtonModule, CarouselModule, DialogModule, CheckboxModule],
   templateUrl: './index-table.html',
   styleUrls: ['./index-table.scss'],
 })
@@ -24,6 +25,8 @@ export class IndexTableComponent {
   @Output() edit = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
   @Output() cellClick = new EventEmitter<{ column: string; value: any; row: any }>();
+  @Output() cellHover = new EventEmitter<{ column: string; value: any; row: any }>();
+  @Output() cellLeave = new EventEmitter<{ column: string; value: any; row: any }>();
 
   expandedRow: any | null = null;
   showDocsDialog = false;
@@ -32,12 +35,8 @@ export class IndexTableComponent {
   currencyColumns = ['boarding_fee', 'deposit', 'amount_paid', 'outstanding_balance', 'total_due'];
   pbUrl = 'http://127.0.0.1:8090';
 
-  /* --------------------------
-     COLUMN TYPE HELPERS
-  --------------------------- */
-
   isOwnerColumn(col: string): boolean {
-    return col === 'owner_id';
+    return col === 'owner';
   }
 
   isDocumentsColumn(col: string): boolean {
@@ -48,10 +47,6 @@ export class IndexTableComponent {
     return this.currencyColumns.includes(col);
   }
 
-  /* --------------------------
-     CLICK & STYLE HELPERS
-  --------------------------- */
-
   handleCellClick(col: string, row: any) {
     this.cellClick.emit({ column: col, value: row[col], row });
   }
@@ -59,10 +54,6 @@ export class IndexTableComponent {
   getClickableStyle() {
     return { cursor: 'pointer', color: '#42A5F5' };
   }
-
-  /* --------------------------
-     DOCUMENT HELPERS
-  --------------------------- */
 
   getDocuments(row: any): string[] {
     return row.documents || [];
@@ -76,17 +67,9 @@ export class IndexTableComponent {
     return fileName.split('.').pop() || '';
   }
 
-  /* --------------------------
-     GENERIC CELL VALUE
-  --------------------------- */
-
   getCellValue(row: any, col: string) {
     return row[col];
   }
-
-  /* --------------------------
-     ROW EXPANSION
-  --------------------------- */
 
   toggleRow(row: any) {
     this.expandedRow = this.expandedRow === row ? null : row;
@@ -104,5 +87,19 @@ export class IndexTableComponent {
 
   getDocumentUrl(row: any, fileName: string): string {
     return `${this.pbUrl}/api/files/owner/${row.id}/${fileName}`;
+  }
+
+  handleCellHover(col: string, row: any) {
+    this.cellHover.emit({ column: col, value: row[col], row });
+  }
+
+  handleCellLeave(col: string, row: any) {
+    this.cellLeave.emit({ column: col, value: row[col], row });
+  }
+
+  isPaidCell(column: string, row: any): boolean {
+    if (!row) return false;
+    const paid = row.outstanding_balance === 0;
+    return paid && (column === 'outstanding_balance' || column === 'total_due');
   }
 }

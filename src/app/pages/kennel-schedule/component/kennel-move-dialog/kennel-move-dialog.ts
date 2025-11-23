@@ -5,13 +5,9 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
-
 import { PocketbaseService } from '../../../../../services/pocketbase.service';
-import { toPocketDate } from '../../../../shared/utils/date-utils';
+import { toPocketDate, normalizeDate, formatYmdLocal } from '../../../../shared/utils/date-utils';
 
-/* ---------------------------------------------------------
-   TIPI BASE (minimi ma molto utili)
---------------------------------------------------------- */
 interface Dog {
   id: string;
   name: string;
@@ -63,18 +59,12 @@ export class KennelMoveDialogComponent {
 
   constructor(private pb: PocketbaseService) {}
 
-  private normalizeDate(value: string | Date | null): Date | null {
-    if (!value) return null;
-    if (value instanceof Date) return value;
-    return new Date(value.split('T')[0]);
-  }
-
   ngOnChanges() {
     if (!this.conflictOccupation || !this.targetBox) return;
     this.selectedArea = this.targetBox?.area || null;
     this.filterBoxes();
-    this.newStart = this.normalizeDate(this.conflictOccupation.arrival_date);
-    this.newEnd = this.normalizeDate(this.conflictOccupation.departure_date);
+    this.newStart = normalizeDate(this.conflictOccupation.arrival_date);
+    this.newEnd = normalizeDate(this.conflictOccupation.departure_date);
     this.newBox = null;
   }
 
@@ -94,8 +84,8 @@ export class KennelMoveDialogComponent {
       });
 
       if (this.targetDog && this.targetStart && this.targetEnd) {
-        const startKey = this.targetStart.toISOString().split('T')[0];
-        const endKey = this.targetEnd.toISOString().split('T')[0];
+        const startKey = formatYmdLocal(this.targetStart);
+        const endKey = formatYmdLocal(this.targetEnd);
 
         const existingTarget = await this.pb.getAll('occupations', 20, {
           filter: `
@@ -108,6 +98,7 @@ export class KennelMoveDialogComponent {
         for (const occ of existingTarget) {
           await this.pb.deleteRecord('occupations', occ.id);
         }
+
         await this.pb.createRecord('occupations', {
           dog: this.targetDog.id,
           box: this.targetBox!.id,
@@ -115,6 +106,7 @@ export class KennelMoveDialogComponent {
           departure_date: toPocketDate(this.targetEnd),
         });
       }
+
       this.moved.emit();
     } catch (err) {
       console.error('Errore durante il move:', err);

@@ -7,7 +7,8 @@
   contentStyle="padding: 2rem; background: #1e1e1e; color: #fff"
 >
   <div class="p-fluid flex flex-column gap-4">
-    <div *ngIf="editingOccupationId">
+    @if (editingOccupationId) {
+    <div>
       <label class="font-semibold mb-2 block">Area</label>
       <p-select
         [options]="availableAreas"
@@ -19,6 +20,8 @@
         class="w-full"
       ></p-select>
     </div>
+    }
+
     <div>
       <label class="font-semibold mb-2 block">Box</label>
       <p-select

@@ -1,4 +1,4 @@
-import { toPocketDate } from './date-utils';
+import { toPocketDate, toPocketDateTime } from './date-utils';
 
 export function toBackendOwner(front: any) {
   return {
@@ -34,6 +34,9 @@ export function fromBackendOwner(back: any) {
     codice_fiscale: back.tax_code,
     cell: back.phone_number,
     email: back.email,
+    extra: back.extra || '',
+    accettazione_regolamento: back.accettazione_regolamento ?? true,
+    documents: back.documents || [],
   };
 }
 
@@ -66,50 +69,57 @@ export function toBackendDog(front: any) {
 }
 
 export function fromBackendDog(back: any) {
+  const taglia: 'Piccola' | 'Media' | 'Grande' =
+    back.size === 'small' ? 'Piccola' : back.size === 'medium' ? 'Media' : 'Grande';
+
+  const vax: 'Si' | 'No' = back.vax ? 'Si' : 'No';
+  const paura: 'Si' | 'No' = back.scared ? 'Si' : 'No';
+
   return {
     id: back.id,
     nome: back.name,
     sesso: back.sex,
     razza: back.race,
-    taglia: back.size === 'small' ? 'Piccola' : back.size === 'medium' ? 'Media' : 'Grande',
+    taglia,
     chip: back.microchip,
-    vax: back.vax ? 'Si' : 'No',
-    paura: back.scared ? 'Si' : 'No',
+    vax,
+    paura,
     extra: back.extra || '',
+    id_proprietario: back.owner_id,
   };
 }
 
 export function toBackendStay(front: any) {
   return {
-    owner_id: front.owner_id,
-    dog_ids: front.dog_ids || [],
+    owner_id: front.id_proprietario,
+    dog_ids: front.id_cani || [],
     area_id: front.area_id || null,
     box_id: front.box_id || null,
-    arrival_date: toPocketDate(front.arrival_date),
-    departure_date: toPocketDate(front.departure_date),
-    boarding_fee: Number(front.boarding_fee) || 0,
-    deposit: Number(front.deposit) || 0,
-    amount_paid: Number(front.amount_paid) || 0,
-    total_due: Number(front.total_due) || 0,
-    outstanding_balance: Number(front.outstanding_balance) || 0,
-    notes: front.notes || '',
+    arrival_date: toPocketDateTime(front.data_arrivo),
+    departure_date: toPocketDateTime(front.data_uscita),
+    boarding_fee: Number(front.retta) || 0,
+    deposit: Number(front.acconto) || 0,
+    // amount_paid: Number(front.pagato) || 0,
+    total_due: Number(front.totale_dovuto) || 0,
+    outstanding_balance: Number(front.rimanente) || 0,
+    notes: front.note || '',
   };
 }
 
 export function fromBackendStay(back: any) {
   return {
     id: back.id,
-    owner_id: back.owner_id,
-    dog_ids: back.dog_ids || [],
+    id_proprietario: back.owner_id,
+    id_cani: back.dog_ids || [],
     area_id: back.area_id || null,
     box_id: back.box_id || null,
-    arrival_date: back.arrival_date ? new Date(back.arrival_date) : null,
-    departure_date: back.departure_date ? new Date(back.departure_date) : null,
-    boarding_fee: back.boarding_fee,
-    deposit: back.deposit,
-    amount_paid: back.amount_paid,
-    total_due: back.total_due,
-    outstanding_balance: back.outstanding_balance,
-    notes: back.notes || '',
+    data_arrivo: back.arrival_date ? new Date(back.arrival_date) : null,
+    data_uscita: back.departure_date ? new Date(back.departure_date) : null,
+    retta: back.boarding_fee,
+    acconto: back.deposit,
+    // pagato: back.amount_paid,
+    totale_dovuto: back.total_due,
+    rimanente: back.outstanding_balance,
+    note: back.notes || '',
   };
 }

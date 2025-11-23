@@ -16,3 +16,9 @@
   max-height: 60vh;
   border-radius: 8px;
 }
+
+.paid-cell {
+  background: var(--p-button-primary-background);
+  color: black;
+  border-right: 1px solid black;
+}

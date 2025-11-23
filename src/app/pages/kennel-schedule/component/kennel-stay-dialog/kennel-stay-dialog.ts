@@ -7,7 +7,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { PocketbaseService } from '../../../../../services/pocketbase.service';
-import { toPocketDate } from '../../../../shared/utils/date-utils';
+import { toPocketDate, parsePbDate, normalizeDate } from '../../../../shared/utils/date-utils';
 import { ConfirmDialogComponent } from '../../../../confirm-dialog/confirm-dialog';
 
 @Component({
@@ -65,10 +65,6 @@ export class KennelDialogComponent {
     `;
   }
 
-  private parseDate(s?: string): Date | null {
-    return s ? new Date(s.split(/[T\s]/)[0]) : null;
-  }
-
   async confirmDialog() {
     if (!this.startDate || !this.pendingBox) return;
 
@@ -79,9 +75,7 @@ export class KennelDialogComponent {
         return;
       }
     }
-
     if (!this.endDate) return;
-
     await this.saveCurrentAssignment();
   }
 
@@ -196,7 +190,6 @@ export class KennelDialogComponent {
     for (const occ of occs) {
       await this.pb.deleteRecord('occupations', occ.id);
     }
-
     this.confirm.emit();
   }
 
@@ -219,7 +212,6 @@ export class KennelDialogComponent {
       this.dialogTitle = 'Assegna cane';
       return;
     }
-
     this.setEditState(occs);
   }
 
@@ -244,9 +236,8 @@ export class KennelDialogComponent {
     } else {
       this.selectedDog = this.availableDogs.find((d) => d.id === dogs[0]?.id) || dogs[0] || null;
     }
-
-    this.startDate = this.parseDate(first.arrival_date) || new Date(this.pendingDay);
-    this.endDate = this.parseDate(first.departure_date) || new Date(this.pendingDay);
+    this.startDate = parsePbDate(first.arrival_date) || new Date(this.pendingDay);
+    this.endDate = parsePbDate(first.departure_date) || new Date(this.pendingDay);
   }
 
   filterBoxes() {

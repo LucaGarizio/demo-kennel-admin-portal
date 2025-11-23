@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PocketbaseService } from '../../../../services/pocketbase.service';
 import { KennelRow } from '../types';
+import { parsePbDate } from '../../../shared/utils/date-utils';
 
 @Injectable()
 export class KennelDataService {
@@ -20,10 +21,12 @@ export class KennelDataService {
     for (const b of boxes) {
       b['area'] = b.expand?.['area'] || null;
     }
+
     const occupations = await this.pb.getAll('occupations', 200, {
       filter: `box.area.id = "${areaId}"`,
       expand: 'dog,box,box.area',
     });
+
     const data: Record<string, Record<string, string>> = {};
 
     for (const row of rows) {
@@ -39,8 +42,8 @@ export class KennelDataService {
       const boxNum = occ.expand?.['box']?.['number'];
       const dogName = occ.expand?.['dog']?.['name'] || '';
       if (!boxNum || !dogName) continue;
-      const start = new Date(occ['arrival_date']);
-      const end = new Date(occ['departure_date'] || occ['arrival_date']);
+      const start = parsePbDate(occ['arrival_date'])!;
+      const end = parsePbDate(occ['departure_date']) || start;
       start.setHours(0, 0, 0, 0);
       end.setHours(23, 59, 59, 999);
 
@@ -64,6 +67,7 @@ export class KennelDataService {
         }
       }
     }
+
     return {
       area: { id: areaId },
       boxes,
@@ -85,7 +89,9 @@ export class KennelDataService {
 
   async getOccupationsForBox(boxId: string, localKey: string) {
     return await this.pb.getAll('occupations', 2, {
-      filter: `box.id = "${boxId}" && arrival_date <= "${localKey} 23:59:59" && departure_date >= "${localKey} 00:00:00"`,
+      filter: `box.id = "${boxId}" &&
+               arrival_date <= "${localKey} 23:59:59" &&
+               departure_date >= "${localKey} 00:00:00"`,
       expand: 'dog,box',
     });
   }

@@ -1,4 +1,4 @@
-<p-card>
+<p-card class="card">
   <form class="p-fluid" #f="ngForm" (ngSubmit)="f.form.markAllAsTouched(); onSubmit()" novalidate>
     <div class="text-right my-3">
       <button pButton label="Salva" icon="pi pi-check" type="submit"></button>
@@ -203,34 +203,47 @@
       </div>
 
       <div class="col-12 md:col-6">
-        <label>Documenti (PDF/JPG/PNG)</label>
-        <input type="file" multiple (change)="onFilesSelected($event)" class="w-full" />
-      </div>
-
-      <div class="col-12 md:col-12">
         <label>Note extra</label>
         <textarea
           pInputTextarea
           [(ngModel)]="model.extra"
           name="extra"
-          rows="4"
+          rows="5"
           class="w-full"
         ></textarea>
       </div>
+      <div class="col-12 md:col-12 mb-5">
+        <label>Documenti (PDF/JPG/PNG)</label>
 
-      <div class="col-12">
+        <div class="upload-wrapper" [class.needs-upload]="uploadNeeded">
+          <p-fileUpload
+            #fu
+            name="documents"
+            mode="advanced"
+            [customUpload]="true"
+            (uploadHandler)="onFilesPicked($event.files); fu.clear(); uploadNeeded = false"
+            (onSelect)="onFilesPicked($event.files)"
+            [multiple]="true"
+            chooseLabel="Scegli file"
+            [files]="existingFiles"
+            [showUploadButton]="true"
+            [showCancelButton]="false"
+            uploadLabel="Carica"
+          />
+        </div>
+      </div>
+
+      <div class="col-12" style="margin-top: 150px">
         <h3 class="text-center">Norme e regolamento</h3>
 
-        <div style="border: 1px solid black; padding: 1rem; border-radius: 6px">
-          <p>- Il proprietario dovrà presentare il libretto sanitario aggiornato...</p>
-          <p>- Tutti i cani dovranno essere privi di parassiti...</p>
-          <p>- Sono consentite visite solo ed esclusivamente dei proprietari...</p>
-          <p>- Al ritiro del cane previo appuntamento...</p>
-          <p>- In caso di rinuncia della prenotazione...</p>
-          <p>- La giornata di entrata sarà conteggiata sempre...</p>
-          <p>- Si declina ogni responsabilità in caso di morte, fuga o furto...</p>
-          <p>- Per ogni controversia è competente il FORO di BIELLA</p>
-        </div>
+        <p>- Il proprietario dovrà presentare il libretto sanitario aggiornato...</p>
+        <p>- Tutti i cani dovranno essere privi di parassiti...</p>
+        <p>- Sono consentite visite solo ed esclusivamente dei proprietari...</p>
+        <p>- Al ritiro del cane previo appuntamento...</p>
+        <p>- In caso di rinuncia della prenotazione...</p>
+        <p>- La giornata di entrata sarà conteggiata sempre...</p>
+        <p>- Si declina ogni responsabilità in caso di morte, fuga o furto...</p>
+        <p>- Per ogni controversia è competente il FORO di BIELLA</p>
 
         <div class="mt-3 flex align-items-center">
           <p-checkbox
@@ -246,7 +259,6 @@
         </small>
       </div>
     </div>
-
     }
 
     <!-- ===== DOGS FORM ===== -->
@@ -365,11 +377,12 @@
           [(ngModel)]="model.id_proprietario"
           name="id_proprietario"
           required
-          #id_proprietario="ngModel"
+          #owner_id="ngModel"
           placeholder="Seleziona Proprietario"
           class="w-full"
         ></p-select>
-        <small *ngIf="id_proprietario.invalid && id_proprietario.touched" class="p-error">
+
+        <small *ngIf="owner_id.invalid && owner_id.touched" class="p-error">
           Questo campo è obbligatorio
         </small>
       </div>
@@ -396,66 +409,123 @@
           [options]="ownerOptions"
           optionLabel="nomeCompleto"
           optionValue="id"
-          [(ngModel)]="model.owner_id"
-          name="owner_id"
+          [(ngModel)]="model.id_proprietario"
+          name="id_proprietario"
           required
-          #owner_id="ngModel"
+          #id_proprietario="ngModel"
           placeholder="Seleziona Proprietario"
           class="w-full"
           (onChange)="ownerChange.emit($event.value)"
         ></p-select>
 
-        <small *ngIf="owner_id.invalid && owner_id.touched" class="p-error">
-          Questo campo è obbligatorio
-        </small>
+        @if (id_proprietario.invalid && id_proprietario.touched) {
+        <small class="p-error"> Questo campo è obbligatorio </small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
         <label>Cani</label>
         <p-multiSelect
           [options]="dogOptions"
-          optionLabel="name"
+          optionLabel="nome"
           optionValue="id"
-          [(ngModel)]="model.dog_ids"
-          name="dog_ids"
+          [(ngModel)]="model.id_cani"
+          name="id_cani"
           required
-          #dog_ids="ngModel"
+          #id_cani="ngModel"
           placeholder="Seleziona cane/i"
           class="w-full"
           display="chip"
+          (onChange)="dogsChange.emit(model.id_cani)"
         ></p-multiSelect>
 
-        <small *ngIf="dog_ids.invalid && dog_ids.touched" class="p-error">
-          Devi selezionare almeno un cane
-        </small>
+        @if (id_cani.invalid && id_cani.touched) {
+        <small class="p-error"> Devi selezionare almeno un cane </small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Area</label>
+        <p-select
+          [options]="areaOptions"
+          optionLabel="nome_area"
+          optionValue="id"
+          [(ngModel)]="model.id_area"
+          name="id_area"
+          required
+          #id_area="ngModel"
+          placeholder="Seleziona area"
+          class="w-full"
+          (onChange)="areaChange.emit($event.value)"
+        ></p-select>
+
+        @if (id_area.invalid && id_area.touched) {
+        <small class="p-error"> Campo obbligatorio </small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Box</label>
+        <p-select
+          [options]="boxOptions"
+          optionLabel="numero"
+          optionValue="id"
+          [(ngModel)]="model.id_box"
+          name="id_box"
+          required
+          #id_box="ngModel"
+          placeholder="Seleziona box"
+          class="w-full"
+          (onChange)="boxChange.emit($event.value)"
+        ></p-select>
+
+        @if (id_box.invalid && id_box.touched) {
+        <small class="p-error"> Campo obbligatorio </small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
         <label>Data arrivo</label>
         <p-datePicker
-          [(ngModel)]="model.arrival_date"
-          name="arrival_date"
+          [(ngModel)]="model.data_arrivo"
+          name="data_arrivo"
           required
-          #arrival_date="ngModel"
+          #data_arrivo="ngModel"
           class="w-full"
+          dateFormat="dd/mm/yy"
+          [showTime]="true"
+          hourFormat="24"
+          appendTo="body"
+          manualMode="true"
+          [hideOnDateTimeSelect]="false"
+          (onSelect)="arrivalChange.emit($event)"
         ></p-datePicker>
-        <small *ngIf="arrival_date.invalid && arrival_date.touched" class="p-error">
-          Campo obbligatorio
-        </small>
+
+        @if (data_arrivo.invalid && data_arrivo.touched) {
+        <small class="p-error"> Campo obbligatorio </small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
         <label>Data uscita</label>
         <p-datePicker
-          [(ngModel)]="model.departure_date"
-          name="departure_date"
+          [(ngModel)]="model.data_uscita"
+          name="data_uscita"
           required
-          #departure_date="ngModel"
+          #data_uscita="ngModel"
           class="w-full"
+          dateFormat="dd/mm/yy"
+          [showTime]="true"
+          hourFormat="24"
+          appendTo="body"
+          manualMode="true"
+          [hideOnDateTimeSelect]="false"
+          (onSelect)="departureChange.emit($event)"
         ></p-datePicker>
-        <small *ngIf="departure_date.invalid && departure_date.touched" class="p-error">
-          Campo obbligatorio
-        </small>
+
+        @if (data_uscita.invalid && data_uscita.touched) {
+        <small class="p-error"> Campo obbligatorio </small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
@@ -463,20 +533,28 @@
         <input
           pInputText
           type="number"
-          [(ngModel)]="model.boarding_fee"
-          name="boarding_fee"
+          [(ngModel)]="model.retta"
+          name="retta"
           required
-          #boarding_fee="ngModel"
+          #retta="ngModel"
           class="w-full"
         />
-        <small *ngIf="boarding_fee.invalid && boarding_fee.touched" class="p-error">
-          Campo obbligatorio
-        </small>
+
+        @if (retta.invalid && retta.touched) {
+        <small class="p-error"> Campo obbligatorio </small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
         <label>Acconto (€)</label>
-        <input pInputText type="number" [(ngModel)]="model.deposit" name="deposit" class="w-full" />
+        <input
+          pInputText
+          type="number"
+          [(ngModel)]="model.acconto"
+          name="acconto"
+          (input)="depositChange.emit()"
+          class="w-full"
+        />
       </div>
 
       <div class="col-12 md:col-6">
@@ -484,8 +562,8 @@
         <input
           pInputText
           type="number"
-          [(ngModel)]="model.outstanding_balance"
-          name="outstanding_balance"
+          [(ngModel)]="model.rimanente"
+          name="rimanente"
           class="w-full"
         />
       </div>
@@ -495,20 +573,24 @@
         <input
           pInputText
           type="number"
-          [(ngModel)]="model.total_due"
-          name="total_due"
+          [(ngModel)]="model.totale_dovuto"
+          name="totale_dovuto"
           required
-          #total_due="ngModel"
+          #totale_dovuto="ngModel"
           class="w-full"
         />
+
+        @if (totale_dovuto.invalid && totale_dovuto.touched) {
+        <small class="p-error"> Campo obbligatorio </small>
+        }
       </div>
 
       <div class="col-12">
         <label>Note</label>
         <textarea
           pInputTextarea
-          [(ngModel)]="model.notes"
-          name="notes"
+          [(ngModel)]="model.note"
+          name="note"
           rows="4"
           class="w-full"
         ></textarea>

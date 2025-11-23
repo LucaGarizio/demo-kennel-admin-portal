@@ -1,0 +1,8 @@
+:host ::ng-deep .p-dialog-header-icons,
+:host ::ng-deep .p-dialog-header-actions {
+  display: none !important;
+}
+.paid-cell {
+  background-color: green;
+  font-weight: 600;
+}

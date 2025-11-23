@@ -1,0 +1,15 @@
+<div class="page-container">
+  <h2 class="text-center">Modifica Proprietario</h2>
+
+  @if (!loading) {
+  <app-index-form
+    type="owner"
+    [model]="model"
+    (save)="onSubmit($event)"
+    (filesSelected)="onFilesSelected($event)"
+    (deleteDocument)="onDeleteDoc($event)"
+  ></app-index-form>
+  } @else {
+  <p class="text-center mt-5">Caricamento...</p>
+  }
+</div>
