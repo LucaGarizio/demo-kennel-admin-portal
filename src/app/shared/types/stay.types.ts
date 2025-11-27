@@ -64,11 +64,33 @@ export interface Stay {
   };
 }
 
+// export interface StayFormModel {
+//   id_proprietario: string | null;
+//   id_cani: string[];
+//   id_area: string | null;
+//   id_box: string | null;
+
+//   data_arrivo: Date | null;
+//   data_uscita: Date | null;
+
+//   retta: number | null;
+//   acconto: number | null;
+//   rimanente: number | null;
+//   totale_dovuto: number | null;
+
+//   note: string;
+// }
+
 export interface StayFormModel {
   id_proprietario: string | null;
   id_cani: string[];
-  id_area: string | null;
-  id_box: string | null;
+
+  cani: {
+    dog_id: string;
+    id_area: string | null;
+    id_box: string | null;
+    boxOptions: BoxOption[];
+  }[];
 
   data_arrivo: Date | null;
   data_uscita: Date | null;

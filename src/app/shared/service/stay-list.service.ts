@@ -7,18 +7,15 @@ import { formatDateTime } from '../utils/date-utils';
 export class StayListService {
   constructor(private pb: PocketbaseService) {}
 
-  /** ============================
-   *  CARICA TUTTI GLI STAY + OCCUPATIONS
-   * ============================ */
-  async loadStays(): Promise<StayListRecord[]> {
-    const [stays, occs] = await Promise.all([
-      this.pb.getAll('stays', 200, {
-        expand: 'owner_id,dog_ids',
-      }),
-      this.pb.getAll('occupations', 500, {
-        expand: 'dog,box,box.area',
-      }),
-    ]);
+  async loadStays(filter: string = ''): Promise<StayListRecord[]> {
+    const stays = await this.pb.getAll('stays', 200, {
+      expand: 'owner_id,dog_ids',
+      filter,
+    });
+
+    const occs = await this.pb.getAll('occupations', 500, {
+      expand: 'dog,box,box.area',
+    });
 
     stays.sort(
       (a: any, b: any) => new Date(b.arrival_date).getTime() - new Date(a.arrival_date).getTime()
@@ -27,14 +24,30 @@ export class StayListService {
     return stays.map((stay: any) => this.mapStayRecord(stay, occs));
   }
 
-  /** ============================ */
   private mapStayRecord(stay: any, occupations: any[]): StayListRecord {
     const dogs = stay.expand?.dog_ids ?? [];
-    const dog = dogs[0];
 
-    const occ = dog ? this.findOccupation(dog.id, stay, occupations) : null;
+    const relatedOccs = occupations.filter((o: any) =>
+      dogs.some((d: any) => o.expand?.dog?.id === d.id)
+    );
 
-    const { area, box } = occ ? this.extractAreaBox(occ) : { area: '', box: '' };
+    const validOccs = relatedOccs.filter((o: any) => {
+      return o.arrival_date <= stay.departure_date && o.departure_date >= stay.arrival_date;
+    });
+
+    const areas = Array.from(
+      new Set(
+        validOccs.map((o: any) => o.expand?.box?.expand?.area?.nome_area).filter((v: any) => !!v)
+      )
+    );
+
+    const boxes = Array.from(
+      new Set(
+        validOccs
+          .map((o: any) => o.expand?.box?.numero ?? o.expand?.box?.number)
+          .filter((v: any) => !!v)
+      )
+    );
 
     return {
       id: stay.id,
@@ -42,8 +55,9 @@ export class StayListService {
         ? `${stay.expand.owner_id.name} ${stay.expand.owner_id.surname}`
         : '',
       dogs: dogs.map((d: any) => d.name).join(', '),
-      area,
-      box,
+      area: areas.join(', '),
+      box: boxes.join(', '),
+
       arrival_date: formatDateTime(stay.arrival_date),
       departure_date: formatDateTime(stay.departure_date),
       boarding_fee: stay.boarding_fee,
@@ -51,11 +65,11 @@ export class StayListService {
       amount_paid: stay.amount_paid,
       outstanding_balance: stay.outstanding_balance,
       total_due: stay.total_due,
+
       raw: stay,
     };
   }
 
-  /** ============================ */
   private findOccupation(dogId: string, stay: any, occupations: any[]) {
     return occupations.find((o: any) => {
       return (
@@ -94,5 +108,15 @@ export class StayListService {
     for (const occ of occList) await this.pb.deleteRecord('occupations', occ.id);
 
     await this.pb.deleteRecord('stays', stay.id);
+  }
+
+  async searchDogsByName(name: string): Promise<string[]> {
+    if (!name) return [];
+
+    const dogs = await this.pb.getAll('dogs', 200, {
+      filter: `name ~ "${name}"`,
+    });
+
+    return dogs.map((d: any) => d.id);
   }
 }

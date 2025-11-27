@@ -44,8 +44,9 @@ export class IndexFormComponent {
   @Output() ownerChange = new EventEmitter<string>();
   @Output() filesSelected = new EventEmitter<File[]>();
   @Output() deleteDocument = new EventEmitter<string>();
-  @Output() areaChange = new EventEmitter<string>();
-  @Output() boxChange = new EventEmitter<string>();
+  @Output() areaChange = new EventEmitter<{ index: number; area: string | null }>();
+  @Output() boxChange = new EventEmitter<{ index: number; box: string | null }>();
+
   @Output() dogsChange = new EventEmitter<string[]>();
   @Output() arrivalChange = new EventEmitter<Date>();
   @Output() departureChange = new EventEmitter<Date>();
@@ -116,5 +117,23 @@ export class IndexFormComponent {
       },
       true
     );
+  }
+
+  getDogName(id: string): string {
+    return this.dogOptions.find((d) => d.id === id)?.nome ?? '';
+  }
+
+  getEmptyMessage(index: number): string {
+    const cane = this.model.cani[index];
+
+    if (!cane.id_area) {
+      return "Seleziona un'area per vedere i box disponibili";
+    }
+
+    if (cane.boxOptions.length === 0) {
+      return "Nessun box disponibile per quest'area";
+    }
+
+    return '';
   }
 }

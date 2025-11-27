@@ -1,0 +1,18 @@
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  // gap: 1.5rem;
+  padding: 1rem;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px; /* così non crollano */
+}
+
+.filter-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+}

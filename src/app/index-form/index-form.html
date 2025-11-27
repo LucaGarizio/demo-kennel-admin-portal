@@ -444,45 +444,42 @@
         }
       </div>
 
+      @for (cane of model.cani; track cane.dog_id; let i = $index) {
+      <div class="col-12 py-0" style="height: inherit">
+        <h4 class="mb-3 mt-0">Cane: {{ getDogName(cane.dog_id) }}</h4>
+      </div>
+
       <div class="col-12 md:col-6">
         <label>Area</label>
         <p-select
           [options]="areaOptions"
           optionLabel="nome_area"
           optionValue="id"
-          [(ngModel)]="model.id_area"
-          name="id_area"
-          required
-          #id_area="ngModel"
-          placeholder="Seleziona area"
+          [(ngModel)]="model.cani[i].id_area"
+          name="area_{{ i }}"
+          (onChange)="areaChange.emit({ index: i, area: model.cani[i].id_area })"
+          [ngModelOptions]="{ standalone: true }"
           class="w-full"
-          (onChange)="areaChange.emit($event.value)"
+          placeholder="Seleziona area"
         ></p-select>
-
-        @if (id_area.invalid && id_area.touched) {
-        <small class="p-error"> Campo obbligatorio </small>
-        }
       </div>
 
       <div class="col-12 md:col-6">
         <label>Box</label>
         <p-select
-          [options]="boxOptions"
+          [options]="model.cani[i].boxOptions"
           optionLabel="numero"
           optionValue="id"
-          [(ngModel)]="model.id_box"
-          name="id_box"
-          required
-          #id_box="ngModel"
-          placeholder="Seleziona box"
+          [(ngModel)]="model.cani[i].id_box"
+          name="box_{{ i }}"
+          (onChange)="boxChange.emit({ index: i, box: model.cani[i].id_box })"
+          [ngModelOptions]="{ standalone: true }"
           class="w-full"
-          (onChange)="boxChange.emit($event.value)"
+          placeholder="Seleziona box"
+          [emptyMessage]="getEmptyMessage(i)"
         ></p-select>
-
-        @if (id_box.invalid && id_box.touched) {
-        <small class="p-error"> Campo obbligatorio </small>
-        }
       </div>
+      }
 
       <div class="col-12 md:col-6">
         <label>Data arrivo</label>

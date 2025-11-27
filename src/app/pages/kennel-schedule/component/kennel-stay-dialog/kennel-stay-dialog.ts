@@ -93,6 +93,23 @@ export class KennelDialogComponent {
     return presentDog?.id !== this.selectedDog?.id;
   }
 
+  // private async saveCurrentAssignment() {
+  //   const payload = {
+  //     arrival_date: toPocketDate(this.startDate!),
+  //     departure_date: toPocketDate(this.endDate!),
+  //   };
+
+  //   try {
+  //     this.pendingBox.double
+  //       ? await this.assignDoubleBox(payload)
+  //       : await this.assignSingleBox(payload);
+
+  //     this.confirm.emit();
+  //   } catch (err) {
+  //     console.error('Errore durante salvataggio:', err);
+  //   }
+  // }
+
   private async saveCurrentAssignment() {
     const payload = {
       arrival_date: toPocketDate(this.startDate!),
@@ -100,9 +117,40 @@ export class KennelDialogComponent {
     };
 
     try {
-      this.pendingBox.double
-        ? await this.assignDoubleBox(payload)
-        : await this.assignSingleBox(payload);
+      if (this.pendingBox.double) {
+        await this.assignDoubleBox(payload);
+      } else {
+        await this.assignSingleBox(payload);
+      }
+
+      // ---- AGGIORNA LO STAY DEL/I CANI ----
+      if (this.pendingBox.double) {
+        // box doppio: aggiorno TUTTI i cani selezionati
+        for (const d of this.selectedDogs) {
+          const stays = await this.pb.getAll('stays', 10, {
+            filter: `dog_ids.id = "${d.id}"`,
+          });
+
+          if (stays.length) {
+            await this.pb.updateRecord('stays', stays[0].id, {
+              id_area: this.pendingBox.expand?.area?.id ?? null,
+              id_box: this.pendingBox.id,
+            });
+          }
+        }
+      } else {
+        // box singolo
+        const stays = await this.pb.getAll('stays', 10, {
+          filter: `dog_ids.id = "${this.selectedDog.id}"`,
+        });
+
+        if (stays.length) {
+          await this.pb.updateRecord('stays', stays[0].id, {
+            id_area: this.pendingBox.expand?.area?.id ?? null,
+            id_box: this.pendingBox.id,
+          });
+        }
+      }
 
       this.confirm.emit();
     } catch (err) {

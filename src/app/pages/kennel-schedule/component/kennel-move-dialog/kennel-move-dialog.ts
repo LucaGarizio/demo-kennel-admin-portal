@@ -72,10 +72,52 @@ export class KennelMoveDialogComponent {
     return !!(this.newBox && this.newStart && this.newEnd);
   }
 
+  // async confirmMove() {
+  //   if (!this.canSubmit || !this.conflictOccupation || !this.conflictDog) return;
+
+  //   try {
+  //     await this.pb.updateRecord('occupations', this.conflictOccupation.id, {
+  //       dog: this.conflictDog.id,
+  //       box: this.newBox!.id,
+  //       arrival_date: toPocketDate(this.newStart!),
+  //       departure_date: toPocketDate(this.newEnd!),
+  //     });
+
+  //     if (this.targetDog && this.targetStart && this.targetEnd) {
+  //       const startKey = formatYmdLocal(this.targetStart);
+  //       const endKey = formatYmdLocal(this.targetEnd);
+
+  //       const existingTarget = await this.pb.getAll('occupations', 20, {
+  //         filter: `
+  //           dog.id = "${this.targetDog.id}" &&
+  //           arrival_date <= "${endKey} 23:59:59" &&
+  //           departure_date >= "${startKey} 00:00:00"
+  //         `,
+  //       });
+
+  //       for (const occ of existingTarget) {
+  //         await this.pb.deleteRecord('occupations', occ.id);
+  //       }
+
+  //       await this.pb.createRecord('occupations', {
+  //         dog: this.targetDog.id,
+  //         box: this.targetBox!.id,
+  //         arrival_date: toPocketDate(this.targetStart),
+  //         departure_date: toPocketDate(this.targetEnd),
+  //       });
+  //     }
+
+  //     this.moved.emit();
+  //   } catch (err) {
+  //     console.error('Errore durante il move:', err);
+  //   }
+  // }
+
   async confirmMove() {
     if (!this.canSubmit || !this.conflictOccupation || !this.conflictDog) return;
 
     try {
+      // 1. Aggiorna la OCCUPATION PRINCIPALE
       await this.pb.updateRecord('occupations', this.conflictOccupation.id, {
         dog: this.conflictDog.id,
         box: this.newBox!.id,
@@ -83,28 +125,54 @@ export class KennelMoveDialogComponent {
         departure_date: toPocketDate(this.newEnd!),
       });
 
+      // 1b. AGGIORNA LO STAY COLLEGATO AL CANE
+      const stays = await this.pb.getAll('stays', 10, {
+        filter: `dog_ids.id = "${this.conflictDog.id}"`,
+      });
+
+      if (stays.length) {
+        await this.pb.updateRecord('stays', stays[0].id, {
+          id_area: this.newBox?.area?.id ?? null,
+          id_box: this.newBox?.id ?? null,
+        });
+      }
+
+      // 2. GESTIONE TARGET DOG (spostamento cane destinazione)
       if (this.targetDog && this.targetStart && this.targetEnd) {
         const startKey = formatYmdLocal(this.targetStart);
         const endKey = formatYmdLocal(this.targetEnd);
 
         const existingTarget = await this.pb.getAll('occupations', 20, {
           filter: `
-            dog.id = "${this.targetDog.id}" &&
-            arrival_date <= "${endKey} 23:59:59" &&
-            departure_date >= "${startKey} 00:00:00"
-          `,
+          dog.id = "${this.targetDog.id}" &&
+          arrival_date <= "${endKey} 23:59:59" &&
+          departure_date >= "${startKey} 00:00:00"
+        `,
         });
 
         for (const occ of existingTarget) {
           await this.pb.deleteRecord('occupations', occ.id);
         }
 
-        await this.pb.createRecord('occupations', {
+        // 2b. CREA OCCUPATION TARGET
+        const newOcc = await this.pb.createRecord('occupations', {
           dog: this.targetDog.id,
           box: this.targetBox!.id,
           arrival_date: toPocketDate(this.targetStart),
           departure_date: toPocketDate(this.targetEnd),
         });
+
+        // 2c. AGGIORNA LO STAY DEL TARGET DOG
+        const targetStays = await this.pb.getAll('stays', 10, {
+          filter: `dog_ids.id = "${this.targetDog.id}"`,
+        });
+
+        if (targetStays.length) {
+          await this.pb.updateRecord('stays', targetStays[0].id, {
+            id_area: this.targetBox?.area?.id ?? null,
+            id_box: this.targetBox?.id ?? null,
+          });
+        }
       }
 
       this.moved.emit();

@@ -1,0 +1,75 @@
+<!-- <div class="filters-container">
+  @for (f of config; track f.key) {
+  <div class="filter-item">
+    <label class="filter-label">{{ f.label }}</label>
+
+    @switch (f.type) { @case ('text') {
+    <input pInputText class="w-full" [(ngModel)]="model[f.key]" (keyup.enter)="update()" />
+
+    } @case ('date') {
+
+    <p-datepicker
+      class="filter-input"
+      [(ngModel)]="model[f.key]"
+      (ngModelChange)="update()"
+      dateFormat="dd-mm-yy"
+      showClear="true"
+    ></p-datepicker>
+    } @case ('select') {
+    <select class="filter-input" [(ngModel)]="model[f.key]" (ngModelChange)="update()">
+      <option [ngValue]="null">Tutti</option>
+
+      @for (opt of f.options; track opt) {
+      <option [ngValue]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+    } @default {
+    <span style="color: red">Tipo filtro non supportato</span>
+    } }
+  </div>
+  }
+</div> -->
+
+<div class="filters-container">
+  <!-- ============================= -->
+  <!--      FILTRO CANE (text)      -->
+  <!-- ============================= -->
+
+  <!-- ============================= -->
+  <!--   FILTRO DATA ARRIVO (date)  -->
+  <!-- ============================= -->
+  <div class="filter-item">
+    <label class="filter-label">Data Arrivo</label>
+    <p-datepicker
+      class="filter-input"
+      [(ngModel)]="model['data_arrivo']"
+      (ngModelChange)="update()"
+      dateFormat="dd-mm-yy"
+      showClear="true"
+    ></p-datepicker>
+  </div>
+
+  <!-- ============================= -->
+  <!--   FILTRO DATA USCITA (date)  -->
+  <!-- ============================= -->
+  <div class="filter-item">
+    <label class="filter-label">Data Uscita</label>
+    <p-datepicker
+      class="filter-input"
+      [(ngModel)]="model['data_uscita']"
+      (ngModelChange)="update()"
+      dateFormat="dd-mm-yy"
+      showClear="true"
+    ></p-datepicker>
+  </div>
+
+  <div class="filter-item">
+    <label class="filter-label">Cane</label>
+    <input
+      pInputText
+      class="filter-input"
+      [(ngModel)]="model['dog_name']"
+      (keyup.enter)="update()"
+    />
+  </div>
+</div>

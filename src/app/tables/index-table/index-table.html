@@ -11,12 +11,10 @@
     [rows]="25"
     [paginator]="true"
     [rowsPerPageOptions]="[25, 50, 75]"
-    [tableStyle]="{ 'min-width': '1000px' }"
   >
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 3rem"></th>
-
         <th style="white-space: nowrap" *ngFor="let col of columns">
           {{ columnLabels[col] || col }}
         </th>
@@ -71,7 +69,7 @@
               pButton
               icon="pi pi-pencil"
               label="Modifica"
-              class="p-button-text p-button-sm p-button-warning"
+              class="p-button-text p-button-sm"
               (click)="edit.emit(row)"
             ></button>
 

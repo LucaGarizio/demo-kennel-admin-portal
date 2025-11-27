@@ -3,9 +3,13 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { IndexFormComponent } from '../../../index-form/index-form';
 import { StayFormService } from '../../../shared/service/stay.service';
-import { OwnerOption, DogOption, AreaOption, BoxOption } from '../../../shared/types/stay.types';
-import { toBackendStay } from '../../../shared/utils/mapper';
-import { StayFormModel } from '../../../shared/types/stay.types';
+import {
+  OwnerOption,
+  DogOption,
+  AreaOption,
+  BoxOption,
+  StayFormModel,
+} from '../../../shared/types/stay.types';
 import { PocketbaseService } from '../../../../services/pocketbase.service';
 import { normalizeDate } from '../../../shared/utils/date-utils';
 import {
@@ -59,14 +63,16 @@ export class StayCreateComponent {
     return {
       id_proprietario: null,
       id_cani: [],
-      id_area: null,
-      id_box: null,
+      cani: [],
+
       data_arrivo: null,
       data_uscita: null,
+
       retta: 0,
       acconto: 0,
       rimanente: 0,
       totale_dovuto: 0,
+
       note: '',
     };
   }
@@ -84,7 +90,41 @@ export class StayCreateComponent {
   }
 
   onDogsChanged() {
+    const selected = this.model.id_cani;
+    const previous = this.model.cani;
+
+    this.model.cani = selected.map((dog_id) => {
+      const found = previous.find((c) => c.dog_id === dog_id);
+      return (
+        found || {
+          dog_id,
+          id_area: null,
+          id_box: null,
+          boxOptions: [],
+        }
+      );
+    });
+
     this.updateAll();
+  }
+
+  onAreaSelected(e: { index: number; area: string | null }) {
+    const { index, area } = e;
+
+    this.model.cani[index].id_area = area;
+
+    const filtered = area ? this.stayForm.filterBoxes(area, this.allBoxes) : [];
+
+    this.model.cani[index].boxOptions = filtered;
+
+    if (!filtered.some((b) => b.id === this.model.cani[index].id_box)) {
+      this.model.cani[index].id_box = null;
+    }
+  }
+
+  onBoxSelected(e: { index: number; box: string | null }) {
+    const { index, box } = e;
+    this.model.cani[index].id_box = box;
   }
 
   onArrivalDateChange() {
@@ -118,39 +158,36 @@ export class StayCreateComponent {
     );
   }
 
-  onAreaSelected(areaId: string) {
-    this.model.id_area = areaId;
-    this.boxOptions = this.stayForm.filterBoxes(areaId, this.allBoxes);
-
-    if (!this.boxOptions.some((b) => b.id === this.model.id_box)) {
-      this.model.id_box = null;
-    }
-  }
-
-  onBoxSelected(boxId: string) {
-    this.model.id_box = boxId;
-  }
-
   async onSubmit(frontModel: StayFormModel) {
-    const dogId = frontModel.id_cani?.[0];
-    const boxId = frontModel.id_box;
-
     frontModel.data_arrivo = normalizeDate(frontModel.data_arrivo);
     frontModel.data_uscita = normalizeDate(frontModel.data_uscita);
 
-    const payload = toBackendStay(frontModel);
-    const stay = await this.pb.createRecord('stays', payload);
-
-    const fullBox = await this.pb.getOne('box', boxId!, { expand: 'area' });
-    const areaId = fullBox.expand?.['area']?.id;
-
-    await this.pb.createRecord('occupations', {
-      dog: dogId,
-      box: boxId,
-      area: areaId,
+    const stayPayload = {
+      owner_id: frontModel.id_proprietario,
+      dog_ids: frontModel.id_cani,
       arrival_date: frontModel.data_arrivo,
       departure_date: frontModel.data_uscita,
-    });
+      boarding_fee: frontModel.retta,
+      deposit: frontModel.acconto,
+      outstanding_balance: frontModel.rimanente,
+      total_due: frontModel.totale_dovuto,
+      notes: frontModel.note || '',
+    };
+
+    const stay = await this.pb.createRecord('stays', stayPayload);
+
+    for (const entry of frontModel.cani) {
+      if (!entry.id_area || !entry.id_box) continue;
+
+      await this.pb.createRecord('occupations', {
+        dog: entry.dog_id,
+        box: entry.id_box,
+        area: entry.id_area,
+        arrival_date: frontModel.data_arrivo,
+        departure_date: frontModel.data_uscita,
+        stay: stay.id,
+      });
+    }
 
     this.router.navigate(['/lista-soggiorni']);
   }
