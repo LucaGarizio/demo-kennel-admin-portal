@@ -11,6 +11,8 @@ import { AuthGuard } from './auth.guard';
 import { KennelScheduleComponent } from './pages/kennel-schedule/kennel-schedule';
 import { OwnerEditComponent } from './pages/owner/owner-edit/owner-edit';
 import { DogEditComponent } from './pages/dog/dog-edit/dog-edit';
+import { SignaturePage } from './signature-page/signature-page';
+import { SignatureWaiting } from './signature-waiting/signature-waiting';
 
 export const routes: Routes = [
   { path: '', component: Login },
@@ -28,4 +30,9 @@ export const routes: Routes = [
   { path: 'soggiorno/:id', component: StayEditComponent, canActivate: [AuthGuard] },
 
   { path: 'box', component: KennelScheduleComponent, canActivate: [AuthGuard] },
+  { path: 'firma-attesa', component: SignatureWaiting },
+  {
+    path: 'firma/:sessionId',
+    component: SignaturePage,
+  },
 ];

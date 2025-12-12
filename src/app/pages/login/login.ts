@@ -7,7 +7,7 @@ import { CardModule } from 'primeng/card';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { PasswordModule } from 'primeng/password';
 import { Router } from '@angular/router';
-import { PocketbaseService } from '../../../services/pocketbase.service';
+import { PocketbaseService } from '../../shared/service/pocket-base-services/pocketbase.service';
 
 @Component({
   selector: 'app-login',

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IndexFormComponent } from '../../../index-form/index-form';
-import { StayFormService } from '../../../shared/service/stay.service';
+import { StayFormService } from '../../../shared/service/stay-service/stay.service';
 
 import {
   StayFormModel,
@@ -13,20 +13,21 @@ import {
 } from '../../../shared/types/stay.types';
 
 import { fromBackendStay, toBackendStay } from '../../../shared/utils/mapper';
-import { PocketbaseService } from '../../../../services/pocketbase.service';
+import { PocketbaseService } from '../../../shared/service/pocket-base-services/pocketbase.service';
 
 import {
   calculateDailyRate,
   calculateTotal,
   calculateRemaining,
-} from '../../../shared/service/stay-price.service';
+} from '../../../shared/service/stay-service/stay-price.service';
 
 import { normalizeDate } from '../../../shared/utils/date-utils';
+import { PageHeaderComponent } from '../../../shared/component/page-header/page-headercomponent';
 
 @Component({
   selector: 'app-stay-edit',
   standalone: true,
-  imports: [CommonModule, IndexFormComponent],
+  imports: [CommonModule, IndexFormComponent, PageHeaderComponent],
   templateUrl: './stay-edit.html',
   styleUrls: ['./stay-edit.scss'],
 })
@@ -79,6 +80,8 @@ export class StayEditComponent {
       acconto: 0,
       rimanente: 0,
       totale_dovuto: 0,
+
+      tipo_pagamento: null,
       note: '',
     };
   }
@@ -111,7 +114,6 @@ export class StayEditComponent {
       };
     });
 
-    // 🔥 5. Assembla il model completo
     this.model = {
       id_proprietario: stayModel.id_proprietario,
       id_cani: dogIds,
@@ -124,7 +126,7 @@ export class StayEditComponent {
       acconto: stayModel.acconto,
       rimanente: stayModel.rimanente,
       totale_dovuto: stayModel.totale_dovuto,
-
+      tipo_pagamento: stayModel.tipo_pagamento,
       note: stayModel.note,
     };
 
@@ -159,6 +161,20 @@ export class StayEditComponent {
   }
 
   onDogsChanged() {
+    const selected = this.model.id_cani;
+
+    this.model.cani = this.model.cani.filter((c) => selected.includes(c.dog_id));
+
+    selected.forEach((cid) => {
+      if (!this.model.cani.some((c) => c.dog_id === cid)) {
+        this.model.cani.push({
+          dog_id: cid,
+          id_area: null,
+          id_box: null,
+          boxOptions: [],
+        });
+      }
+    });
     this.updateAll();
   }
 

@@ -95,6 +95,17 @@
         [value]="owner.id_card_expiration_date | date : 'dd/MM/yyyy'"
       />
     </div>
+
+    <div class="col-12">
+      <label>Note extra</label>
+      <textarea
+        pInputTextarea
+        disabled
+        class="w-full"
+        rows="4"
+        [value]="owner.extra || 'Nessuna nota'"
+      ></textarea>
+    </div>
   </div>
   <div class="mt-4 text-right">
     <button

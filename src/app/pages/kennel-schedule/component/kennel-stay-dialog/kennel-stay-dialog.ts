@@ -6,7 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { PocketbaseService } from '../../../../../services/pocketbase.service';
+import { PocketbaseService } from '../../../../shared/service/pocket-base-services/pocketbase.service';
 import { toPocketDate, parsePbDate, normalizeDate } from '../../../../shared/utils/date-utils';
 import { ConfirmDialogComponent } from '../../../../confirm-dialog/confirm-dialog';
 
@@ -92,24 +92,6 @@ export class KennelDialogComponent {
     const presentDog = occ.expand?.['dog'];
     return presentDog?.id !== this.selectedDog?.id;
   }
-
-  // private async saveCurrentAssignment() {
-  //   const payload = {
-  //     arrival_date: toPocketDate(this.startDate!),
-  //     departure_date: toPocketDate(this.endDate!),
-  //   };
-
-  //   try {
-  //     this.pendingBox.double
-  //       ? await this.assignDoubleBox(payload)
-  //       : await this.assignSingleBox(payload);
-
-  //     this.confirm.emit();
-  //   } catch (err) {
-  //     console.error('Errore durante salvataggio:', err);
-  //   }
-  // }
-
   private async saveCurrentAssignment() {
     const payload = {
       arrival_date: toPocketDate(this.startDate!),
@@ -122,10 +104,7 @@ export class KennelDialogComponent {
       } else {
         await this.assignSingleBox(payload);
       }
-
-      // ---- AGGIORNA LO STAY DEL/I CANI ----
       if (this.pendingBox.double) {
-        // box doppio: aggiorno TUTTI i cani selezionati
         for (const d of this.selectedDogs) {
           const stays = await this.pb.getAll('stays', 10, {
             filter: `dog_ids.id = "${d.id}"`,
@@ -139,7 +118,6 @@ export class KennelDialogComponent {
           }
         }
       } else {
-        // box singolo
         const stays = await this.pb.getAll('stays', 10, {
           filter: `dog_ids.id = "${this.selectedDog.id}"`,
         });

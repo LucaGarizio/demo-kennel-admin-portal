@@ -15,17 +15,26 @@
 
   <ng-template pTemplate="body" let-row>
     @if (row.kind === 'month') {
-    <tr class="month-sep">
-      <td [attr.colspan]="boxes.length + 1">{{ row.label }}</td>
+    <tr class="month-sep" (click)="toggleMonth(row.key)">
+      <td [attr.colspan]="boxes.length + 1" class="month-header">
+        <i class="pi" [ngClass]="expandedMonths[row.key] ? 'pi-caret-down' : 'pi-caret-right'"></i>
+        <span class="month-label mx-2">{{ row.label }}</span>
+        <i class="pi" [ngClass]="expandedMonths[row.key] ? 'pi-caret-down' : 'pi-caret-left'"></i>
+      </td>
     </tr>
-    } @else {
-    <tr [ngStyle]="getRowStyle(row)">
-      <td>{{ row.display }}</td>
+    } @if (row.kind === 'day' && expandedMonths[row.monthKey]) {
+    <tr [@rowAnimation] [ngStyle]="getRowStyle(row)">
+      <td [pTooltip]="getTooltip(row)" tooltipPosition="top" [showDelay]="200">
+        {{ row.display }}
+      </td>
+
       @for (box of boxes; track box.id) {
       <td
         [ngStyle]="getCellStyle(row, box)"
-        (click)="onCellClick(row.key, box)"
-        class="cursor-pointer"
+        [class.cursor-pointer]="!isDisabledDay(row)"
+        (click)="!isDisabledDay(row) && onCellClick(row.key, box)"
+        [pTooltip]="getTooltip(row)"
+        tooltipPosition="top"
       >
         {{ data[row.key]?.[box.number] || '' }}
       </td>

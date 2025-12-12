@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { PocketbaseService } from '../../../services/pocketbase.service';
-import { OwnerFormModel } from '../types/owner.types';
-import { toBackendOwner } from '../utils/mapper';
+import { PocketbaseService } from '../pocket-base-services/pocketbase.service';
+import { OwnerFormModel } from '../../types/owner.types';
+import { toBackendOwner } from '../../utils/mapper';
 
 @Injectable({ providedIn: 'root' })
 export class OwnerService {
@@ -10,6 +10,12 @@ export class OwnerService {
   loadOwner(id: string) {
     return this.pb.getOne('owner', id);
   }
+
+  // loadOwner(id: string) {
+  //   return this.pb.getOne('owner', id, {
+  //     fields: '*',
+  //   });
+  // }
 
   createOwner(model: OwnerFormModel, files: File[]) {
     const payload = toBackendOwner(model);

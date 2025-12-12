@@ -9,6 +9,7 @@ export const STAY_LIST_COLUMNS = [
   'deposit',
   'outstanding_balance',
   'total_due',
+  'payment_type',
 ] as const;
 
 export const STAY_LIST_LABELS: Record<string, string> = {
@@ -22,4 +23,5 @@ export const STAY_LIST_LABELS: Record<string, string> = {
   deposit: 'Acconto',
   outstanding_balance: 'Saldo residuo',
   total_due: 'Totale da pagare',
+  payment_type: 'Pagamento',
 };

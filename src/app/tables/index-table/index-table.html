@@ -1,9 +1,3 @@
-@if (showCreate) {
-<div class="table-header my-3 text-right">
-  <button pButton icon="pi pi-plus" label="Aggiungi Record" (click)="create.emit()"></button>
-</div>
-}
-
 <div class="table-wrapper">
   <p-table
     [value]="data"
@@ -26,18 +20,14 @@
         <td>
           <button
             pButton
-            icon="{{ isRowExpanded(row) ? 'pi pi-chevron-down' : 'pi pi-chevron-right' }}"
+            icon="pi pi-pencil"
             class="p-button-text p-button-sm"
-            (click)="toggleRow(row)"
+            (click)="edit.emit(row)"
           ></button>
         </td>
+
         @for (c of columns; track c) { @if (isOwnerColumn(c)) {
-        <td
-          (mouseenter)="handleCellHover(c, row)"
-          (mouseleave)="handleCellLeave(c, row)"
-          (click)="handleCellClick(c, row)"
-          [ngStyle]="getClickableStyle()"
-        >
+        <td (click)="handleCellClick(c, row)" [ngStyle]="getClickableStyle()">
           {{ getCellValue(row, c) }}
         </td>
         } @else if (isDocumentsColumn(c)) {
@@ -60,31 +50,23 @@
         </td>
         } }
       </tr>
-
-      @if (isRowExpanded(row)) {
-      <tr>
-        <td [attr.colspan]="columns.length + 1">
-          <div class="flex gap-2 ml-5 pl-4 justify-content-start">
-            <button
-              pButton
-              icon="pi pi-pencil"
-              label="Modifica"
-              class="p-button-text p-button-sm"
-              (click)="edit.emit(row)"
-            ></button>
-
-            <!-- <button
-              pButton
-              icon="pi pi-trash"
-              label="Elimina"
-              class="p-button-text p-button-sm p-button-danger"
-              (click)="delete.emit(row)"
-            ></button> -->
-          </div>
-        </td>
-      </tr>
-      }
     </ng-template>
+    @if(showFooter){
+    <ng-template pTemplate="footer">
+      <tr>
+        <td>
+          <b>Totali:</b>
+        </td>
+        <td [attr.colspan]="columns.indexOf('total_due')"></td>
+        <td>
+          <b>{{ totals | currency : 'EUR' : 'symbol' : '1.2-2' : 'it-IT' }}</b>
+        </td>
+        @if (columns.indexOf('total_due') < columns.length - 1) {
+        <td [attr.colspan]="columns.length - columns.indexOf('total_due') - 1"></td>
+        }
+      </tr>
+    </ng-template>
+    }
   </p-table>
 
   <p-dialog

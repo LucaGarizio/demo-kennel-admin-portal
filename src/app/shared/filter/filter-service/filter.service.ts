@@ -1,21 +1,37 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-export type GenericFilters = Record<string, any>;
+export interface FiltersState {
+  period?: string;
+  dog_name?: string;
+  owner_name?: string;
+  owner_surname?: string;
+  phone_number?: string;
+  microchip?: string;
+  payment_type?: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class FiltersService {
-  private filters$ = new BehaviorSubject<GenericFilters>({});
+  private state: FiltersState = {};
 
-  getFilters() {
-    return this.filters$.asObservable();
+  private subject$ = new BehaviorSubject<FiltersState>({});
+
+  watch() {
+    return this.subject$.asObservable();
   }
 
-  setFilters(values: GenericFilters) {
-    this.filters$.next(values);
+  set(key: keyof FiltersState, value: any) {
+    this.state = { ...this.state, [key]: value };
+    this.subject$.next({ ...this.state });
+  }
+
+  getSnapshot(): FiltersState {
+    return { ...this.state };
   }
 
   reset() {
-    this.filters$.next({});
+    this.state = {};
+    this.subject$.next({});
   }
 }

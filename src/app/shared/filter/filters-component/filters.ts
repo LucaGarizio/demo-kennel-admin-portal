@@ -1,51 +1,103 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+// import { Component, Input, OnInit } from '@angular/core';
+// import { CommonModule } from '@angular/common';
+// import { FormsModule } from '@angular/forms';
+// import { SelectModule } from 'primeng/select';
+// import { InputTextModule } from 'primeng/inputtext';
+// import { FiltersService } from '../filter-service/filter.service';
+// import { FilterConfig } from '../types/filter.types';
+
+// @Component({
+//   selector: 'app-filter',
+//   standalone: true,
+//   imports: [CommonModule, FormsModule, SelectModule, InputTextModule],
+//   templateUrl: './filters.html',
+//   styleUrls: ['./filters.scss'],
+// })
+// export class FilterComponent implements OnInit {
+//   @Input() type!: 'select' | 'text';
+//   @Input() label: string = '';
+//   @Input() placeholder: string = '';
+//   @Input() field?: 'dog_name' | 'owner_name' | 'microchip';
+//   @Input() config: FilterConfig[] = [];
+
+//   model = {
+//     mode: 'all',
+//     value: '',
+//   };
+
+//   constructor(private filtersS: FiltersService) {}
+
+//   ngOnInit() {
+//     if (this.type === 'mode') {
+//       this.filtersS.set('mode', this.model.mode);
+//     }
+//   }
+
+//   update() {
+//     if (this.type === 'mode') {
+//       this.filtersS.set('mode', this.model.mode);
+//       return;
+//     }
+
+//     if (this.type === 'text' && this.field) {
+//       this.filtersS.set(this.field, this.model.value);
+//     }
+//   }
+// }
+
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DatePickerModule } from 'primeng/datepicker';
-import { FilterConfig } from '../types/filter.types';
+import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
-import { toPocketDate } from '../../utils/date-utils';
+import { FiltersService } from '../filter-service/filter.service';
+import { FilterConfig } from '../types/filter.types';
 
 @Component({
-  selector: 'app-filters',
+  selector: 'app-filter',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePickerModule, InputTextModule],
+  imports: [CommonModule, FormsModule, SelectModule, InputTextModule],
   templateUrl: './filters.html',
   styleUrls: ['./filters.scss'],
 })
-export class Filters {
+export class FilterComponent implements OnInit {
+  @Input() type!: 'select' | 'text';
+  @Input() label: string = '';
+  @Input() placeholder: string = '';
+
+  // IMPORTANTE: esteso con payment_type
+  @Input() field?:
+    | 'dog_name'
+    | 'owner_name'
+    | 'owner_surname'
+    | 'phone_number'
+    | 'microchip'
+    | 'payment_type'
+    | 'period';
+
   @Input() config: FilterConfig[] = [];
 
-  @Output() changed = new EventEmitter<Record<string, any>>();
+  model = {
+    select: 'all',
+    value: '',
+  };
 
-  model: Record<string, any> = {};
+  constructor(private filtersS: FiltersService) {}
 
-  update() {
-    console.log('%c[FILTERS] Raw model:', 'color: #42a5f5', this.model);
-
-    const out: Record<string, any> = {};
-
-    for (const c of this.config) {
-      const val = this.model[c.key];
-
-      if (c.type === 'date' && val) {
-        const formatted = this.formatDate(val);
-        console.log(`%c[FILTERS] Formatting date for key "${c.key}":`, 'color: #ab47bc', {
-          raw: val,
-          formatted,
-        });
-        out[c.key] = formatted;
-      } else {
-        out[c.key] = val ?? null;
-      }
+  ngOnInit() {
+    if (this.type === 'select' && this.field) {
+      this.filtersS.set(this.field, this.model.select);
     }
-
-    console.log('%c[FILTERS] Emitting:', 'color: #66bb6a', out);
-
-    this.changed.emit(out);
   }
 
-  private formatDate(v: any): string | null {
-    return toPocketDate(v); // <-- usa il tuo formatter ufficiale
+  update() {
+    if (this.type === 'select' && this.field) {
+      this.filtersS.set(this.field, this.model.select);
+      return;
+    }
+
+    if (this.type === 'text' && this.field) {
+      this.filtersS.set(this.field, this.model.value);
+    }
   }
 }

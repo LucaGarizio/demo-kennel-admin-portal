@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { PocketbaseService } from '../services/pocketbase.service';
+import { PocketbaseService } from './shared/service/pocket-base-services/pocketbase.service';
 
 /**
  * AuthGuard: blocca l’accesso alle rotte se l’utente non è autenticato.

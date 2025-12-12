@@ -8,15 +8,26 @@ import { RippleModule } from 'primeng/ripple';
 import { IndexTableComponent } from '../../../tables/index-table/index-table';
 import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog';
 
-import { OwnerListService } from '../../../shared/service/owner-list.service';
+import { OwnerListService } from '../../../shared/service/owner-service/owner-list.service';
 import { OwnerListRecord, OwnerListRow } from '../../../shared/types/owner-list.types';
 
 import { OWNER_LIST_COLUMNS, OWNER_LIST_LABELS } from '../config/config-column';
+import { PageHeaderComponent } from '../../../shared/component/page-header/page-headercomponent';
+import { FilterComponent } from '../../../shared/filter/filters-component/filters';
+import { FiltersService } from '../../../shared/filter/filter-service/filter.service';
 
 @Component({
   selector: 'app-owner',
   standalone: true,
-  imports: [CommonModule, CardModule, RippleModule, IndexTableComponent, ConfirmDialogComponent],
+  imports: [
+    CommonModule,
+    CardModule,
+    RippleModule,
+    IndexTableComponent,
+    ConfirmDialogComponent,
+    PageHeaderComponent,
+    FilterComponent,
+  ],
   templateUrl: './owner-list.html',
   styleUrls: ['./owner-list.scss'],
 })
@@ -34,21 +45,49 @@ export class OwnerList implements OnInit {
   constructor(
     private ownerListSvc: OwnerListService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private filtersS: FiltersService
   ) {}
 
+  // async ngOnInit() {
+  //   await this.loadRecords();
+  // }
+
   async ngOnInit() {
+    this.filtersS.reset();
     await this.loadRecords();
+
+    this.filtersS.watch().subscribe(async (filters) => {
+      await this.loadRecords(filters);
+    });
   }
 
-  async loadRecords() {
+  // async loadRecords() {
+  //   this.loading = true;
+
+  //   const ownerId = this.route.snapshot.paramMap.get('id');
+
+  //   this.records = ownerId
+  //     ? [await this.ownerListSvc.loadOwner(ownerId)]
+  //     : await this.ownerListSvc.loadOwners();
+
+  //   this.loading = false;
+  // }
+
+  async loadRecords(filters: Record<string, any> = {}) {
     this.loading = true;
 
-    const ownerId = this.route.snapshot.paramMap.get('id');
+    const clauses: string[] = [];
 
-    this.records = ownerId
-      ? [await this.ownerListSvc.loadOwner(ownerId)]
-      : await this.ownerListSvc.loadOwners();
+    const surnameClause = this.buildSurnameFilter(filters);
+    if (surnameClause) clauses.push(surnameClause);
+
+    const phoneClause = this.buildPhoneFilter(filters);
+    if (phoneClause) clauses.push(phoneClause);
+
+    const filter = clauses.join(' && ');
+
+    this.records = await this.ownerListSvc.loadOwners(filter);
 
     this.loading = false;
   }
@@ -81,5 +120,21 @@ export class OwnerList implements OnInit {
 
     await this.ownerListSvc.deleteOwnerAndDogs(this.selectedRecord);
     await this.loadRecords();
+  }
+
+  /** ============================
+   * FILTER: Cognome proprietario
+   * ============================ */
+  private buildSurnameFilter(filters: Record<string, any>): string | null {
+    if (!filters['owner_surname']) return null;
+    return `surname ~ "${filters['owner_surname']}"`;
+  }
+
+  /** ============================
+   * FILTER: Numero di telefono
+   * ============================ */
+  private buildPhoneFilter(filters: Record<string, any>): string | null {
+    if (!filters['phone_number']) return null;
+    return `phone_number ~ "${filters['phone_number']}"`;
   }
 }

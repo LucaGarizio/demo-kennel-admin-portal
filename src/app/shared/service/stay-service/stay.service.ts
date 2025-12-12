@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { PocketbaseService } from '../../../services/pocketbase.service';
+import { PocketbaseService } from '../pocket-base-services/pocketbase.service';
 
-import { OwnerOption, DogOption, AreaOption, BoxOption } from '../types/stay.types';
+import { OwnerOption, DogOption, AreaOption, BoxOption } from '../../types/stay.types';
 
 @Injectable({ providedIn: 'root' })
 export class StayFormService {
@@ -32,14 +32,36 @@ export class StayFormService {
     }));
   }
 
+  // async loadBoxes(): Promise<BoxOption[]> {
+  //   const boxes = await this.pb.getAll('box', 200, { expand: 'area' });
+  //   return boxes.map((b: any) => ({
+  //     id: b.id,
+  //     numero: b.number,
+  //     area_id: b.expand?.area?.id || null,
+  //     double: b.double,
+  //     covered: b.covered,
+  //   }));
+  // }
+
   async loadBoxes(): Promise<BoxOption[]> {
     const boxes = await this.pb.getAll('box', 200, { expand: 'area' });
+
     return boxes.map((b: any) => ({
       id: b.id,
       numero: b.number,
       area_id: b.expand?.area?.id || null,
       double: b.double,
+      covered: b.covered,
+      label: this.formatBoxLabel(b),
     }));
+  }
+
+  private formatBoxLabel(b: any): string {
+    const parts: string[] = [];
+    if (b.covered) parts.push('coperto');
+    if (b.double) parts.push('doppio');
+    if (parts.length === 0) return b.number;
+    return `${b.number} (${parts.join(', ')})`;
   }
 
   filterDogs(ownerId: string, allDogs: DogOption[]): DogOption[] {

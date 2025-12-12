@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
-import { PocketbaseService } from '../../../services/pocketbase.service';
-import { DogListRecord, DogListRow } from '../types/dog-list.types';
+import { PocketbaseService } from '../pocket-base-services/pocketbase.service';
+import { DogListRecord, DogListRow } from '../../types/dog-list.types';
 
 @Injectable({ providedIn: 'root' })
 export class DogListService {
   constructor(private pb: PocketbaseService) {}
 
-  async loadDogs(): Promise<DogListRecord[]> {
+  async loadDogs(filter: string = ''): Promise<DogListRecord[]> {
     const data = await this.pb.getAll('dogs', 200, {
       expand: 'owner_id',
+      filter: filter || undefined,
     });
 
     data.sort((a: any, b: any) => Date.parse(b.created) - Date.parse(a.created));

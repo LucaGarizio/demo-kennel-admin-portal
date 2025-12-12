@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { IndexFormComponent } from '../../../index-form/index-form';
-import { StayFormService } from '../../../shared/service/stay.service';
+import { StayFormService } from '../../../shared/service/stay-service/stay.service';
 import {
   OwnerOption,
   DogOption,
@@ -10,18 +10,19 @@ import {
   BoxOption,
   StayFormModel,
 } from '../../../shared/types/stay.types';
-import { PocketbaseService } from '../../../../services/pocketbase.service';
+import { PocketbaseService } from '../../../shared/service/pocket-base-services/pocketbase.service';
 import { normalizeDate } from '../../../shared/utils/date-utils';
 import {
   calculateDailyRate,
   calculateTotal,
   calculateRemaining,
-} from '../../../shared/service/stay-price.service';
+} from '../../../shared/service/stay-service/stay-price.service';
+import { PageHeaderComponent } from '../../../shared/component/page-header/page-headercomponent';
 
 @Component({
   selector: 'app-stay-create',
   standalone: true,
-  imports: [CommonModule, IndexFormComponent],
+  imports: [CommonModule, IndexFormComponent, PageHeaderComponent],
   templateUrl: './stay-create.html',
   styleUrls: ['./stay-create.scss'],
 })
@@ -73,6 +74,7 @@ export class StayCreateComponent {
       rimanente: 0,
       totale_dovuto: 0,
 
+      tipo_pagamento: null,
       note: '',
     };
   }
@@ -85,7 +87,6 @@ export class StayCreateComponent {
     this.model.id_cani = this.model.id_cani.filter((cid) =>
       this.dogOptions.some((d) => d.id === cid)
     );
-
     this.updateAll();
   }
 
@@ -104,7 +105,6 @@ export class StayCreateComponent {
         }
       );
     });
-
     this.updateAll();
   }
 
@@ -171,6 +171,7 @@ export class StayCreateComponent {
       deposit: frontModel.acconto,
       outstanding_balance: frontModel.rimanente,
       total_due: frontModel.totale_dovuto,
+      payment_type: frontModel.tipo_pagamento,
       notes: frontModel.note || '',
     };
 

@@ -1,6 +1,3 @@
-// ----------------------
-// SALVATAGGIO SU POCKETBASE
-// ----------------------
 export function toPocketDate(value?: string | Date): string | null {
   if (!value) return null;
   const d = new Date(value);
@@ -24,9 +21,6 @@ export function toPocketDateTime(value?: string | Date): string | null {
   return `${y}-${m}-${day} ${hh}:${mm}:00`;
 }
 
-// ----------------------
-// FORMATI ITALIANI
-// ----------------------
 export function formatDateTime(value?: string | Date): string {
   if (!value) return '';
   const d = new Date(value);

@@ -37,6 +37,7 @@ export function fromBackendOwner(back: any) {
     extra: back.extra || '',
     accettazione_regolamento: back.accettazione_regolamento ?? true,
     documents: back.documents || [],
+    signature: back.signature || null,
   };
 }
 
@@ -99,10 +100,10 @@ export function toBackendStay(front: any) {
     departure_date: toPocketDateTime(front.data_uscita),
     boarding_fee: Number(front.retta) || 0,
     deposit: Number(front.acconto) || 0,
-    // amount_paid: Number(front.pagato) || 0,
     total_due: Number(front.totale_dovuto) || 0,
     outstanding_balance: Number(front.rimanente) || 0,
     notes: front.note || '',
+    payment_type: front.tipo_pagamento || null,
   };
 }
 
@@ -117,9 +118,14 @@ export function fromBackendStay(back: any) {
     data_uscita: back.departure_date ? new Date(back.departure_date) : null,
     retta: back.boarding_fee,
     acconto: back.deposit,
-    // pagato: back.amount_paid,
     totale_dovuto: back.total_due,
     rimanente: back.outstanding_balance,
     note: back.notes || '',
+    tipo_pagamento:
+      back.payment_type === 'Contanti'
+        ? 'cash'
+        : back.payment_type === 'Pagamento elettronico'
+        ? 'electronic'
+        : back.payment_type || null,
   };
 }

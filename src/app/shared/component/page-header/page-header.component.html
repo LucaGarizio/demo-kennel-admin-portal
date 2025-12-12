@@ -1,0 +1,24 @@
+<div class="page-header-container">
+  <div class="grid align-items-center">
+    <div class="col-4">
+      @if(showExport){
+      <button pButton label="Esporta" icon="pi pi-download" (click)="export.emit()"></button>
+      }
+    </div>
+    <div class="col-4 text-center">
+      <h2 class="title">{{ title }}</h2>
+    </div>
+
+    <div class="col-4 text-right">
+      @if (showCreate) {
+      <button
+        pButton
+        icon="pi pi-plus"
+        [label]="createLabel"
+        class="p-button-sm"
+        (click)="create.emit()"
+      ></button>
+      }
+    </div>
+  </div>
+</div>

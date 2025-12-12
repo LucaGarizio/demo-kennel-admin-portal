@@ -2,13 +2,14 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { IndexFormComponent } from '../../../index-form/index-form';
-import { OwnerService } from '../../../shared/service/owner.service';
+import { OwnerService } from '../../../shared/service/owner-service/owner-crud.service';
 import { OwnerFormModel } from '../../../shared/types/owner.types';
+import { PageHeaderComponent } from '../../../shared/component/page-header/page-headercomponent';
 
 @Component({
   selector: 'app-owner-create',
   standalone: true,
-  imports: [CommonModule, IndexFormComponent],
+  imports: [CommonModule, IndexFormComponent, PageHeaderComponent],
   templateUrl: './owner-create.html',
   styleUrls: ['./owner-create.scss'],
 })

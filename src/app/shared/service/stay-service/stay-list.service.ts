@@ -1,11 +1,19 @@
 import { Injectable } from '@angular/core';
-import { PocketbaseService } from '../../../services/pocketbase.service';
-import { StayListRecord, StayListRow } from '../types/stay-list.types';
-import { formatDateTime } from '../utils/date-utils';
+import { PocketbaseService } from '../pocket-base-services/pocketbase.service';
+import { StayListRecord, StayListRow } from '../../types/stay-list.types';
+import { formatDateTime } from '../../utils/date-utils';
 
 @Injectable({ providedIn: 'root' })
 export class StayListService {
   constructor(private pb: PocketbaseService) {}
+
+  private formatPayment(type: string | null | undefined): string {
+    return type === 'cash' ? 'Contanti' : type === 'electronic' ? 'Pagamento elettronico' : '';
+  }
+
+  getTotal(stays: any[]): number {
+    return stays.reduce((sum, s) => sum + (s.total_due || 0), 0);
+  }
 
   async loadStays(filter: string = ''): Promise<StayListRecord[]> {
     const stays = await this.pb.getAll('stays', 200, {
@@ -41,13 +49,16 @@ export class StayListService {
       )
     );
 
-    const boxes = Array.from(
-      new Set(
-        validOccs
-          .map((o: any) => o.expand?.box?.numero ?? o.expand?.box?.number)
-          .filter((v: any) => !!v)
-      )
-    );
+    // const boxes = Array.from(
+    //   new Set(
+    //     validOccs
+    //       .map((o: any) => o.expand?.box?.numero ?? o.expand?.box?.number)
+    //       .filter((v: any) => !!v)
+    //   )
+    // );
+    const boxes = validOccs
+      .map((o: any) => o.expand?.box?.numero ?? o.expand?.box?.number)
+      .filter((v: any) => !!v);
 
     return {
       id: stay.id,
@@ -65,6 +76,7 @@ export class StayListService {
       amount_paid: stay.amount_paid,
       outstanding_balance: stay.outstanding_balance,
       total_due: stay.total_due,
+      payment_type: this.formatPayment(stay.payment_type),
 
       raw: stay,
     };

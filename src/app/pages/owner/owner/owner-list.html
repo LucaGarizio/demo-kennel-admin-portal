@@ -1,3 +1,25 @@
+<app-page-header
+  title="Lista Proprietari"
+  [showCreate]="true"
+  (create)="onCreate()"
+></app-page-header>
+
+<div class="grid">
+  <app-filter
+    type="text"
+    field="owner_surname"
+    label="Proprietario"
+    placeholder="Cognome proprietario"
+  ></app-filter>
+
+  <app-filter
+    type="text"
+    field="phone_number"
+    label="Numero di telefono"
+    placeholder="N° Telefono"
+  ></app-filter>
+</div>
+
 <p-card class="custom-card">
   <app-index-table
     [data]="records"

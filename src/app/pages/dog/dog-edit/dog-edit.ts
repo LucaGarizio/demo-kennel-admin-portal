@@ -3,14 +3,15 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { IndexFormComponent } from '../../../index-form/index-form';
-import { DogService } from '../../../shared/service/dog.service';
+import { DogService } from '../../../shared/service/dog/dog.service';
 import { DogFormModel, OwnerOption } from '../../../shared/types/dog.types';
 import { fromBackendDog, fromBackendOwner } from '../../../shared/utils/mapper';
+import { PageHeaderComponent } from '../../../shared/component/page-header/page-headercomponent';
 
 @Component({
   selector: 'app-dog-edit',
   standalone: true,
-  imports: [CommonModule, IndexFormComponent],
+  imports: [CommonModule, IndexFormComponent, PageHeaderComponent],
   templateUrl: './dog-edit.html',
   styleUrls: ['./dog-edit.scss'],
 })

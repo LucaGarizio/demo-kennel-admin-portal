@@ -2,14 +2,15 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IndexFormComponent } from '../../../index-form/index-form';
-import { OwnerService } from '../../../shared/service/owner.service';
+import { OwnerService } from '../../../shared/service/owner-service/owner-crud.service';
 import { OwnerFormModel } from '../../../shared/types/owner.types';
 import { fromBackendOwner } from '../../../shared/utils/mapper';
+import { PageHeaderComponent } from '../../../shared/component/page-header/page-headercomponent';
 
 @Component({
   selector: 'app-owner-edit',
   standalone: true,
-  imports: [CommonModule, IndexFormComponent],
+  imports: [CommonModule, IndexFormComponent, PageHeaderComponent],
   templateUrl: './owner-edit.html',
   styleUrls: ['./owner-edit.scss'],
 })
@@ -30,10 +31,26 @@ export class OwnerEditComponent {
     await this.loadOwner();
   }
 
+  // async loadOwner() {
+  //   try {
+  //     const back = await this.ownerSvc.loadOwner(this.id);
+  //     console.log('BACK FROM POCKETBASE:', back);
+  //     console.log('BACK SIGNATURE:', back['signature']);
+  //     this.model = fromBackendOwner(back);
+  //     this.loading = false;
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // }
   async loadOwner() {
     try {
       const back = await this.ownerSvc.loadOwner(this.id);
-      this.model = fromBackendOwner(back);
+      console.log('BACK FROM POCKETBASE:', back);
+      console.log('BACK SIGNATURE:', back['signature']);
+
+      // ✅ QUESTA È LA RIGA GIUSTA
+      this.model = { ...back, ...fromBackendOwner(back) };
+
       this.loading = false;
     } catch (err) {
       console.error(err);

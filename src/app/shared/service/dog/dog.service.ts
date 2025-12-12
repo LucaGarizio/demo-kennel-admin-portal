@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { PocketbaseService } from '../../../services/pocketbase.service';
-import { DogFormModel } from '../types/dog.types';
-import { toBackendDog } from '../utils/mapper';
+import { PocketbaseService } from '../pocket-base-services/pocketbase.service';
+import { DogFormModel } from '../../types/dog.types';
+import { toBackendDog } from '../../utils/mapper';
 
 @Injectable({ providedIn: 'root' })
 export class DogService {

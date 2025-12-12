@@ -19,14 +19,14 @@ export class IndexTableComponent {
   @Input() columnLabels: Record<string, string> = {};
   @Input() loading = false;
   @Input() showCreate = true;
+  @Input() showFooter = false;
+  @Input() totals: number = 0;
 
   @Output() create = new EventEmitter<void>();
   @Output() view = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
   @Output() cellClick = new EventEmitter<{ column: string; value: any; row: any }>();
-  @Output() cellHover = new EventEmitter<{ column: string; value: any; row: any }>();
-  @Output() cellLeave = new EventEmitter<{ column: string; value: any; row: any }>();
 
   expandedRow: any | null = null;
   showDocsDialog = false;
@@ -71,14 +71,6 @@ export class IndexTableComponent {
     return row[col];
   }
 
-  toggleRow(row: any) {
-    this.expandedRow = this.expandedRow === row ? null : row;
-  }
-
-  isRowExpanded(row: any) {
-    return this.expandedRow === row;
-  }
-
   openDocumentsDialog(row: any) {
     this.currentDocs = this.getDocuments(row);
     this.currentRow = row;
@@ -87,14 +79,6 @@ export class IndexTableComponent {
 
   getDocumentUrl(row: any, fileName: string): string {
     return `${this.pbUrl}/api/files/owner/${row.id}/${fileName}`;
-  }
-
-  handleCellHover(col: string, row: any) {
-    this.cellHover.emit({ column: col, value: row[col], row });
-  }
-
-  handleCellLeave(col: string, row: any) {
-    this.cellLeave.emit({ column: col, value: row[col], row });
   }
 
   isPaidCell(column: string, row: any): boolean {

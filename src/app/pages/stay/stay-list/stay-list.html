@@ -1,7 +1,16 @@
-<h2 class="text-center">Lista Soggiorni</h2>
+<app-page-header
+  title="Lista Soggiorni"
+  [showCreate]="true"
+  [showExport]="true"
+  (create)="onCreate()"
+  (export)="exportData()"
+></app-page-header>
 
-<app-filters [config]="filtersConfig" (changed)="onFiltersChanged($event)"></app-filters>
-
+<div class="grid">
+  <app-filter type="text" field="dog_name" label="Cane" placeholder="Nome cane"></app-filter>
+  <app-filter type="select" field="period" [config]="periodFiltersConfig"></app-filter>
+  <app-filter type="select" field="payment_type" [config]="paymentFilterConfig"> </app-filter>
+</div>
 <app-index-table
   [data]="records"
   [columns]="columns"
@@ -9,6 +18,8 @@
   [loading]="loading"
   (create)="onCreate()"
   (edit)="onEdit($event)"
+  [showFooter]="true"
+  [totals]="totals"
   (delete)="openConfirm($event)"
   (cellClick)="onCellClick($event)"
 ></app-index-table>

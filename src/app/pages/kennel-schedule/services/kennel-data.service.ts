@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PocketbaseService } from '../../../../services/pocketbase.service';
+import { PocketbaseService } from '../../../shared/service/pocket-base-services/pocketbase.service';
 import { KennelRow } from '../types';
 import { parsePbDate } from '../../../shared/utils/date-utils';
 

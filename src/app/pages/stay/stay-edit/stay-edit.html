@@ -1,5 +1,5 @@
 <div class="page-container">
-  <h2 class="text-center">Modifica Soggiorno</h2>
+  <app-page-header title="Modifica Soggiorno"></app-page-header>
   <app-index-form
     type="stay"
     [model]="model"
@@ -7,6 +7,8 @@
     [dogOptions]="dogOptions"
     [areaOptions]="areaOptions"
     [boxOptions]="boxOptions"
+    (areaChange)="onAreaSelected($event)"
+    (boxChange)="onBoxSelected($event)"
     (ownerChange)="onOwnerSelected($event)"
     (dogsChange)="onDogsChanged()"
     (arrivalChange)="onArrivalDateChange()"

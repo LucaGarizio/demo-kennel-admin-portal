@@ -90,4 +90,32 @@ export class PocketbaseService {
       throw err;
     }
   }
+
+  // SIGNATURE
+  // --- SESSIONE FIRMA --- //
+
+  async createSignSession(model: any) {
+    const sessionId = crypto.randomUUID();
+
+    const expires_at = new Date(Date.now() + 600000).toISOString();
+
+    return await this.pb.collection('sign_session').create({
+      session_id: sessionId,
+      model_json: model,
+      expires_at,
+    });
+  }
+
+  async getSignSession(sessionId: string) {
+    const res = await this.pb.collection('sign_session').getFirstListItem(`
+    session_id="${sessionId}"
+  `);
+    return res;
+  }
+
+  async saveSignature(recordId: string, file: File) {
+    return await this.pb.collection('sign_session').update(recordId, {
+      signature: file,
+    });
+  }
 }

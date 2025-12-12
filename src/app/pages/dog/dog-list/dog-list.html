@@ -1,10 +1,30 @@
-<p-card class="custom-card">
+<app-page-header title="Lista Cani" [showCreate]="true" (create)="onCreate()"></app-page-header>
+
+<p-card class="custom-card py-4">
+  <div class="grid">
+    <app-filter type="text" field="dog_name" label="Cane" placeholder="Nome cane"></app-filter>
+
+    <app-filter
+      type="text"
+      field="owner_name"
+      label="Proprietario"
+      placeholder="Nome proprietario"
+    ></app-filter>
+
+    <app-filter
+      type="text"
+      field="microchip"
+      label="Microchip"
+      placeholder="Numero microchip"
+    ></app-filter>
+  </div>
+
   <app-index-table
     [data]="records"
     [columns]="columns"
     [columnLabels]="columnLabels"
     [loading]="loading"
-    (create)="goToCreate()"
+    (create)="onCreate()"
     (edit)="onEdit($event)"
     (delete)="openConfirm($event)"
     (cellClick)="onCellClick($event)"
