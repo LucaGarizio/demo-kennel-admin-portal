@@ -94,7 +94,12 @@ export class KennelTableComponent {
     };
   }
 
+  // onCellClick(day: string, box: any) {
+  //   this.selectCell.emit({ day, box });
+  // }
   onCellClick(day: string, box: any) {
+    const dog = this.data?.[day]?.[box.number];
+    if (!dog) return;
     this.selectCell.emit({ day, box });
   }
 

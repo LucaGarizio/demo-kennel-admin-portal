@@ -36,7 +36,7 @@
 
     <div>
       <label class="font-semibold mb-2 block">Cane</label>
-      <p-select
+      <!-- <p-select
         *ngIf="!pendingBox?.double"
         [options]="availableDogs"
         [(ngModel)]="selectedDog"
@@ -53,6 +53,35 @@
         display="chip"
         class="w-full"
         placeholder="Seleziona fino a 2 cani"
+      ></p-multiSelect> -->
+      <p-select
+        *ngIf="!isMultiMode"
+        [options]="availableDogs"
+        [(ngModel)]="selectedDog"
+        optionLabel="name"
+        class="w-full"
+        placeholder="Seleziona un cane"
+        disabled="true"
+      ></p-select>
+
+      <!-- <p-multiSelect
+        *ngIf="isMultiMode"
+        [options]="availableDogs"
+        [(ngModel)]="selectedDogs"
+        optionLabel="name"
+        display="chip"
+        class="w-full"
+        placeholder="Seleziona fino a 2 cani"
+      ></p-multiSelect> -->
+      <p-multiSelect
+        *ngIf="isMultiMode"
+        [options]="availableDogs"
+        [(ngModel)]="selectedDogs"
+        optionLabel="name"
+        display="chip"
+        class="w-full"
+        placeholder="Seleziona fino a 2 cani"
+        [disabled]="selectedDogs.length <= 1"
       ></p-multiSelect>
     </div>
 
@@ -65,6 +94,7 @@
         locale="it"
         appendTo="body"
         class="w-full"
+        disabled="true"
       />
     </div>
 
@@ -76,6 +106,7 @@
         showIcon="true"
         appendTo="body"
         class="w-full"
+        disabled="true"
       />
     </div>
 

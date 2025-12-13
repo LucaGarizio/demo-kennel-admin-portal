@@ -1,50 +1,46 @@
-<div class="flex align-items-center justify-content-center h-95">
-  <p-card class="py-5 w-4">
-    <h2 class="text-center mb-5 mt-0">Accedi</h2>
+<div class="flex align-items-center justify-content-center" style="height: 90vh">
+  <div class="grid w-full justify-content-center">
+    <div class="col-12 md:col-6 lg:col-4">
+      <p-card class="px-4 pb-4">
+        <h2 class="text-center mb-4">Accedi</h2>
 
-    <form
-      (ngSubmit)="onLogin()"
-      #loginForm="ngForm"
-      class="flex flex-column align-items-center gap-4"
-    >
-      <div class="p-field w-full flex flex-column">
-        <label for="email" class="mb-3 w-6 mx-auto">Email</label>
-        <input
-          id="email"
-          pInputText
-          type="email"
-          [(ngModel)]="email"
-          name="email"
-          required
-          class="w-6 mx-auto"
-        />
-      </div>
+        <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="flex flex-column gap-4">
+          <div class="flex flex-column">
+            <label for="email" class="mb-3">Email</label>
+            <input
+              id="email"
+              pInputText
+              type="email"
+              name="email"
+              [(ngModel)]="email"
+              required
+              class="w-full"
+            />
+          </div>
+          <div class="flex flex-column">
+            <label for="password" class="mb-3">Password</label>
+            <input
+              id="password"
+              pInputText
+              type="password"
+              name="password"
+              [(ngModel)]="password"
+              required
+              class="w-full"
+            />
+          </div>
 
-      <div class="p-field w-full flex flex-column">
-        <label for="password" class="mb-3 w-6 mx-auto">Password</label>
-
-        <input
-          id="password"
-          pInputText
-          type="password"
-          [(ngModel)]="password"
-          name="password"
-          required
-          class="w-6 mx-auto"
-        />
-      </div>
-
-      <div class="w-full flex justify-content-center mt-4">
-        <button
-          pButton
-          type="submit"
-          label="Accedi"
-          icon="pi pi-sign-in"
-          class="create"
-          [disabled]="loginForm.invalid"
-          class="w-6"
-        ></button>
-      </div>
-    </form>
-  </p-card>
+          <!-- BUTTON -->
+          <button
+            pButton
+            type="submit"
+            label="Accedi"
+            icon="pi pi-sign-in"
+            class="w-full mt-5"
+            [disabled]="loginForm.invalid || loading"
+          ></button>
+        </form>
+      </p-card>
+    </div>
+  </div>
 </div>

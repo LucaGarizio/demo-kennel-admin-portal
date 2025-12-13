@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { KennelRow } from '../types';
-import { formatYmdLocal } from '../../../shared/utils/date-utils';
 
 @Injectable()
 export class KennelCalendarService {

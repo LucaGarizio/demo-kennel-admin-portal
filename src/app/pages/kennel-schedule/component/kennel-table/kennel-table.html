@@ -31,13 +31,14 @@
       @for (box of boxes; track box.id) {
       <td
         [ngStyle]="getCellStyle(row, box)"
-        [class.cursor-pointer]="!isDisabledDay(row)"
-        (click)="!isDisabledDay(row) && onCellClick(row.key, box)"
+        [class.cursor-pointer]="!isDisabledDay(row) && !!data[row.key]?.[box.number]"
+        (click)="!isDisabledDay(row) && !!data[row.key]?.[box.number] && onCellClick(row.key, box)"
         [pTooltip]="getTooltip(row)"
         tooltipPosition="top"
       >
         {{ data[row.key]?.[box.number] || '' }}
       </td>
+
       }
     </tr>
     }
