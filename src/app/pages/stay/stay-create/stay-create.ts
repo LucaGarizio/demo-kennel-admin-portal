@@ -11,7 +11,7 @@ import {
   StayFormModel,
 } from '../../../shared/types/stay.types';
 import { PocketbaseService } from '../../../shared/service/pocket-base-services/pocketbase.service';
-import { normalizeDate } from '../../../shared/utils/date-utils';
+import { normalizeDate, toPocketDateTime } from '../../../shared/utils/date-utils';
 import {
   calculateDailyRate,
   calculateTotal,
@@ -158,15 +158,55 @@ export class StayCreateComponent {
     );
   }
 
+  // async onSubmit(frontModel: StayFormModel) {
+  //   frontModel.data_arrivo = normalizeDate(frontModel.data_arrivo);
+  //   frontModel.data_uscita = normalizeDate(frontModel.data_uscita);
+
+  //   const stayPayload = {
+  //     owner_id: frontModel.id_proprietario,
+  //     dog_ids: frontModel.id_cani,
+  //     arrival_date: frontModel.data_arrivo,
+  //     departure_date: frontModel.data_uscita,
+  //     boarding_fee: frontModel.retta,
+  //     deposit: frontModel.acconto,
+  //     outstanding_balance: frontModel.rimanente,
+  //     total_due: frontModel.totale_dovuto,
+  //     payment_type: frontModel.tipo_pagamento,
+  //     notes: frontModel.note || '',
+  //   };
+
+  //   const stay = await this.pb.createRecord('stays', stayPayload);
+
+  //   for (const entry of frontModel.cani) {
+  //     if (!entry.id_area || !entry.id_box) continue;
+
+  //     await this.pb.createRecord('occupations', {
+  //       dog: entry.dog_id,
+  //       box: entry.id_box,
+  //       area: entry.id_area,
+  //       arrival_date: frontModel.data_arrivo,
+  //       departure_date: frontModel.data_uscita,
+  //       stay: stay.id,
+  //     });
+  //   }
+
+  //   this.router.navigate(['/lista-soggiorni']);
+  // }
   async onSubmit(frontModel: StayFormModel) {
-    frontModel.data_arrivo = normalizeDate(frontModel.data_arrivo);
-    frontModel.data_uscita = normalizeDate(frontModel.data_uscita);
+    const arrival = normalizeDate(frontModel.data_arrivo);
+    const departure = normalizeDate(frontModel.data_uscita);
+
+    // ✅ guardia di sicurezza (obbligatoria per TS)
+    if (!arrival || !departure) {
+      console.error('Date non valide', { arrival, departure });
+      return;
+    }
 
     const stayPayload = {
       owner_id: frontModel.id_proprietario,
       dog_ids: frontModel.id_cani,
-      arrival_date: frontModel.data_arrivo,
-      departure_date: frontModel.data_uscita,
+      arrival_date: toPocketDateTime(arrival),
+      departure_date: toPocketDateTime(departure),
       boarding_fee: frontModel.retta,
       deposit: frontModel.acconto,
       outstanding_balance: frontModel.rimanente,
@@ -184,8 +224,8 @@ export class StayCreateComponent {
         dog: entry.dog_id,
         box: entry.id_box,
         area: entry.id_area,
-        arrival_date: frontModel.data_arrivo,
-        departure_date: frontModel.data_uscita,
+        arrival_date: toPocketDateTime(arrival),
+        departure_date: toPocketDateTime(departure),
         stay: stay.id,
       });
     }

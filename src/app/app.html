@@ -1,4 +1,4 @@
-<app-navbar *ngIf="!isLoginPage"></app-navbar>
+<!-- <app-navbar *ngIf="!isLoginPage"></app-navbar>
 
 <div>
   <router-outlet></router-outlet>
@@ -11,4 +11,15 @@
     [stay]="stay"
     [dogs]="[dog]"
   ></app-dialog-reminder>
-</ng-container>
+</ng-container> -->
+
+<app-navbar *ngIf="!isLoginPage"></app-navbar>
+
+<router-outlet></router-outlet>
+
+<app-dialog-reminder
+  *ngIf="currentStay"
+  [(visible)]="dialogVisible"
+  [stay]="currentStay"
+  (visibleChange)="!$event && onDialogClosed()"
+></app-dialog-reminder>

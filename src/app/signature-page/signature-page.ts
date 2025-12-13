@@ -21,6 +21,9 @@ export class SignaturePage implements AfterViewChecked {
 
   private ctx!: CanvasRenderingContext2D;
   private canvasInitialized = false;
+  private drawing = false;
+  private lastX = 0;
+  private lastY = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,9 +31,6 @@ export class SignaturePage implements AfterViewChecked {
     private pb: PocketbaseService
   ) {}
 
-  // -------------------------------------------------------------
-  // LOAD SESSIONE
-  // -------------------------------------------------------------
   async ngOnInit() {
     const sessionId = this.route.snapshot.paramMap.get('sessionId');
     if (!sessionId) return;
@@ -49,9 +49,6 @@ export class SignaturePage implements AfterViewChecked {
     }
   }
 
-  // -------------------------------------------------------------
-  // INIZIALIZZA CANVAS QUANDO ESISTE NEL DOM
-  // -------------------------------------------------------------
   ngAfterViewChecked() {
     if (!this.canvasInitialized && !this.loading && this.canvasRef) {
       this.initCanvas();
@@ -59,13 +56,21 @@ export class SignaturePage implements AfterViewChecked {
     }
   }
 
-  private initCanvas() {
-    const canvas = this.canvasRef?.nativeElement;
+  private getCanvasCoords(e: any) {
+    const canvas = this.canvasRef.nativeElement;
+    const rect = canvas.getBoundingClientRect();
 
-    if (!canvas) {
-      console.error('Canvas non trovato');
-      return;
-    }
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY,
+    };
+  }
+
+  private initCanvas() {
+    const canvas = this.canvasRef.nativeElement;
 
     canvas.width = 300;
     canvas.height = 90;
@@ -73,188 +78,73 @@ export class SignaturePage implements AfterViewChecked {
     this.ctx = canvas.getContext('2d')!;
     this.ctx.strokeStyle = '#ffffff';
     this.ctx.lineWidth = 2;
+    this.ctx.lineCap = 'round';
 
-    console.log('Canvas inizializzato correttamente');
-  }
+    canvas.addEventListener('mousedown', (e) => this.startDraw(e));
+    canvas.addEventListener('mousemove', (e) => this.draw(e));
+    canvas.addEventListener('mouseup', () => this.endDraw());
+    canvas.addEventListener('mouseleave', () => this.endDraw());
 
-  // -------------------------------------------------------------
-  // FIRMA AUTOMATICA
-  // -------------------------------------------------------------
-  autoSign() {
-    if (!this.ctx) return;
-
-    const canvas = this.canvasRef.nativeElement;
-    const ctx = this.ctx;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.beginPath();
-    ctx.moveTo(20, 60);
-
-    ctx.bezierCurveTo(40, 20, 80, 80, 120, 30);
-    ctx.bezierCurveTo(150, 10, 200, 70, 250, 40);
-
-    ctx.stroke();
-  }
-
-  // -------------------------------------------------------------
-  // SALVA FIRMA E REINDIRIZZA
-  // -------------------------------------------------------------
-
-  // async onConfirm() {
-  //   console.log('1) Conferma cliccata');
-
-  //   const canvas = this.canvasRef?.nativeElement;
-  //   if (!canvas) {
-  //     console.error('Canvas non disponibile');
-  //     return;
-  //   }
-
-  //   const blob = await new Promise<Blob | null>((resolve) => {
-  //     canvas.toBlob(resolve, 'image/png');
-  //   });
-
-  //   console.log('2) Blob generato:', blob);
-
-  //   if (!blob) {
-  //     console.error('Errore conversione blob');
-  //     return;
-  //   }
-
-  //   const file = new File([blob], 'firma.png', { type: 'image/png' });
-
-  //   const pbId = this.model?._pbId;
-  //   console.log('3) PB ID:', pbId);
-
-  //   if (!pbId) {
-  //     console.error('ID PocketBase mancante');
-  //     return;
-  //   }
-
-  //   try {
-  //     console.log('4) Aggiorno sign_session…');
-
-  //     const session = await this.pb.pb.collection('sign_session').update(pbId, {
-  //       signature: file,
-  //       stato: 'completed',
-  //     });
-
-  //     console.log('5) Risposta SIGN_SESSION:', session);
-
-  //     // ⭐⭐⭐ QUI LA PARTE FONDAMENTALE ⭐⭐⭐
-  //     const ownerId = session['model_json']?.id; // <-- l'id del proprietario viene dal modello salvato
-  //     console.log('OWNER DA AGGIORNARE:', ownerId);
-
-  //     if (ownerId) {
-  //       console.log('6) Aggiorno OWNER con firma…');
-
-  //       const ownerUpdate = await this.pb.pb.collection('owner').update(ownerId, {
-  //         signature: file,
-  //       });
-
-  //       console.log('OWNER aggiornato:', ownerUpdate);
-  //     } else {
-  //       console.warn('ATTENZIONE: ownerId non trovato nel model_json.');
-  //     }
-
-  //     console.log('7) Reindirizzo…');
-  //     this.router.navigate(['/firma-attesa']);
-  //   } catch (err) {
-  //     console.error('ERRORE PocketBase:', err);
-  //   }
-  // }
-
-  // async onConfirm() {
-  //   console.log('1) Conferma cliccata');
-
-  //   const canvas = this.canvasRef?.nativeElement;
-  //   if (!canvas) return;
-
-  //   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
-  //   if (!blob) return;
-
-  //   const file = new File([blob], 'firma.png', { type: 'image/png' });
-
-  //   const sessionId = this.model?._pbId;
-  //   if (!sessionId) {
-  //     console.error('ID sign_session mancante');
-  //     return;
-  //   }
-
-  //   try {
-  //     console.log('2) Aggiorno sign_session…');
-
-  //     const session = await this.pb.pb.collection('sign_session').update(sessionId, {
-  //       signature: file,
-  //       stato: 'completed',
-  //     });
-
-  //     console.log('3) SESSION AGGIORNATA', session);
-
-  //     const ownerId = session['model_json']?.id;
-  //     if (!ownerId) {
-  //       console.error('ownerId non trovato dentro model_json');
-  //       return;
-  //     }
-
-  //     console.log('4) Aggiorno owner…');
-
-  //     const updatedOwner = await this.pb.pb.collection('owner').update(ownerId, {
-  //       signature: file,
-  //     });
-
-  //     console.log('5) OWNER aggiornato:', updatedOwner);
-
-  //     this.router.navigate(['/firma-attesa']);
-  //   } catch (err) {
-  //     console.error('ERRORE PocketBase:', err);
-  //   }
-  // }
-
-  async onConfirm() {
-    console.log('1) Conferma cliccata');
-
-    const canvas = this.canvasRef?.nativeElement;
-    if (!canvas) {
-      console.error('Canvas non disponibile');
-      return;
-    }
-
-    const blob = await new Promise<Blob | null>((resolve) => {
-      canvas.toBlob(resolve, 'image/png');
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      this.startDraw(e.touches[0]);
     });
 
-    console.log('2) Blob generato:', blob);
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      this.draw(e.touches[0]);
+    });
+    canvas.addEventListener('touchend', () => this.endDraw());
+  }
 
-    if (!blob) {
-      console.error('Errore conversione blob');
-      return;
-    }
+  private startDraw(e: any) {
+    this.drawing = true;
+
+    const pos = this.getCanvasCoords(e);
+    this.lastX = pos.x;
+    this.lastY = pos.y;
+  }
+
+  private draw(e: any) {
+    if (!this.drawing) return;
+
+    const pos = this.getCanvasCoords(e);
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.lastX, this.lastY);
+    this.ctx.lineTo(pos.x, pos.y);
+    this.ctx.stroke();
+
+    this.lastX = pos.x;
+    this.lastY = pos.y;
+  }
+
+  private endDraw() {
+    this.drawing = false;
+  }
+
+  async onConfirm() {
+    const canvas = this.canvasRef.nativeElement;
+
+    const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, 'image/png'));
+    if (!blob) return;
 
     const file = new File([blob], 'firma.png', { type: 'image/png' });
 
     const sessionId = this.model?._pbId;
-    if (!sessionId) {
-      console.error('ID sign_session mancante');
-      return;
-    }
+    if (!sessionId) return;
 
-    try {
-      console.log('3) Aggiorno sign_session con firma…');
+    await this.pb.pb.collection('sign_session').update(sessionId, {
+      signature: file,
+      stato: 'completed',
+    });
 
-      const updatedSession = await this.pb.pb.collection('sign_session').update(sessionId, {
-        signature: file,
-        stato: 'completed',
-      });
+    sessionStorage.setItem('signature_done', '1');
+    this.router.navigate(['/kiosk']);
+  }
 
-      console.log('4) SESSIONE AGGIORNATA:', updatedSession);
-
-      // NON CERCARE ownerId QUI — L’OWNER ANCORA NON ESISTE
-      console.log('5) Firma salvata nella sessione. Redirect…');
-
-      this.router.navigate(['/firma-attesa']);
-    } catch (err) {
-      console.error('ERRORE PocketBase:', err);
-    }
+  clearSignature() {
+    const canvas = this.canvasRef.nativeElement;
+    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 }

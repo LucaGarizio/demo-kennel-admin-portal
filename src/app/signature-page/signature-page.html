@@ -1,8 +1,5 @@
-<div *ngIf="loading" class="fade-wrapper loading-wrapper" [class.fade-out]="!loading">
-  Caricamento…
-</div>
-
-<div *ngIf="!loading" class="fade-wrapper" [class.fade-out]="loading">
+@if(!loading){
+<div class="fade-wrapper" [class.fade-out]="loading">
   <div class="content-wrapper">
     <div class="grid">
       <div class="col-11" style="font-size: 20px">
@@ -69,23 +66,22 @@
       <div class="col-6">
         <div class="firma-box mt-5">
           <canvas #signatureCanvas></canvas>
-
-          <div class="firma-label">Firma qui</div>
-          <button
-            type="button"
-            pButton
-            label="Compila automaticamente"
-            class="p-button-text p-button-sm mt-2"
-            (click)="autoSign()"
-          ></button>
         </div>
+
+        <div class="firma-label">Firma qui</div>
       </div>
     </div>
     <div class="grid mt-5">
-      <div class="col-12 flex justify-content-between mt-5 pt-5">
-        <button pButton label="Riprova" class="p-button-sm"></button>
-        <button pButton label="Conferma" (click)="onConfirm()" class="p-button-sm mr-4"></button>
+      <div class="col-12 flex justify-content-start p-0">
+        <button pButton label="Conferma" (click)="onConfirm()" class="p-button-sm mr-5"></button>
+        <button
+          pButton
+          label="Riprova"
+          (click)="clearSignature()"
+          class="p-button-sm ml-5"
+        ></button>
       </div>
     </div>
   </div>
 </div>
+}

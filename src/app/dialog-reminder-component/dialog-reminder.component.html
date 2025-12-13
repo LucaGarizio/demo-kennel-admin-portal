@@ -1,65 +1,53 @@
 <p-dialog
   [(visible)]="visible"
-  [modal]="true"
   [closable]="false"
-  [style]="{ width: '35rem', borderRadius: '12px' }"
+  [modal]="false"
+  [style]="{ width: '40rem', height: 'auto', borderRadius: '12px' }"
 >
-  <!-- HEADER PERSONALIZZATO -->
   <ng-template pTemplate="header">
-    <div class="flex justify-content-between align-items-center w-full">
+    <div>
       <span class="text-xl font-bold">Promemoria uscita</span>
-
-      @if (showTimePicker) {
-      <button
-        pButton
-        label="Conferma"
-        class="p-button-success p-button-sm"
-        (click)="onPostpone()"
-      ></button>
-      }
     </div>
   </ng-template>
 
-  @if (dogs.length > 0) {
-  <div class="mb-3">
-    <p><strong>Cane:</strong> {{ dogs[0].name }}</p>
+  <ng-container *ngIf="stay">
+    <div
+      class="flex justify-content-between align-items-center mb-3"
+      style="border: 1px solid white"
+    >
+      <div class="text-left">
+        <button pButton label="Posticipa" class="p-button-sm p-button-success"></button>
+      </div>
 
-    <p>
-      <!-- <strong>Uscita prevista:</strong>
-      {{ stay?.departure_date | date : 'dd/MM/yyyy HH:mm' }} -->
-      <strong>Uscita prevista:</strong>
-      {{ formatDateTime(stay?.departure_date) }}
-    </p>
+      <div class="text-right">
+        <button
+          pButton
+          label="Chiudi"
+          class="p-button-sm p-button-success"
+          (click)="close()"
+        ></button>
+      </div>
+    </div>
+    <!-- RIGA PRINCIPALE -->
+    <div class="flex justify-content-between align-items-center mb-3">
+      <div>
+        <span class="text-md text-color-secondary">Cane</span><br />
+        <span class="text-lg font-semibold">{{ dogNames }}</span>
+      </div>
 
-    <p><strong>Note:</strong> {{ dogs[0].extra }}</p>
-  </div>
+      <div class="text-right">
+        <span class="text-md text-color-secondary">Uscita prevista</span><br />
+        <span class="text-lg font-semibold">
+          {{ formatDateTime(stay.departure_date) }}
+        </span>
+      </div>
+    </div>
 
-  <div class="mt-3 flex align-items-center gap-3">
-    <p class="m-0"><strong>Vuoi posticipare?</strong></p>
-
-    <button
-      pButton
-      label="Sì"
-      class="p-button-sm p-button-primary"
-      (click)="showTimePicker = true"
-    ></button>
-
-    <button pButton label="No" class="p-button-sm p-button-secondary" (click)="onClose()"></button>
-  </div>
-
-  @if (showTimePicker) {
-  <div class="mt-3" style="display: flex; flex-direction: column; gap: 0.5rem">
-    <label for="calendar-timeonly">
-      <strong>Nuova ora di promemoria:</strong>
-    </label>
-
-    <p-datepicker
-      inputId="calendar-timeonly"
-      [(ngModel)]="time"
-      [timeOnly]="true"
-      [appendTo]="'body'"
-      style="width: 100%"
-    ></p-datepicker>
-  </div>
-  } }
+    <div *ngIf="stay.notes" class="mb-4 mt-5">
+      <span class="text-md text-color-secondary">Note</span>
+      <div class="mt-1 p-2 border-round surface-200">
+        {{ stay.notes }}
+      </div>
+    </div>
+  </ng-container>
 </p-dialog>

@@ -43,10 +43,20 @@ export class OwnerCreateComponent {
 
   async onSubmit(front: OwnerFormModel) {
     try {
-      await this.ownerSvc.createOwner(front, this.selectedFiles);
+      if (front.id) {
+        await this.ownerSvc.updateOwner(front.id, front, this.selectedFiles);
+      } else {
+        await this.ownerSvc.createOwner(front, this.selectedFiles);
+      }
+
       this.router.navigate(['/lista-proprietari']);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
     }
+  }
+
+  async createTempOwner() {
+    const result = await this.ownerSvc.createOwner(this.model, []);
+    this.model.id = result.id;
   }
 }

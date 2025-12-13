@@ -4,7 +4,6 @@
   transition: opacity 0.5s ease;
 }
 
-/* loading al centro schermo */
 .loading-wrapper {
   display: flex;
   justify-content: center;
@@ -13,32 +12,26 @@
   text-align: center;
 }
 
-/* blocco regolamento centrato orizzontalmente con larghezza max */
 .content-wrapper {
-  // max-width: 900px;
-  margin: 2rem 2rem; /* <— questo lo centra orizzontalmente */
+  margin: 2rem 2rem;
 }
 
-/* se vuoi, lascia pure la firma a destra */
 .firma-box {
   width: 300px;
   height: 90px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 6px;
   display: flex;
-  align-items: center;
-  flex-direction: column;
   justify-content: center;
-  padding-bottom: 0.5rem;
-  color: #fff;
-  font-size: 0.9rem;
+  align-items: center;
   margin-left: auto;
 }
 
 .firma-label {
+  margin-top: 0.5rem;
+  text-align: end;
   color: #fff;
   font-size: 0.9rem;
-  text-align: center;
 }
 
 .fade-out {
@@ -68,4 +61,8 @@
   justify-content: space-between !important;
   align-items: center;
   width: 100%;
+}
+
+button {
+  font-size: 1rem;
 }

@@ -11,12 +11,6 @@ export class OwnerService {
     return this.pb.getOne('owner', id);
   }
 
-  // loadOwner(id: string) {
-  //   return this.pb.getOne('owner', id, {
-  //     fields: '*',
-  //   });
-  // }
-
   createOwner(model: OwnerFormModel, files: File[]) {
     const payload = toBackendOwner(model);
 

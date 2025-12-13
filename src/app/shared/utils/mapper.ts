@@ -1,4 +1,4 @@
-import { toPocketDate, toPocketDateTime } from './date-utils';
+import { normalizeDate, toPocketDate, toPocketDateTime } from './date-utils';
 
 export function toBackendOwner(front: any) {
   return {
@@ -107,6 +107,27 @@ export function toBackendStay(front: any) {
   };
 }
 
+// export function fromBackendStay(back: any) {
+//   return {
+//     id: back.id,
+//     id_proprietario: back.owner_id,
+//     id_cani: back.dog_ids || [],
+//     area_id: back.area_id || null,
+//     box_id: back.box_id || null,
+//     data_arrivo: back.arrival_date ? new Date(back.arrival_date) : null,
+//     data_uscita: back.departure_date ? new Date(back.departure_date) : null,
+//     retta: back.boarding_fee,
+//     acconto: back.deposit,
+//     totale_dovuto: back.total_due,
+//     rimanente: back.outstanding_balance,
+//     note: back.notes || '',
+//     tipo_pagamento:
+//       back.payment_type === 'Contanti'
+//         ? 'cash'
+//         : back.payment_type === 'Pagamento elettronico'
+//         ? 'electronic'
+//         : back.payment_type || null,
+//   };
 export function fromBackendStay(back: any) {
   return {
     id: back.id,
@@ -114,8 +135,11 @@ export function fromBackendStay(back: any) {
     id_cani: back.dog_ids || [],
     area_id: back.area_id || null,
     box_id: back.box_id || null,
-    data_arrivo: back.arrival_date ? new Date(back.arrival_date) : null,
-    data_uscita: back.departure_date ? new Date(back.departure_date) : null,
+
+    // ⬇️ QUI È IL FIX
+    data_arrivo: back.arrival_date ? normalizeDate(back.arrival_date) : null,
+    data_uscita: back.departure_date ? normalizeDate(back.departure_date) : null,
+
     retta: back.boarding_fee,
     acconto: back.deposit,
     totale_dovuto: back.total_due,

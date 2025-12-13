@@ -30,9 +30,6 @@ export const routes: Routes = [
   { path: 'soggiorno/:id', component: StayEditComponent, canActivate: [AuthGuard] },
 
   { path: 'box', component: KennelScheduleComponent, canActivate: [AuthGuard] },
-  { path: 'firma-attesa', component: SignatureWaiting },
-  {
-    path: 'firma/:sessionId',
-    component: SignaturePage,
-  },
+  { path: 'kiosk', component: SignatureWaiting },
+  { path: 'kiosk/:sessionId', component: SignaturePage },
 ];
