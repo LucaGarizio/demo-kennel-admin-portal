@@ -1,12 +1,13 @@
-@if(!isLoginPage){
+@if (!isLoginPage) {
 <app-navbar></app-navbar>
-}1
+}
+
 <router-outlet></router-outlet>
 
 <app-dialog-reminder
-  *ngIf="currentStay"
-  [(visible)]="dialogVisible"
-  [stay]="currentStay"
-  (visibleChange)="!$event && onDialogClosed()"
-  (postponeStay)="onPostpone($event)"
+  *ngIf="reminder.currentStay"
+  [(visible)]="reminder.dialogVisible"
+  [stay]="reminder.currentStay"
+  (visibleChange)="!$event && reminder.onDialogClosed()"
+  (postponeStay)="reminder.onPostpone($event)"
 ></app-dialog-reminder>

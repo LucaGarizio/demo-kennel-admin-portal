@@ -1,4 +1,4 @@
-<div class="page-container">
+<!-- <div class="page-container">
   <app-page-header title="Modifica Cane"></app-page-header>
   @if (!loading) {
   <app-index-form
@@ -11,6 +11,24 @@
     [sexOptions]="sexOptions"
     (save)="onSubmit($event)"
   ></app-index-form>
+  } @else {
+  <p class="text-center mt-4">Caricamento...</p>
+  }
+</div> -->
+
+<div class="page-container">
+  <app-page-header title="Modifica Cane"></app-page-header>
+
+  @if (!loading) {
+  <app-dogs-form
+    [model]="model"
+    [ownerOptions]="ownerOptions"
+    [tagliaOptions]="tagliaOptions"
+    [vaxOptions]="vaxOptions"
+    [pauraOptions]="pauraOptions"
+    [sexOptions]="sexOptions"
+    (save)="onSubmit($event)"
+  ></app-dogs-form>
   } @else {
   <p class="text-center mt-4">Caricamento...</p>
   }

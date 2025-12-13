@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { IndexFormComponent } from '../../../index-form/index-form';
+import { StayFormComponent } from '../stay-form/stay-form';
 import { StayFormService } from '../../../shared/service/stay-service/stay.service';
 import {
   OwnerOption,
@@ -22,7 +22,7 @@ import { PageHeaderComponent } from '../../../shared/component/page-header/page-
 @Component({
   selector: 'app-stay-create',
   standalone: true,
-  imports: [CommonModule, IndexFormComponent, PageHeaderComponent],
+  imports: [CommonModule, StayFormComponent, PageHeaderComponent],
   templateUrl: './stay-create.html',
   styleUrls: ['./stay-create.scss'],
 })

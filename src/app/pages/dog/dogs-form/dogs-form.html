@@ -1,0 +1,143 @@
+<p-card class="card">
+  <form class="p-fluid" #f="ngForm" (ngSubmit)="f.form.markAllAsTouched(); onSubmit()" novalidate>
+    <div class="text-right my-3">
+      <button pButton label="Salva" icon="pi pi-check" type="submit"></button>
+    </div>
+
+    <div class="grid justify-content-start">
+      <div class="col-12 md:col-6">
+        <label>Nome</label>
+        <input
+          pInputText
+          [(ngModel)]="model.nome"
+          name="nome"
+          required
+          #nomeD="ngModel"
+          class="w-full"
+        />
+        <small *ngIf="nomeD.invalid && nomeD.touched" class="p-error">
+          Questo campo è obbligatorio
+        </small>
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Sesso</label>
+        <p-select
+          [options]="sexOptions"
+          [(ngModel)]="model.sesso"
+          name="sesso"
+          required
+          #sesso="ngModel"
+          placeholder="Seleziona Sesso"
+          class="w-full"
+        ></p-select>
+        <small *ngIf="sesso.invalid && sesso.touched" class="p-error">
+          Questo campo è obbligatorio
+        </small>
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Razza</label>
+        <input
+          pInputText
+          [(ngModel)]="model.razza"
+          name="razza"
+          required
+          #razza="ngModel"
+          class="w-full"
+        />
+        <small *ngIf="razza.invalid && razza.touched" class="p-error">
+          Questo campo è obbligatorio
+        </small>
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Microchip</label>
+        <input
+          pInputText
+          [(ngModel)]="model.chip"
+          name="microchip"
+          required
+          #microchip="ngModel"
+          class="w-full"
+        />
+        <small *ngIf="microchip.invalid && microchip.touched" class="p-error">
+          Questo campo è obbligatorio
+        </small>
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Vaccinato</label>
+        <p-select
+          [options]="vaxOptions"
+          [(ngModel)]="model.vax"
+          name="vax"
+          required
+          #vax="ngModel"
+          placeholder="Vaccinato?"
+          class="w-full"
+        ></p-select>
+        <small *ngIf="vax.invalid && vax.touched" class="p-error">
+          Questo campo è obbligatorio
+        </small>
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Spaventato</label>
+        <p-select
+          [options]="pauraOptions"
+          [(ngModel)]="model.paura"
+          name="paura"
+          placeholder="Spaventato?"
+          class="w-full"
+        ></p-select>
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Taglia</label>
+        <p-select
+          [options]="tagliaOptions"
+          [(ngModel)]="model.taglia"
+          name="taglia"
+          required
+          #taglia="ngModel"
+          placeholder="Seleziona Taglia"
+          class="w-full"
+        ></p-select>
+        <small *ngIf="taglia.invalid && taglia.touched" class="p-error">
+          Questo campo è obbligatorio
+        </small>
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Proprietario</label>
+        <p-select
+          [options]="ownerOptions"
+          optionLabel="nomeCompleto"
+          optionValue="id"
+          [(ngModel)]="model.id_proprietario"
+          name="id_proprietario"
+          required
+          #owner_id="ngModel"
+          placeholder="Seleziona Proprietario"
+          class="w-full"
+        ></p-select>
+
+        <small *ngIf="owner_id.invalid && owner_id.touched" class="p-error">
+          Questo campo è obbligatorio
+        </small>
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Note extra</label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="model.extra"
+          name="extra"
+          rows="4"
+          class="w-full"
+        ></textarea>
+      </div>
+    </div>
+  </form>
+</p-card>

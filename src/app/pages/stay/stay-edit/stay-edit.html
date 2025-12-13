@@ -1,4 +1,4 @@
-<div class="page-container">
+<!-- <div class="page-container">
   <app-page-header title="Modifica Soggiorno"></app-page-header>
   <app-index-form
     type="stay"
@@ -16,4 +16,22 @@
     (depositChange)="onDepositChange()"
     (save)="onSubmit($event)"
   ></app-index-form>
+</div> -->
+
+<div class="page-container">
+  <app-page-header title="Modifica Soggiorno"></app-page-header>
+  <app-stay-form
+    [model]="model"
+    [ownerOptions]="ownerOptions"
+    [dogOptions]="dogOptions"
+    [areaOptions]="areaOptions"
+    (areaChange)="onAreaSelected($event)"
+    (boxChange)="onBoxSelected($event)"
+    (ownerChange)="onOwnerSelected($event)"
+    (dogsChange)="onDogsChanged()"
+    (arrivalChange)="onArrivalDateChange()"
+    (departureChange)="onDepartureDateChange()"
+    (depositChange)="onDepositChange()"
+    (save)="onSubmit($event)"
+  ></app-stay-form>
 </div>

@@ -34,6 +34,16 @@ label {
   padding-right: 2rem !important;
 }
 
+::placeholder {
+  color: white !important;
+  opacity: 1 !important;
+}
+
+/* Safari/iOS */
+input::-webkit-input-placeholder {
+  color: white !important;
+}
+
 .clear-btn {
   position: absolute;
   right: 20px;
