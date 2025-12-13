@@ -52,6 +52,9 @@ export interface Stay {
   dog_ids: string[];
   arrival_date: string;
   departure_date: string;
+  postpone_at?: string | null;
+  reminder?: boolean | null;
+
   boarding_fee: number;
   deposit: number;
   outstanding_balance: number;

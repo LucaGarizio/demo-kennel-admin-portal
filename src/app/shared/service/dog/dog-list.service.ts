@@ -10,6 +10,7 @@ export class DogListService {
     const data = await this.pb.getAll('dogs', 200, {
       expand: 'owner_id',
       filter: filter || undefined,
+      requestKey: null,
     });
 
     data.sort((a: any, b: any) => Date.parse(b.created) - Date.parse(a.created));

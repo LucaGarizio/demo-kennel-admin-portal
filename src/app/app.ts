@@ -7,7 +7,7 @@ import { NavbarComponent } from './navbar/navbar';
 import { DialogReminderComponent } from './dialog-reminder-component/dialog-reminder.component';
 import { PocketbaseService } from './shared/service/pocket-base-services/pocketbase.service';
 import { Stay } from './shared/types/stay.types';
-import { normalizeDate } from './shared/utils/date-utils';
+import { normalizeDate, toPocketDateTime } from './shared/utils/date-utils';
 
 @Component({
   selector: 'app-root',
@@ -18,24 +18,51 @@ import { normalizeDate } from './shared/utils/date-utils';
 export class App {
   isLoginPage = false;
 
-  reminderStays: Stay[] = [];
   private reminderTimer: any;
   private alreadyNotified = new Set<string>();
+  private authCheckTimer: any;
 
-  showReminder: boolean[] = [];
   reminderQueue: Stay[] = [];
   currentStay: Stay | null = null;
   dialogVisible = false;
+
   constructor(private router: Router, private pb: PocketbaseService) {
+    const initialUrl = this.router.url;
+    this.isLoginPage =
+      initialUrl === '/' || initialUrl === '/kiosk' || initialUrl.startsWith('/kiosk');
     this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe((e: any) => {
       const url = e.urlAfterRedirects;
       this.isLoginPage = url === '/' || url === '/kiosk' || url.startsWith('/kiosk');
+      this.updateReminderWatcher();
     });
 
-    this.loadStaysWithReminder();
+    this.pb.pb.authStore.onChange(() => {
+      this.updateReminderWatcher();
+    });
+
+    this.updateReminderWatcher();
+    this.authCheckTimer = setInterval(() => {
+      this.updateReminderWatcher();
+    }, 10_000);
   }
-  ngOnInit() {
-    this.startReminderWatcher();
+
+  private updateReminderWatcher() {
+    if (this.pb.isAuth && !this.isLoginPage) {
+      this.startReminderWatcher();
+    } else {
+      this.stopReminderWatcher();
+    }
+  }
+
+  stopReminderWatcher() {
+    if (this.reminderTimer) {
+      clearInterval(this.reminderTimer);
+      this.reminderTimer = null;
+    }
+
+    this.reminderQueue = [];
+    this.currentStay = null;
+    this.dialogVisible = false;
   }
 
   ngOnDestroy() {
@@ -43,41 +70,54 @@ export class App {
       clearInterval(this.reminderTimer);
     }
   }
+
+  /* =========================
+   *   WATCHER
+   * ========================= */
+
   startReminderWatcher() {
     this.loadStaysWithReminder();
     this.reminderTimer = setInterval(() => {
       this.loadStaysWithReminder();
-    }, 30_000);
-  }
-
-  tryOpenNext() {
-    if (this.dialogVisible) return;
-    const next = this.reminderQueue.shift();
-    if (!next) return;
-
-    this.currentStay = next;
-    this.dialogVisible = true;
+    }, 20_000);
   }
 
   async loadStaysWithReminder() {
+    if (!this.pb.isAuth) return;
+
     try {
       const stays = (await this.pb.getAll('stays', 200, {
         expand: 'dog_ids',
         requestKey: null,
       })) as unknown as Stay[];
 
+      const now = Date.now();
       const newlyValid: Stay[] = [];
 
       for (const s of stays) {
-        const ok =
-          !!s.notes &&
-          s.notes.trim() !== '' &&
-          this.isWithin2Minutes(s.departure_date) &&
-          !this.alreadyNotified.has(s.id);
+        if (!s.notes || s.notes.trim() === '') continue;
+        if (this.alreadyNotified.has(s.id)) continue;
 
-        if (ok) {
-          this.alreadyNotified.add(s.id);
-          newlyValid.push(s);
+        if (s.postpone_at) {
+          const pDate = normalizeDate(s.postpone_at);
+          if (pDate && now >= pDate.getTime()) {
+            this.alreadyNotified.add(s.id);
+            newlyValid.push(s);
+            continue;
+          }
+        }
+
+        if (!s.reminder) {
+          const dep = normalizeDate(s.departure_date);
+          if (!dep) continue;
+
+          const depTime = dep.getTime();
+          const threshold24h = depTime - 24 * 60 * 60 * 1000;
+
+          if (now >= threshold24h && now <= depTime) {
+            this.alreadyNotified.add(s.id);
+            newlyValid.push(s);
+          }
         }
       }
 
@@ -90,36 +130,53 @@ export class App {
     }
   }
 
+  async tryOpenNext() {
+    if (this.dialogVisible) return;
+
+    const next = this.reminderQueue.shift();
+    if (!next) return;
+
+    if (!next.reminder) next.reminder = true;
+    if (next.postpone_at) next.postpone_at = null;
+
+    this.currentStay = next;
+    this.dialogVisible = true;
+
+    const updates: any = {};
+    if (next.reminder === true) updates.reminder = true;
+    updates.postpone_at = null;
+
+    await this.pb.updateRecord('stays', next.id, updates);
+  }
+
   onDialogClosed() {
     this.dialogVisible = false;
     this.currentStay = null;
     this.tryOpenNext();
   }
 
-  isWithin24Hours(dateStr: string): boolean {
-    if (!dateStr) return false;
+  /* =========================
+   *   POSTICIPO
+   * ========================= */
+  async onPostpone(event: { stayId: string; minutes: number }) {
+    const stay = this.currentStay;
+    if (!stay || stay.id !== event.stayId) return;
 
-    const target = new Date(dateStr);
-    const now = new Date();
+    const baseDate = new Date();
 
-    const diffMs = target.getTime() - now.getTime();
-    const diffHours = diffMs / 1000 / 60 / 60;
+    baseDate.setMinutes(baseDate.getMinutes() + event.minutes);
 
-    return diffHours > 0 && diffHours <= 24;
-  }
+    const newPostponeAt = toPocketDateTime(baseDate);
+    if (!newPostponeAt) return;
 
-  isWithin2Minutes(dateStr: string): boolean {
-    if (!dateStr) return false;
-    const targetDate = normalizeDate(dateStr);
-    if (!targetDate) return false;
+    await this.pb.updateRecord('stays', stay.id, {
+      postpone_at: newPostponeAt,
+    });
 
-    const target = targetDate.getTime();
-    const now = Date.now();
+    this.alreadyNotified.delete(stay.id);
 
-    const diffMinutes = Math.abs(target - now) / 1000 / 60;
-
-    console.log('⏱ DIFF MINUTES', diffMinutes);
-
-    return diffMinutes <= 27;
+    this.dialogVisible = false;
+    this.currentStay = null;
+    this.tryOpenNext();
   }
 }

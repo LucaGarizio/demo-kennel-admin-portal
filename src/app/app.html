@@ -1,20 +1,6 @@
-<!-- <app-navbar *ngIf="!isLoginPage"></app-navbar>
-
-<div>
-  <router-outlet></router-outlet>
-</div>
-
-<ng-container *ngFor="let dog of dogs; let i = index">
-  <app-dialog-reminder
-    *ngIf="showReminder[i]"
-    [(visible)]="showReminder[i]"
-    [stay]="stay"
-    [dogs]="[dog]"
-  ></app-dialog-reminder>
-</ng-container> -->
-
-<app-navbar *ngIf="!isLoginPage"></app-navbar>
-
+@if(!isLoginPage){
+<app-navbar></app-navbar>
+}1
 <router-outlet></router-outlet>
 
 <app-dialog-reminder
@@ -22,4 +8,5 @@
   [(visible)]="dialogVisible"
   [stay]="currentStay"
   (visibleChange)="!$event && onDialogClosed()"
+  (postponeStay)="onPostpone($event)"
 ></app-dialog-reminder>

@@ -4,3 +4,18 @@
 * {
   box-sizing: border-box;
 }
+
+/* testo del select */
+.p-select .p-select-label {
+  color: #ffffff;
+}
+
+/* freccia (trigger dropdown) */
+.p-select .p-select-dropdown {
+  color: #ffffff;
+}
+
+/* se la freccia è un svg */
+.p-select .p-select-dropdown svg {
+  fill: #ffffff;
+}

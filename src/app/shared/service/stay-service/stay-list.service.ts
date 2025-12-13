@@ -19,10 +19,12 @@ export class StayListService {
     const stays = await this.pb.getAll('stays', 200, {
       expand: 'owner_id,dog_ids',
       filter,
+      requestKey: null,
     });
 
     const occs = await this.pb.getAll('occupations', 500, {
       expand: 'dog,box,box.area',
+      requestKey: null,
     });
 
     stays.sort(
@@ -127,6 +129,7 @@ export class StayListService {
 
     const dogs = await this.pb.getAll('dogs', 200, {
       filter: `name ~ "${name}"`,
+      requestKey: null,
     });
 
     return dogs.map((d: any) => d.id);

@@ -10,13 +10,21 @@
     </div>
   </ng-template>
 
-  <ng-container *ngIf="stay">
+  @if(stay){
+  <ng-container>
     <div
       class="flex justify-content-between align-items-center mb-3"
       style="border: 1px solid white"
     >
       <div class="text-left">
-        <button pButton label="Posticipa" class="p-button-sm p-button-success"></button>
+        <p-select
+          [options]="postponeOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Posticipa"
+          appendTo="body"
+          (onChange)="postpone($event.value)"
+        ></p-select>
       </div>
 
       <div class="text-right">
@@ -28,7 +36,7 @@
         ></button>
       </div>
     </div>
-    <!-- RIGA PRINCIPALE -->
+
     <div class="flex justify-content-between align-items-center mb-3">
       <div>
         <span class="text-md text-color-secondary">Cane</span><br />
@@ -43,11 +51,14 @@
       </div>
     </div>
 
-    <div *ngIf="stay.notes" class="mb-4 mt-5">
+    @if(stay.notes){
+    <div class="mb-4 mt-5">
       <span class="text-md text-color-secondary">Note</span>
-      <div class="mt-1 p-2 border-round surface-200">
+      <div class="mt-1 p-2 border-round surface-200" style="overflow-wrap: anywhere">
         {{ stay.notes }}
       </div>
     </div>
+    }
   </ng-container>
+  }
 </p-dialog>
