@@ -14,7 +14,9 @@ export interface OwnerListRecord {
   tax_code: string;
   phone_number: string;
   email: string;
+  notes: string | null;
   documents: string[];
+  signature: string | null;
   raw: any;
 }
 

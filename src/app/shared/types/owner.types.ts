@@ -15,7 +15,7 @@ export interface OwnerFormModel {
   cell: string;
   email: string;
 
-  extra: string;
+  note: string;
   accettazione_regolamento: boolean;
 
   documents: string[];

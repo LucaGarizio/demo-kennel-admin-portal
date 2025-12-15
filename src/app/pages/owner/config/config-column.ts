@@ -13,6 +13,8 @@ export const OWNER_LIST_COLUMNS = [
   'phone_number',
   'email',
   'documents',
+  'notes',
+  'signature',
 ] as const;
 
 export const OWNER_LIST_LABELS: Record<string, string> = {
@@ -29,5 +31,7 @@ export const OWNER_LIST_LABELS: Record<string, string> = {
   tax_code: 'Codice fiscale',
   phone_number: 'Telefono',
   email: 'Email',
+  notes: 'Note',
   documents: 'Documenti',
+  signature: 'Firma',
 };

@@ -73,6 +73,7 @@ export class StayListService {
 
       arrival_date: formatDateTime(stay.arrival_date),
       departure_date: formatDateTime(stay.departure_date),
+      notes: stay.notes || '',
       boarding_fee: stay.boarding_fee,
       deposit: stay.deposit,
       amount_paid: stay.amount_paid,
@@ -94,7 +95,6 @@ export class StayListService {
     });
   }
 
-  /** ============================ */
   private extractAreaBox(occ: any) {
     return {
       area: occ.expand?.box?.expand?.area?.nome_area ?? '',
@@ -102,9 +102,6 @@ export class StayListService {
     };
   }
 
-  /** ============================
-   * DELETE STAY + OCCUPATION
-   * ============================ */
   async deleteStayAndOccupation(stay: StayListRow): Promise<void> {
     const dog = stay.expand?.dog_ids?.[0];
     if (!dog) return;

@@ -15,6 +15,8 @@ export function toBackendOwner(front: any) {
     tax_code: front.codice_fiscale,
     phone_number: front.cell,
     email: front.email,
+    notes: front.note || '',
+    signature: front.signature || null,
   };
 }
 
@@ -34,7 +36,7 @@ export function fromBackendOwner(back: any) {
     codice_fiscale: back.tax_code,
     cell: back.phone_number,
     email: back.email,
-    extra: back.extra || '',
+    note: back.notes || '',
     accettazione_regolamento: back.accettazione_regolamento ?? true,
     documents: back.documents || [],
     signature: back.signature || null,
@@ -65,7 +67,7 @@ export function toBackendDog(front: any) {
     microchip: front.chip,
     vax: front.vax === 'Si',
     scared: front.paura === 'Si' ? true : false,
-    extra: front.extra || '',
+    notes: front.note || '',
   };
 }
 
@@ -85,7 +87,7 @@ export function fromBackendDog(back: any) {
     chip: back.microchip,
     vax,
     paura,
-    extra: back.extra || '',
+    note: back.notes || '',
     id_proprietario: back.owner_id,
   };
 }

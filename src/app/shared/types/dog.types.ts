@@ -8,7 +8,7 @@ export interface DogFormModel {
   vax: 'Si' | 'No';
   paura: 'Si' | 'No';
   id_proprietario: string | null;
-  extra: string;
+  note: string;
 }
 
 export interface OwnerOption {

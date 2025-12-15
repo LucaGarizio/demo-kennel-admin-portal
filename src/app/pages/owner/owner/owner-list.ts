@@ -62,18 +62,6 @@ export class OwnerList implements OnInit {
     });
   }
 
-  // async loadRecords() {
-  //   this.loading = true;
-
-  //   const ownerId = this.route.snapshot.paramMap.get('id');
-
-  //   this.records = ownerId
-  //     ? [await this.ownerListSvc.loadOwner(ownerId)]
-  //     : await this.ownerListSvc.loadOwners();
-
-  //   this.loading = false;
-  // }
-
   async loadRecords(filters: Record<string, any> = {}) {
     this.loading = true;
 
@@ -122,17 +110,11 @@ export class OwnerList implements OnInit {
     await this.loadRecords();
   }
 
-  /** ============================
-   * FILTER: Cognome proprietario
-   * ============================ */
   private buildSurnameFilter(filters: Record<string, any>): string | null {
     if (!filters['owner_surname']) return null;
     return `surname ~ "${filters['owner_surname']}"`;
   }
 
-  /** ============================
-   * FILTER: Numero di telefono
-   * ============================ */
   private buildPhoneFilter(filters: Record<string, any>): string | null {
     if (!filters['phone_number']) return null;
     return `phone_number ~ "${filters['phone_number']}"`;

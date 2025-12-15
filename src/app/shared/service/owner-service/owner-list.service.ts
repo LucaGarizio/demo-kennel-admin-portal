@@ -36,7 +36,9 @@ export class OwnerListService {
       tax_code: r.tax_code,
       phone_number: r.phone_number,
       email: r.email,
+      notes: r.notes || null,
       documents: r.documents || [],
+      signature: r.signature || null,
       raw: r,
     };
   }

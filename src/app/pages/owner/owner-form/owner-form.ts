@@ -18,7 +18,6 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { FileUpload } from 'primeng/fileupload';
 import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
-
 import { PocketbaseService } from '../../../shared/service/pocket-base-services/pocketbase.service';
 import { toBackendOwner } from '../../../shared/utils/mapper';
 
@@ -31,6 +30,7 @@ import { toBackendOwner } from '../../../shared/utils/mapper';
     ButtonModule,
     InputTextModule,
     DatePickerModule,
+    InputTextModule,
     SelectModule,
     CardModule,
     MultiSelectModule,

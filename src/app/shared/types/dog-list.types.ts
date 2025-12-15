@@ -7,7 +7,7 @@ export interface DogListRecord {
   microchip: string;
   vax: 'Si' | 'No';
   scared: 'Si' | 'No';
-  extra: string;
+  notes: string;
   owner_id: string;
   raw: any;
 }

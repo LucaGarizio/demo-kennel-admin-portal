@@ -86,4 +86,13 @@ export class IndexTableComponent {
     const paid = row.outstanding_balance === 0;
     return paid && (column === 'outstanding_balance' || column === 'total_due');
   }
+
+  isSignatureColumn(col: string): boolean {
+    return col === 'signature';
+  }
+
+  getSignatureUrl(row: any): string {
+    if (!row?.signature) return '';
+    return `${this.pbUrl}/api/files/owner/${row.id}/${row.signature}`;
+  }
 }

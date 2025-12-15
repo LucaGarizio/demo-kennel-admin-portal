@@ -29,7 +29,7 @@ export class DogListService {
       microchip: r.microchip,
       vax: r.vax ? 'Si' : 'No',
       scared: r.scared ? 'Si' : 'No',
-      extra: r.extra || '',
+      notes: r.notes || '',
 
       owner_id: r.expand?.owner_id
         ? `${r.expand.owner_id.name} ${r.expand.owner_id.surname}`

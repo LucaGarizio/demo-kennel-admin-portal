@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { OwnerFormComponent } from '../owner-form/owner-form'; // ⬅️ NUOVO IMPORT
+import { OwnerFormComponent } from '../owner-form/owner-form';
 import { OwnerService } from '../../../shared/service/owner-service/owner-crud.service';
 import { OwnerFormModel } from '../../../shared/types/owner.types';
 import { fromBackendOwner } from '../../../shared/utils/mapper';

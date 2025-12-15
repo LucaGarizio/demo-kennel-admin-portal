@@ -23,14 +23,32 @@ export class OwnerService {
     return this.pb.createRecord('owner', fd);
   }
 
+  // updateOwner(id: string, model: OwnerFormModel, files: File[]) {
+  //   const payload = toBackendOwner(model);
+
+  //   const fd = new FormData();
+  //   for (const [k, v] of Object.entries(payload)) {
+  //     fd.append(k, v ?? '');
+  //   }
+  //   for (const f of files) fd.append('documents', f);
+
+  //   return this.pb.updateRecord('owner', id, fd);
+  // }
   updateOwner(id: string, model: OwnerFormModel, files: File[]) {
     const payload = toBackendOwner(model);
 
+    // ✅ NESSUN FILE → JSON
+    if (!files || files.length === 0) {
+      return this.pb.updateRecord('owner', id, payload);
+    }
+
+    // ✅ FILE PRESENTI → FormData
     const fd = new FormData();
     for (const [k, v] of Object.entries(payload)) {
       fd.append(k, v ?? '');
     }
     for (const f of files) fd.append('documents', f);
+    console.log('OWNER EXTRA:', model.note);
 
     return this.pb.updateRecord('owner', id, fd);
   }

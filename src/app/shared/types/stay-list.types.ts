@@ -6,6 +6,7 @@ export interface StayListRecord {
   box: string;
   arrival_date: string;
   departure_date: string;
+  notes: string;
   boarding_fee: number;
   deposit: number;
   amount_paid: number;

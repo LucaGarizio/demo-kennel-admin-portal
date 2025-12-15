@@ -15,7 +15,7 @@
       </tr>
     </ng-template>
 
-    <ng-template pTemplate="body" let-row>
+    <!-- <ng-template pTemplate="body" let-row>
       <tr>
         <td>
           <button
@@ -26,7 +26,8 @@
           ></button>
         </td>
 
-        @for (c of columns; track c) { @if (isOwnerColumn(c)) {
+        @for (c of columns; track c)
+        { @if (isOwnerColumn(c)) {
         <td (click)="handleCellClick(c, row)" [ngStyle]="getClickableStyle()">
           {{ getCellValue(row, c) }}
         </td>
@@ -38,6 +39,65 @@
           </div>
           } } @else {
           <span>Nessun documento</span>
+          }
+        </td>
+        } @else {
+        <td style="white-space: nowrap" [ngClass]="{ 'paid-cell': isPaidCell(c, row) }">
+          @if (isCurrencyColumn(c)) {
+          {{ getCellValue(row, c) | currency : 'EUR' : 'symbol' : '1.2-2' : 'it-IT' }}
+          } @else {
+          {{ getCellValue(row, c) }}
+          }
+        </td>
+        } }
+      </tr>
+    </ng-template> -->
+    <ng-template pTemplate="body" let-row>
+      <tr>
+        <!-- AZIONI -->
+        <td>
+          <button
+            pButton
+            icon="pi pi-pencil"
+            class="p-button-text p-button-sm"
+            (click)="edit.emit(row)"
+          ></button>
+        </td>
+
+        @for (c of columns; track c) {
+
+        <!-- OWNER CLICK -->
+        @if (isOwnerColumn(c)) {
+        <td (click)="handleCellClick(c, row)" [ngStyle]="getClickableStyle()">
+          {{ getCellValue(row, c) }}
+        </td>
+        }
+
+        <!-- DOCUMENTI -->
+        @else if (isDocumentsColumn(c)) {
+        <td style="white-space: nowrap; cursor: pointer" (click)="openDocumentsDialog(row)">
+          @let docs = getDocuments(row); @if (docs.length > 0) { @for (doc of docs; track $index) {
+          <div style="color: #42a5f5">
+            {{ getFileLabel($index, doc) }}
+          </div>
+          } } @else {
+          <span>Nessun documento</span>
+          }
+        </td>
+        } @else if (c === 'signature') {
+        <td>
+          @if (row.signature) {
+          <img [src]="getSignatureUrl(row)" class="signature-thumb" alt="Firma" />
+          } @else {
+          <span></span>
+          }
+        </td>
+        } @else if (c === 'notes') {
+        <td>
+          @if (row.notes && row.notes.trim().length > 0) {
+          <span>Sì</span>
+          } @else {
+          <span>No</span>
           }
         </td>
         } @else {

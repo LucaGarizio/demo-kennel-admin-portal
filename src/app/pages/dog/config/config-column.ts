@@ -6,7 +6,7 @@ export const DOG_LIST_COLUMNS = [
   'microchip',
   'vax',
   'scared',
-  'extra',
+  'notes',
   'owner_id',
 ] as const;
 
@@ -18,6 +18,6 @@ export const DOG_LIST_LABELS: Record<string, string> = {
   microchip: 'Microchip',
   vax: 'Vaccinato',
   scared: 'Spaventato',
-  extra: 'Extra',
+  notes: 'note',
   owner_id: 'Proprietario',
 };
