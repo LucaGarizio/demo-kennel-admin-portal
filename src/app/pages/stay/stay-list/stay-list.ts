@@ -54,7 +54,7 @@ export class StayList implements OnInit {
   periodFiltersConfig: FilterConfig[] = [
     {
       key: 'period',
-      label: 'Filtri',
+      label: 'Filtri arrivi / uscite',
       type: 'select',
       options: [
         { label: 'Visualizza tutto', value: 'all' },
@@ -67,7 +67,7 @@ export class StayList implements OnInit {
   paymentFilterConfig: FilterConfig[] = [
     {
       key: 'payment_type',
-      label: 'Pagamento',
+      label: 'Filtri Pagamento',
       type: 'select',
       options: [
         { label: 'Tutti', value: 'all' },

@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { TabsModule } from 'primeng/tabs';
 import { TableModule } from 'primeng/table';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { KennelTableComponent } from './component/kennel-table/kennel-table.component';
+import { KennelTableComponent } from './component/kennel-table/kennel-table/kennel-table.component';
 import { KennelDialogComponent } from './component/kennel-stay-dialog/kennel-stay-dialog';
 import { KennelMoveDialogComponent } from './component/kennel-move-dialog/kennel-move-dialog';
 import { KennelCalendarService } from './services/kennel-calendar.service';
 import { KennelDataService } from './services/kennel-data.service';
 import { KennelRow } from './types';
+import { DatePickerModule } from 'primeng/datepicker';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-kennel-schedule',
@@ -21,6 +23,8 @@ import { KennelRow } from './types';
     KennelTableComponent,
     KennelDialogComponent,
     KennelMoveDialogComponent,
+    DatePickerModule,
+    FormsModule,
   ],
   templateUrl: './kennel-schedule.html',
   styleUrls: ['./kennel-schedule.scss'],
@@ -43,6 +47,7 @@ export class KennelScheduleComponent implements OnInit {
 
   showMoveDialog = false;
   moveDialogData: any = null;
+  selectedYearDate: Date = new Date();
 
   constructor(private calendar: KennelCalendarService, private dataService: KennelDataService) {}
 
@@ -58,7 +63,6 @@ export class KennelScheduleComponent implements OnInit {
   async loadAreaData(area: any) {
     this.loading = true;
     const result = await this.dataService.loadAreaData(area.id, this.rows);
-    console.log('KENNEL → OCCUPAZIONI CARICATE:', result.data);
     this.selectedArea = result.area;
     this.boxes = result.boxes;
     this.data = result.data;
@@ -95,5 +99,17 @@ export class KennelScheduleComponent implements OnInit {
     this.showMoveDialog = false;
     this.showDialog = false;
     await this.loadAreaData(this.selectedArea);
+  }
+
+  async onYearSelected(date: Date) {
+    if (!date) return;
+    const year = date.getFullYear();
+    this.loading = true;
+    this.rows = this.calendar.generateRowsForYear(year);
+    if (this.selectedArea) {
+      await this.loadAreaData(this.selectedArea);
+    }
+
+    this.loading = false;
   }
 }

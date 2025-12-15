@@ -1,4 +1,16 @@
 <div class="kennel-wrapper">
+  <div class="mb-3">
+    <label style="display: block" class="font-semibold mb-2">Anno:</label>
+
+    <p-datepicker
+      [(ngModel)]="selectedYearDate"
+      view="year"
+      dateFormat="yy"
+      [showIcon]="true"
+      (onSelect)="onYearSelected($event)"
+    />
+  </div>
+
   <p-tabs [value]="selectedArea?.id" (valueChange)="onAreaChange($event?.toString() || '')">
     <p-tablist>
       @for (area of areas; track area.id) {

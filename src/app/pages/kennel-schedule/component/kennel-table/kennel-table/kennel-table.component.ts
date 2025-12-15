@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
-import { KennelRow } from '../../types';
-import { getHolidayName, isHoliday } from '../../utils/holiday-utils';
+import { KennelRow } from '../../../types';
+import { getHolidayName, isHoliday } from '../../../utils/holiday-utils';
 import { TooltipModule } from 'primeng/tooltip';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
@@ -10,8 +10,8 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
   selector: 'app-kennel-table',
   standalone: true,
   imports: [CommonModule, TableModule, TooltipModule],
-  templateUrl: './kennel-table.html',
-  styleUrls: ['./kennel-table.scss'],
+  templateUrl: './kennel-table-component.html',
+  styleUrls: ['./kennel-table-component.scss'],
   animations: [
     trigger('rowAnimation', [
       transition(':enter', [
