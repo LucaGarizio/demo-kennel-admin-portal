@@ -24,6 +24,10 @@ export class PocketbaseService {
     });
   }
 
+  get baseUrl(): string {
+    return this.pb.baseUrl;
+  }
+
   get isAuth() {
     return this.pb.authStore.isValid;
   }

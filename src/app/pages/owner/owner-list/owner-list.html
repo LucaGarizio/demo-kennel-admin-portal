@@ -30,6 +30,9 @@
     (create)="onCreate()"
     (edit)="onEdit($event)"
     (delete)="openConfirm($event)"
+    [getFileUrl]="getOwnerFileUrl"
+    [getSignatureFileUrl]="getOwnerSignatureUrl"
+    (downloadDocuments)="onDownloadOwnerDocuments($event)"
   ></app-index-table>
 </p-card>
 

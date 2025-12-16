@@ -15,6 +15,8 @@ import { OWNER_LIST_COLUMNS, OWNER_LIST_LABELS } from '../config/config-column';
 import { PageHeaderComponent } from '../../../shared/component/page-header/page-headercomponent';
 import { FilterComponent } from '../../../shared/filter/filters-component/filters';
 import { FiltersService } from '../../../shared/filter/filter-service/filter.service';
+import { ExportService } from '../../../shared/service/export-service/export-service';
+import { PocketbaseService } from '../../../shared/service/pocket-base-services/pocketbase.service';
 
 @Component({
   selector: 'app-owner',
@@ -46,7 +48,9 @@ export class OwnerList implements OnInit {
     private ownerListSvc: OwnerListService,
     private route: ActivatedRoute,
     private router: Router,
-    private filtersS: FiltersService
+    private filtersS: FiltersService,
+    private exportService: ExportService,
+    private pbSvc: PocketbaseService
   ) {}
 
   async ngOnInit() {
@@ -115,4 +119,26 @@ export class OwnerList implements OnInit {
     if (!filters['phone_number']) return null;
     return `phone_number ~ "${filters['phone_number']}"`;
   }
+
+  onDownloadOwnerDocuments(event: { row: OwnerListRecord; documents: string[] }) {
+    const baseUrl = this.pbSvc.baseUrl;
+
+    const urls = event.documents.map((doc) => `${baseUrl}/api/files/owner/${event.row.id}/${doc}`);
+
+    const name = event.row.name ?? '';
+    const surname = event.row.surname ?? 'sconosciuto';
+
+    const safeName = name.toLowerCase().replace(/\s+/g, '_');
+    const safeSurname = surname.toLowerCase().replace(/\s+/g, '_');
+
+    const filename = `documenti_${safeSurname}_${safeName}.pdf`;
+
+    this.exportService.exportImagesToPdf(filename, urls);
+  }
+
+  getOwnerFileUrl = (row: OwnerListRecord, file: string) =>
+    `${this.pbSvc.baseUrl}/api/files/owner/${row.id}/${file}`;
+
+  getOwnerSignatureUrl = (row: OwnerListRecord) =>
+    row.signature ? `${this.pbSvc.baseUrl}/api/files/owner/${row.id}/${row.signature}` : '';
 }

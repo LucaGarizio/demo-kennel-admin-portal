@@ -22,21 +22,26 @@ export class IndexTableComponent {
   @Input() showCreate = true;
   @Input() showFooter = false;
   @Input() totals: number = 0;
+  @Input() getFileUrl!: (row: any, fileName: string) => string;
+  @Input() getSignatureFileUrl?: (row: any) => string;
 
   @Output() create = new EventEmitter<void>();
   @Output() view = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
   @Output() cellClick = new EventEmitter<{ column: string; value: any; row: any }>();
+  @Output() downloadDocuments = new EventEmitter<{
+    row: any;
+    documents: string[];
+  }>();
 
   expandedRow: any | null = null;
   showDocsDialog = false;
   currentDocs: string[] = [];
   currentRow: any = null;
   currencyColumns = ['boarding_fee', 'deposit', 'amount_paid', 'outstanding_balance', 'total_due'];
-  pbUrl = 'http://127.0.0.1:8090';
 
-  constructor(private exportService: ExportService) {}
+  constructor() {}
   isOwnerColumn(col: string): boolean {
     return col === 'owner';
   }
@@ -80,7 +85,7 @@ export class IndexTableComponent {
   }
 
   getDocumentUrl(row: any, fileName: string): string {
-    return `${this.pbUrl}/api/files/owner/${row.id}/${fileName}`;
+    return this.getFileUrl(row, fileName);
   }
 
   isPaidCell(column: string, row: any): boolean {
@@ -94,30 +99,15 @@ export class IndexTableComponent {
   }
 
   getSignatureUrl(row: any): string {
-    if (!row?.signature) return '';
-    return `${this.pbUrl}/api/files/owner/${row.id}/${row.signature}`;
+    return this.getSignatureFileUrl?.(row) ?? '';
   }
 
   downloadDocumentsPdf() {
     if (!this.currentRow || !this.currentDocs.length) return;
 
-    const urls = this.currentDocs.map((doc) => this.getDocumentUrl(this.currentRow, doc));
-
-    const name = this.currentRow.name ?? '';
-    const surname = this.currentRow.surname ?? 'sconosciuto';
-
-    const safeName = name
-      .toLowerCase()
-      .replace(/\s+/g, '_')
-      .replace(/[^a-z0-9_]/g, '');
-
-    const safeSurname = surname
-      .toLowerCase()
-      .replace(/\s+/g, '_')
-      .replace(/[^a-z0-9_]/g, '');
-
-    const filename = `documenti_${safeSurname}_${safeName}.pdf`;
-
-    this.exportService.exportImagesToPdf(filename, urls);
+    this.downloadDocuments.emit({
+      row: this.currentRow,
+      documents: this.currentDocs,
+    });
   }
 }

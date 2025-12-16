@@ -8,10 +8,10 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th style="width: 3rem"></th>
-
+        <th></th>
+        <!-- class="white-space-nowrap" -->
         @for (col of columns; track col) {
-        <th style="white-space: nowrap">
+        <th>
           {{ columnLabels[col] || col }}
         </th>
         }
@@ -36,17 +36,26 @@
         <td (click)="handleCellClick(c, row)" [ngStyle]="getClickableStyle()">
           {{ getCellValue(row, c) }}
         </td>
-        } @else if (isDocumentsColumn(c)) {
-        <td style="white-space: nowrap; cursor: pointer" (click)="openDocumentsDialog(row)">
-          @let docs = getDocuments(row); @if (docs.length > 0) { @for (doc of docs; track $index) {
-          <div style="color: #42a5f5">
+        }
+        <!-- DOCUMENTS -->
+        @else if (isDocumentsColumn(c)) { @let docs = getDocuments(row);
+        <td
+          class="white-space-nowrap"
+          [class.cursor-pointer]="docs.length > 0"
+          (click)="docs.length > 0 && openDocumentsDialog(row)"
+        >
+          @if (docs.length > 0) { @for (doc of docs; track $index) {
+          <div class="document-link">
             {{ getFileLabel($index, doc) }}
           </div>
           } } @else {
           <span>Nessun documento</span>
           }
         </td>
-        } @else if (c === 'signature') {
+        }
+
+        <!-- SIGNATURE -->
+        @else if (c === 'signature') {
         <td>
           @if (row.signature) {
           <img [src]="getSignatureUrl(row)" class="signature-thumb" alt="Firma" />
@@ -63,7 +72,7 @@
           }
         </td>
         } @else {
-        <td style="white-space: nowrap" [ngClass]="{ 'paid-cell': isPaidCell(c, row) }">
+        <td class="white-space-nowrap" [ngClass]="{ 'paid-cell': isPaidCell(c, row) }">
           @if (isCurrencyColumn(c)) {
           {{ getCellValue(row, c) | currency : 'EUR' : 'symbol' : '1.2-2' : 'it-IT' }}
           } @else {

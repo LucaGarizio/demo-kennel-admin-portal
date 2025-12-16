@@ -30,3 +30,8 @@
 :host ::ng-deep .documents-dialog [data-pc-section='headeractions'] {
   display: none !important;
 }
+
+.document-link {
+  color: #42a5f5;
+  cursor: pointer;
+}
