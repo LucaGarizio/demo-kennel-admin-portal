@@ -1,10 +1,7 @@
 :host ::ng-deep {
-  /* Dialog container */
   .owner-dialog.p-dialog {
     border-radius: 10px !important;
   }
-
-  /* Header */
   .owner-dialog .p-dialog-header {
     background: #1e1e1e !important;
     color: #fff !important;
@@ -13,22 +10,19 @@
     text-align: center;
   }
 
-  /* Remove close icon */
   .owner-dialog .p-dialog-header-icons {
     display: none !important;
   }
 
-  /* Content wrapper */
   .owner-dialog .p-dialog-content {
     background: #1e1e1e !important;
     padding-top: 1.5rem !important;
   }
 
-  /* Labels */
   .owner-dialog label {
     font-weight: 600;
     display: block;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     color: #fff !important;
   }
 

@@ -1,6 +1,11 @@
-:host ::ng-deep p-datepicker .p-inputtext {
-  width: 100% !important;
+:host ::ng-deep p-datepicker.date {
+  width: 100%;
 }
+
+:host ::ng-deep p-datepicker.date .p-datepicker-input {
+  width: 100%;
+}
+
 .card {
   height: fit-content;
   overflow-y: auto;
@@ -182,4 +187,19 @@ label {
   max-height: 80px;
   object-fit: contain;
   display: block;
+}
+
+.regolamento-list {
+  padding-left: 1.2rem;
+  margin: 1.5rem 0;
+  list-style-type: disc;
+  font-size: 20px;
+
+  li {
+    margin-bottom: 1rem;
+    // line-height: 1.5;
+  }
+}
+.text {
+  font-size: 1.2rem;
 }

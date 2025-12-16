@@ -31,21 +31,23 @@ export class SignaturePage implements AfterViewChecked {
     private pb: PocketbaseService
   ) {}
 
+
   async ngOnInit() {
     const sessionId = this.route.snapshot.paramMap.get('sessionId');
-    if (!sessionId) return;
+    if (!sessionId) {
+      return;
+    }
 
     try {
       const session = await this.pb.pb
         .collection('sign_session')
         .getFirstListItem(`session_id="${sessionId}"`);
-
       this.model = session['model_json'];
       this.model._pbId = session.id;
 
       this.loading = false;
     } catch (err) {
-      console.error('Errore nel recupero sessione:', err);
+      console.error('[SIGNATURE PAGE] Errore nel recupero sessione:', err);
     }
   }
 
@@ -53,6 +55,7 @@ export class SignaturePage implements AfterViewChecked {
     if (!this.canvasInitialized && !this.loading && this.canvasRef) {
       this.initCanvas();
       this.canvasInitialized = true;
+      this.loadSignatureFromModel();
     }
   }
 
@@ -146,5 +149,27 @@ export class SignaturePage implements AfterViewChecked {
   clearSignature() {
     const canvas = this.canvasRef.nativeElement;
     this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  private async loadSignatureFromModel() {
+    if (!this.model?.signature) {
+      return;
+    }
+    const ownerRecord = {
+      id: this.model.id,
+      collectionName: 'owner',
+    } as any;
+
+    const url = this.pb.pb.getFileUrl(ownerRecord, this.model.signature);
+    const blob = await fetch(url).then((r) => r.blob());
+    const objectUrl = URL.createObjectURL(blob);
+
+    const img = new Image();
+    img.onload = () => {
+      this.ctx.clearRect(0, 0, 300, 90);
+      this.ctx.drawImage(img, 0, 0, 300, 90);
+      URL.revokeObjectURL(objectUrl);
+    };
+    img.src = objectUrl;
   }
 }
