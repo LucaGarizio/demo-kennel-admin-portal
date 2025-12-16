@@ -1,5 +1,8 @@
-<div class="wait-container">
-  <h2 class="ml-5 fade" [class.show]="!showSuccess">Benvenuto</h2>
-  <h2 class="ml-5 fade success-text" [class.show]="showSuccess">Firma aggiunta</h2>
-  <div class="dog"></div>
+<div class="wait-container flex flex-column align-items-center justify-content-center gap-1">
+  @if (!showSuccess) {
+  <h2 class="ml-5 fade-in m-0">Benvenuto</h2>
+  } @else {
+  <h2 class="pl-5 fade-in success-text m-0">Firma aggiunta</h2>
+  }
+  <div class="dog mt-3 mr-5"></div>
 </div>

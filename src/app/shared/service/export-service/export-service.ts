@@ -73,4 +73,52 @@ export class ExportService {
     const num = Number(value) || 0;
     return num.toLocaleString('it-IT', { minimumFractionDigits: 2 }) + ' €';
   }
+
+  async exportImagesToPdf(filename: string, imageUrls: string[]) {
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    let y = 10;
+
+    for (let i = 0; i < imageUrls.length; i++) {
+      const imgData = await this.loadImageAsBase64(imageUrls[i]);
+
+      const imgProps = doc.getImageProperties(imgData);
+      const imgWidth = pageWidth - 20;
+      const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+      if (y + imgHeight > pageHeight - 10) {
+        doc.addPage();
+        y = 10;
+      }
+
+      doc.addImage(imgData, 'JPEG', 10, y, imgWidth, imgHeight);
+      y += imgHeight + 10;
+    }
+
+    doc.save(filename.endsWith('.pdf') ? filename : `${filename}.pdf`);
+  }
+
+  private loadImageAsBase64(url: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx!.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/jpeg'));
+      };
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
 }

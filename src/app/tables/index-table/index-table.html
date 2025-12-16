@@ -36,10 +36,7 @@
         <td (click)="handleCellClick(c, row)" [ngStyle]="getClickableStyle()">
           {{ getCellValue(row, c) }}
         </td>
-        }
-
-        <!-- DOCUMENTI -->
-        @else if (isDocumentsColumn(c)) {
+        } @else if (isDocumentsColumn(c)) {
         <td style="white-space: nowrap; cursor: pointer" (click)="openDocumentsDialog(row)">
           @let docs = getDocuments(row); @if (docs.length > 0) { @for (doc of docs; track $index) {
           <div style="color: #42a5f5">
@@ -95,11 +92,26 @@
   </p-table>
 
   <p-dialog
-    header="Documenti"
     [(visible)]="showDocsDialog"
     [modal]="true"
+    styleClass="documents-dialog"
+    [dismissableMask]="true"
     [style]="{ width: '70vw' }"
   >
+    <ng-template pTemplate="header">
+      <div class="grid align-items-center w-full">
+        <div class="col-4 text-left">
+          <p-button
+            icon="pi pi-download"
+            label="Scarica Documenti PDF"
+            (onClick)="downloadDocumentsPdf()"
+          ></p-button>
+        </div>
+        <div class="col-4 text-center font-semibold text-lg">Documenti</div>
+        <div class="col-4"></div>
+      </div>
+    </ng-template>
+
     <p-carousel
       [value]="currentDocs"
       [numVisible]="1"

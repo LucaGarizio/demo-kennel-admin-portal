@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { CarouselModule } from 'primeng/carousel';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ExportService } from '../../shared/service/export-service/export-service';
 
 @Component({
   selector: 'app-index-table',
@@ -35,6 +36,7 @@ export class IndexTableComponent {
   currencyColumns = ['boarding_fee', 'deposit', 'amount_paid', 'outstanding_balance', 'total_due'];
   pbUrl = 'http://127.0.0.1:8090';
 
+  constructor(private exportService: ExportService) {}
   isOwnerColumn(col: string): boolean {
     return col === 'owner';
   }
@@ -94,5 +96,28 @@ export class IndexTableComponent {
   getSignatureUrl(row: any): string {
     if (!row?.signature) return '';
     return `${this.pbUrl}/api/files/owner/${row.id}/${row.signature}`;
+  }
+
+  downloadDocumentsPdf() {
+    if (!this.currentRow || !this.currentDocs.length) return;
+
+    const urls = this.currentDocs.map((doc) => this.getDocumentUrl(this.currentRow, doc));
+
+    const name = this.currentRow.name ?? '';
+    const surname = this.currentRow.surname ?? 'sconosciuto';
+
+    const safeName = name
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_]/g, '');
+
+    const safeSurname = surname
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_]/g, '');
+
+    const filename = `documenti_${safeSurname}_${safeName}.pdf`;
+
+    this.exportService.exportImagesToPdf(filename, urls);
   }
 }

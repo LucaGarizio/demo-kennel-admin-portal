@@ -26,3 +26,7 @@
   max-width: 100px;
   object-fit: contain;
 }
+
+:host ::ng-deep .documents-dialog [data-pc-section='headeractions'] {
+  display: none !important;
+}
