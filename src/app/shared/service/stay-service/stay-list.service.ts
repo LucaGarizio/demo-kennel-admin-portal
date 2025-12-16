@@ -51,13 +51,6 @@ export class StayListService {
       )
     );
 
-    // const boxes = Array.from(
-    //   new Set(
-    //     validOccs
-    //       .map((o: any) => o.expand?.box?.numero ?? o.expand?.box?.number)
-    //       .filter((v: any) => !!v)
-    //   )
-    // );
     const boxes = validOccs
       .map((o: any) => o.expand?.box?.numero ?? o.expand?.box?.number)
       .filter((v: any) => !!v);

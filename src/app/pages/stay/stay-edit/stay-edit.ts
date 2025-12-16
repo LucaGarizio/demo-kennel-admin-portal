@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StayFormComponent } from '../stay-form/stay-form';
 import { StayFormService } from '../../../shared/service/stay-service/stay.service';
+import { FormsModule } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
 
 import {
   StayFormModel,
@@ -21,26 +23,49 @@ import {
   calculateRemaining,
 } from '../../../shared/service/stay-service/stay-price.service';
 
-import { normalizeDate } from '../../../shared/utils/date-utils';
+import { normalizeDate, toPocketDateTime, formatDateTime } from '../../../shared/utils/date-utils';
+
 import { PageHeaderComponent } from '../../../shared/component/page-header/page-headercomponent';
+import { SelectModule } from 'primeng/select';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-stay-edit',
   standalone: true,
-  imports: [CommonModule, StayFormComponent, PageHeaderComponent],
+  imports: [
+    CommonModule,
+    StayFormComponent,
+    PageHeaderComponent,
+    SelectModule,
+    DialogModule,
+    FormsModule,
+    ButtonModule,
+  ],
   templateUrl: './stay-edit.html',
   styleUrls: ['./stay-edit.scss'],
 })
 export class StayEditComponent {
   id!: string;
+
   model: StayFormModel = this.initModel();
+
   ownerOptions: OwnerOption[] = [];
   dogOptions: DogOption[] = [];
   allDogs: DogOption[] = [];
+
   areaOptions: AreaOption[] = [];
   boxOptions: BoxOption[] = [];
   allBoxes: BoxOption[] = [];
-  existingOccupation: any = null;
+
+  existingOccupation: any[] = [];
+
+  showConflictDialog = false;
+  conflictOccupation: any = null;
+  conflictSelectValue = 'x';
+  hasBlockingConflict = false;
+
+  originalArrival: Date | null = null;
+  originalDeparture: Date | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -80,7 +105,6 @@ export class StayEditComponent {
       acconto: 0,
       rimanente: 0,
       totale_dovuto: 0,
-
       tipo_pagamento: null,
       note: '',
     };
@@ -100,17 +124,17 @@ export class StayEditComponent {
     });
 
     this.existingOccupation = occupations;
+
     const cani = dogIds.map((cid: string) => {
       const occ = occupations.find((o) => o.expand?.['dog']?.id === cid);
 
-      const id_area = occ?.expand?.['box']?.expand?.area?.id ?? null;
-      const id_box = occ?.expand?.['box']?.id ?? null;
-
       return {
         dog_id: cid,
-        id_area,
-        id_box,
-        boxOptions: id_area ? this.stayForm.filterBoxes(id_area, this.allBoxes) : [],
+        id_area: occ?.expand?.['box']?.expand?.area?.id ?? null,
+        id_box: occ?.expand?.['box']?.id ?? null,
+        boxOptions: occ?.expand?.['box']?.expand?.area?.id
+          ? this.stayForm.filterBoxes(occ.expand['box'].expand.area.id, this.allBoxes)
+          : [],
       };
     });
 
@@ -118,10 +142,8 @@ export class StayEditComponent {
       id_proprietario: stayModel.id_proprietario,
       id_cani: dogIds,
       cani,
-
       data_arrivo: stayModel.data_arrivo,
       data_uscita: stayModel.data_uscita,
-
       retta: stayModel.retta,
       acconto: stayModel.acconto,
       rimanente: stayModel.rimanente,
@@ -129,6 +151,9 @@ export class StayEditComponent {
       tipo_pagamento: stayModel.tipo_pagamento,
       note: stayModel.note,
     };
+
+    this.originalArrival = normalizeDate(this.model.data_arrivo);
+    this.originalDeparture = normalizeDate(this.model.data_uscita);
 
     this.onOwnerSelected(this.model.id_proprietario!);
     this.updateAll();
@@ -143,21 +168,6 @@ export class StayEditComponent {
     );
 
     this.updateAll();
-  }
-
-  onAreaSelected(e: { index: number; area: string | null }) {
-    const { index, area } = e;
-    this.model.cani[index].id_area = area;
-    const filtered = area ? this.stayForm.filterBoxes(area, this.allBoxes) : [];
-    this.model.cani[index].boxOptions = filtered;
-    if (!filtered.some((b) => b.id === this.model.cani[index].id_box)) {
-      this.model.cani[index].id_box = null;
-    }
-  }
-
-  onBoxSelected(e: { index: number; box: string | null }) {
-    const { index, box } = e;
-    this.model.cani[index].id_box = box;
   }
 
   onDogsChanged() {
@@ -175,15 +185,34 @@ export class StayEditComponent {
         });
       }
     });
+
     this.updateAll();
+  }
+
+  onAreaSelected(e: { index: number; area: string | null }) {
+    const { index, area } = e;
+    this.model.cani[index].id_area = area;
+
+    const filtered = area ? this.stayForm.filterBoxes(area, this.allBoxes) : [];
+
+    this.model.cani[index].boxOptions = filtered;
+
+    if (!filtered.some((b) => b.id === this.model.cani[index].id_box)) {
+      this.model.cani[index].id_box = null;
+    }
+  }
+
+  onBoxSelected(e: { index: number; box: string | null }) {
+    this.model.cani[e.index].id_box = e.box;
   }
 
   onArrivalDateChange() {
     this.updateAll();
   }
 
-  onDepartureDateChange() {
+  async onDepartureDateChange() {
     this.updateAll();
+    await this.checkBoxConflictsOnDates();
   }
 
   onDepositChange() {
@@ -195,6 +224,7 @@ export class StayEditComponent {
 
   private updateAll() {
     const dogs = this.allDogs.filter((d) => this.model.id_cani.includes(d.id));
+
     this.model.retta = calculateDailyRate(dogs);
 
     if (this.model.data_arrivo && this.model.data_uscita) {
@@ -210,10 +240,14 @@ export class StayEditComponent {
   }
 
   async onSubmit(frontModel: StayFormModel) {
+    if (this.hasBlockingConflict) return;
+
     frontModel.data_arrivo = normalizeDate(frontModel.data_arrivo);
     frontModel.data_uscita = normalizeDate(frontModel.data_uscita);
+
     const payload = toBackendStay(frontModel);
     await this.pb.updateRecord('stays', this.id, payload);
+
     for (const occ of this.existingOccupation) {
       await this.pb.deleteRecord('occupations', occ.id);
     }
@@ -225,12 +259,69 @@ export class StayEditComponent {
         dog: entry.dog_id,
         box: entry.id_box,
         area: entry.id_area,
-        arrival_date: frontModel.data_arrivo,
-        departure_date: frontModel.data_uscita,
+        arrival_date: toPocketDateTime(frontModel.data_arrivo!),
+        departure_date: toPocketDateTime(frontModel.data_uscita!),
         stay: this.id,
       });
     }
 
     this.router.navigate(['/lista-soggiorni']);
+  }
+
+  private async checkBoxConflictsOnDates() {
+    const arrival = normalizeDate(this.model.data_arrivo);
+    const departure = normalizeDate(this.model.data_uscita);
+
+    if (!arrival || !departure) return;
+
+    for (const cane of this.model.cani) {
+      if (!cane.id_box) continue;
+
+      const conflicts = await this.pb.getAll('occupations', 1, {
+        filter: `
+          box = "${cane.id_box}"
+          && arrival_date <= "${toPocketDateTime(departure)}"
+          && departure_date >= "${toPocketDateTime(arrival)}"
+        `,
+        expand: 'dog',
+      });
+
+      if (conflicts.length > 0) {
+        this.conflictOccupation = conflicts[0];
+        this.showConflictDialog = true;
+        this.hasBlockingConflict = true;
+        return;
+      }
+    }
+
+    this.hasBlockingConflict = false;
+    this.conflictOccupation = null;
+    this.showConflictDialog = false;
+  }
+
+  onConflictDialogClose() {
+    this.showConflictDialog = false;
+    this.hasBlockingConflict = false;
+    this.conflictOccupation = null;
+    this.model.data_arrivo = this.originalArrival;
+    this.model.data_uscita = this.originalDeparture;
+
+    this.updateAll();
+  }
+
+  getConflictDogName(): string {
+    return (
+      this.conflictOccupation?.expand?.dog?.nome ||
+      this.conflictOccupation?.expand?.dog?.name ||
+      'Altro cane'
+    );
+  }
+
+  getConflictFrom(): string {
+    return this.conflictOccupation ? formatDateTime(this.conflictOccupation.arrival_date) : '';
+  }
+
+  getConflictTo(): string {
+    return this.conflictOccupation ? formatDateTime(this.conflictOccupation.departure_date) : '';
   }
 }

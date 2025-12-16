@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
 import { DogList } from './pages/dog/dog-list/dog-list';
-import { OwnerList } from './pages/owner/owner/owner-list';
+import { OwnerList } from './pages/owner/owner-list/owner-list';
 import { OwnerCreateComponent } from './pages/owner/owner-create/owner-create';
 import { DogCreateComponent } from './pages/dog/dog-create/dog-create';
 import { StayList } from './pages/stay/stay-list/stay-list';

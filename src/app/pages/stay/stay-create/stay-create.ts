@@ -11,18 +11,30 @@ import {
   StayFormModel,
 } from '../../../shared/types/stay.types';
 import { PocketbaseService } from '../../../shared/service/pocket-base-services/pocketbase.service';
-import { normalizeDate, toPocketDateTime } from '../../../shared/utils/date-utils';
+import { formatDateTime, normalizeDate, toPocketDateTime } from '../../../shared/utils/date-utils';
 import {
   calculateDailyRate,
   calculateTotal,
   calculateRemaining,
 } from '../../../shared/service/stay-service/stay-price.service';
 import { PageHeaderComponent } from '../../../shared/component/page-header/page-headercomponent';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { SelectModule } from 'primeng/select';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-stay-create',
   standalone: true,
-  imports: [CommonModule, StayFormComponent, PageHeaderComponent],
+  imports: [
+    CommonModule,
+    StayFormComponent,
+    PageHeaderComponent,
+    DialogModule,
+    ButtonModule,
+    SelectModule,
+    FormsModule,
+  ],
   templateUrl: './stay-create.html',
   styleUrls: ['./stay-create.scss'],
 })
@@ -36,6 +48,11 @@ export class StayCreateComponent {
   areaOptions: AreaOption[] = [];
   boxOptions: BoxOption[] = [];
   allBoxes: BoxOption[] = [];
+
+  showConflictDialog = false;
+  conflictOccupation: any = null;
+  conflictSelectValue = 'x';
+  hasBlockingConflict = false;
 
   constructor(
     private stayForm: StayFormService,
@@ -128,11 +145,20 @@ export class StayCreateComponent {
   }
 
   onArrivalDateChange() {
+    this.hasBlockingConflict = false;
+    this.conflictOccupation = null;
+    this.showConflictDialog = false;
+
     this.updateAll();
   }
 
-  onDepartureDateChange() {
+  async onDepartureDateChange() {
+    this.hasBlockingConflict = false;
+    this.conflictOccupation = null;
+    this.showConflictDialog = false;
+
     this.updateAll();
+    await this.checkBoxConflictsOnDates();
   }
 
   onDepositChange() {
@@ -158,45 +184,11 @@ export class StayCreateComponent {
     );
   }
 
-  // async onSubmit(frontModel: StayFormModel) {
-  //   frontModel.data_arrivo = normalizeDate(frontModel.data_arrivo);
-  //   frontModel.data_uscita = normalizeDate(frontModel.data_uscita);
-
-  //   const stayPayload = {
-  //     owner_id: frontModel.id_proprietario,
-  //     dog_ids: frontModel.id_cani,
-  //     arrival_date: frontModel.data_arrivo,
-  //     departure_date: frontModel.data_uscita,
-  //     boarding_fee: frontModel.retta,
-  //     deposit: frontModel.acconto,
-  //     outstanding_balance: frontModel.rimanente,
-  //     total_due: frontModel.totale_dovuto,
-  //     payment_type: frontModel.tipo_pagamento,
-  //     notes: frontModel.note || '',
-  //   };
-
-  //   const stay = await this.pb.createRecord('stays', stayPayload);
-
-  //   for (const entry of frontModel.cani) {
-  //     if (!entry.id_area || !entry.id_box) continue;
-
-  //     await this.pb.createRecord('occupations', {
-  //       dog: entry.dog_id,
-  //       box: entry.id_box,
-  //       area: entry.id_area,
-  //       arrival_date: frontModel.data_arrivo,
-  //       departure_date: frontModel.data_uscita,
-  //       stay: stay.id,
-  //     });
-  //   }
-
-  //   this.router.navigate(['/lista-soggiorni']);
-  // }
   async onSubmit(frontModel: StayFormModel) {
+    if (this.hasBlockingConflict) return;
+
     const arrival = normalizeDate(frontModel.data_arrivo);
     const departure = normalizeDate(frontModel.data_uscita);
-
-    // ✅ guardia di sicurezza (obbligatoria per TS)
     if (!arrival || !departure) {
       console.error('Date non valide', { arrival, departure });
       return;
@@ -231,5 +223,60 @@ export class StayCreateComponent {
     }
 
     this.router.navigate(['/lista-soggiorni']);
+  }
+
+  private async checkBoxConflictsOnDates() {
+    const arrival = normalizeDate(this.model.data_arrivo);
+    const departure = normalizeDate(this.model.data_uscita);
+
+    if (!arrival || !departure) return;
+
+    for (const cane of this.model.cani) {
+      if (!cane.id_box) continue;
+
+      const conflicts = await this.pb.getAll('occupations', 1, {
+        filter: `
+        box = "${cane.id_box}"
+        && arrival_date <= "${toPocketDateTime(departure)}"
+        && departure_date >= "${toPocketDateTime(arrival)}"
+      `,
+        expand: 'dog',
+      });
+
+      if (conflicts.length > 0) {
+        this.conflictOccupation = conflicts[0];
+        this.showConflictDialog = true;
+        this.hasBlockingConflict = true;
+        return;
+      }
+    }
+    this.hasBlockingConflict = false;
+    this.conflictOccupation = null;
+    this.showConflictDialog = false;
+  }
+
+  getConflictDogName(): string {
+    const occ = this.conflictOccupation;
+    if (!occ) return '';
+    return occ.expand?.dog?.nome || occ.expand?.dog?.name || 'Altro cane';
+  }
+
+  getConflictFrom(): string {
+    const occ = this.conflictOccupation;
+    return occ ? formatDateTime(occ.arrival_date) : '';
+  }
+
+  getConflictTo(): string {
+    const occ = this.conflictOccupation;
+    return occ ? formatDateTime(occ.departure_date) : '';
+  }
+
+  onConflictDialogClose() {
+    this.showConflictDialog = false;
+    this.hasBlockingConflict = false;
+    this.conflictOccupation = null;
+    this.model.data_arrivo = null;
+    this.model.data_uscita = null;
+    this.updateAll();
   }
 }

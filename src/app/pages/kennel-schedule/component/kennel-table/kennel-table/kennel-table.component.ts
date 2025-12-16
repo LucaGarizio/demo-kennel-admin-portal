@@ -29,6 +29,7 @@ export class KennelTableComponent {
   @Input() boxes: any[] = [];
   @Input() data: Record<string, Record<string, string>> = {};
   @Output() selectCell = new EventEmitter<{ day: string; box: any }>();
+  @Input() expandedMonthKey: string | null = null;
 
   expandedMonths: Record<string, boolean> = {};
 
@@ -94,9 +95,6 @@ export class KennelTableComponent {
     };
   }
 
-  // onCellClick(day: string, box: any) {
-  //   this.selectCell.emit({ day, box });
-  // }
   onCellClick(day: string, box: any) {
     const dog = this.data?.[day]?.[box.number];
     if (!dog) return;

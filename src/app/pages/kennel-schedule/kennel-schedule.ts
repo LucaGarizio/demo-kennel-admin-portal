@@ -11,6 +11,7 @@ import { KennelDataService } from './services/kennel-data.service';
 import { KennelRow } from './types';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-kennel-schedule',
@@ -48,8 +49,13 @@ export class KennelScheduleComponent implements OnInit {
   showMoveDialog = false;
   moveDialogData: any = null;
   selectedYearDate: Date = new Date();
+  expandedMonthKey: string | null = null;
 
-  constructor(private calendar: KennelCalendarService, private dataService: KennelDataService) {}
+  constructor(
+    private calendar: KennelCalendarService,
+    private dataService: KennelDataService,
+    private route: ActivatedRoute
+  ) {}
 
   async ngOnInit() {
     this.loading = true;

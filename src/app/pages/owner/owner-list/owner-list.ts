@@ -49,10 +49,6 @@ export class OwnerList implements OnInit {
     private filtersS: FiltersService
   ) {}
 
-  // async ngOnInit() {
-  //   await this.loadRecords();
-  // }
-
   async ngOnInit() {
     this.filtersS.reset();
     await this.loadRecords();

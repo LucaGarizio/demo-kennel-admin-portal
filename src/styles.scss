@@ -5,7 +5,6 @@
   box-sizing: border-box;
 }
 
-/* testo del select */
 .p-select .p-select-label {
   color: #ffffff;
 }
@@ -18,4 +17,12 @@
 /* se la freccia è un svg */
 .p-select .p-select-dropdown svg {
   fill: #ffffff;
+}
+
+.p-multiselect .p-multiselect-label {
+  color: #ffffff;
+}
+
+.p-multiselect.p-multiselect-filled .p-multiselect-label {
+  color: #ffffff;
 }

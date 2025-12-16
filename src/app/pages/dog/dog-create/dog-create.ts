@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { DogsFormComponent } from '../dogs-form/dogs-form';
+import { DogsFormComponent } from '../dog-form/dogs-form';
 import { DogService } from '../../../shared/service/dog/dog.service';
 import { DogFormModel, OwnerOption } from '../../../shared/types/dog.types';
 import { fromBackendOwner } from '../../../shared/utils/mapper';

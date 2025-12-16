@@ -1,26 +1,5 @@
-<!-- <div class="page-container">
-  <app-page-header title="Aggiungi Nuovo Soggiorno"></app-page-header>
-  <app-index-form
-    type="stay"
-    [model]="model"
-    [ownerOptions]="ownerOptions"
-    [dogOptions]="dogOptions"
-    [areaOptions]="areaOptions"
-    [boxOptions]="boxOptions"
-    (ownerChange)="onOwnerSelected($event)"
-    (dogsChange)="onDogsChanged()"
-    (areaChange)="onAreaSelected($event)"
-    (boxChange)="onBoxSelected($event)"
-    (arrivalChange)="onArrivalDateChange()"
-    (departureChange)="onDepartureDateChange()"
-    (depositChange)="onDepositChange()"
-    (save)="onSubmit($event)"
-  ></app-index-form>
-</div> -->
-
 <div class="page-container">
   <app-page-header title="Aggiungi Nuovo Soggiorno"></app-page-header>
-
   <app-stay-form
     [model]="model"
     [ownerOptions]="ownerOptions"
@@ -34,6 +13,56 @@
     (arrivalChange)="onArrivalDateChange()"
     (departureChange)="onDepartureDateChange()"
     (depositChange)="onDepositChange()"
+    [blockSave]="hasBlockingConflict"
     (save)="onSubmit($event)"
   ></app-stay-form>
 </div>
+
+<p-dialog
+  header=""
+  [(visible)]="showConflictDialog"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '30rem' }"
+>
+  <div class="p-fluid">
+    <h2 class="mt-0 mb-4 text-center">Box occupato</h2>
+
+    <div class="field mb-3">
+      <label>Cane</label>
+      <p-select
+        class="w-full"
+        [options]="[{ label: getConflictDogName(), value: 'x' }]"
+        [(ngModel)]="conflictSelectValue"
+        [ngModelOptions]="{ standalone: true }"
+        disabled
+      ></p-select>
+    </div>
+
+    <div class="field mb-3">
+      <label>Dal</label>
+      <p-select
+        class="w-full"
+        [options]="[{ label: getConflictFrom(), value: 'x' }]"
+        [(ngModel)]="conflictSelectValue"
+        [ngModelOptions]="{ standalone: true }"
+        disabled
+      ></p-select>
+    </div>
+
+    <div class="field mb-3">
+      <label>Al</label>
+      <p-select
+        class="w-full"
+        [options]="[{ label: getConflictTo(), value: 'x' }]"
+        [(ngModel)]="conflictSelectValue"
+        [ngModelOptions]="{ standalone: true }"
+        disabled
+      ></p-select>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Conferma" class="p-button-text" (click)="onConflictDialogClose()"></p-button>
+  </ng-template>
+</p-dialog>

@@ -30,9 +30,9 @@
           #cognome="ngModel"
           class="w-full"
         />
-        <small *ngIf="cognome.invalid && cognome.touched" class="p-error">
-          Questo campo è obbligatorio
-        </small>
+        @if(cognome.invalid && cognome.touched){
+        <small class="p-error"> Questo campo è obbligatorio </small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
@@ -45,9 +45,9 @@
           #codice_fiscale="ngModel"
           class="w-full"
         />
-        <small *ngIf="codice_fiscale.invalid && codice_fiscale.touched" class="p-error">
-          Questo campo è obbligatorio
-        </small>
+        @if(codice_fiscale.invalid && codice_fiscale.touched){
+        <small class="p-error"> Questo campo è obbligatorio </small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
@@ -135,9 +135,9 @@
           #n_carta_identita="ngModel"
           class="w-full"
         />
-        <small *ngIf="n_carta_identita.invalid && n_carta_identita.touched" class="p-error"
-          >Questo campo è obbligatorio</small
-        >
+        @if(n_carta_identita.invalid && n_carta_identita.touched){
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
@@ -150,9 +150,9 @@
           dateFormat="dd/mm/yy"
           style="width: 100%"
         />
-        <small *ngIf="rilascio_carta.invalid && rilascio_carta.touched" class="p-error"
-          >Questo campo è obbligatorio</small
-        >
+        @if(rilascio_carta.invalid && rilascio_carta.touched) {
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
@@ -165,9 +165,9 @@
           dateFormat="dd/mm/yy"
           style="width: 100%"
         />
-        <small *ngIf="scadenza_carta.invalid && scadenza_carta.touched" class="p-error"
-          >Questo campo è obbligatorio</small
-        >
+        @if(scadenza_carta.invalid && scadenza_carta.touched) {
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
@@ -180,9 +180,9 @@
           #cell="ngModel"
           class="w-full"
         />
-        <small *ngIf="cell.invalid && cell.touched" class="p-error"
-          >Questo campo è obbligatorio</small
-        >
+        @if(cell.invalid && cell.touched) {
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
@@ -196,9 +196,9 @@
           #email="ngModel"
           class="w-full"
         />
-        <small *ngIf="email.invalid && email.touched" class="p-error"
-          >Questo campo è obbligatorio</small
-        >
+        @if(email.invalid && email.touched) {
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
       </div>
 
       <div class="col-12 md:col-6">
@@ -299,8 +299,11 @@
 
       <div class="col-6">
         <div class="firma-box">
-          <img *ngIf="firmaUrl" [src]="firmaUrl" class="firma-img" />
-          <span *ngIf="!firmaUrl">Firma</span>
+          @if (firmaUrl) {
+          <img [src]="firmaUrl" class="firma-img" />
+          } @else {
+          <span>Firma</span>
+          }
         </div>
       </div>
     </div>

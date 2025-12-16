@@ -32,17 +32,6 @@ export class StayFormService {
     }));
   }
 
-  // async loadBoxes(): Promise<BoxOption[]> {
-  //   const boxes = await this.pb.getAll('box', 200, { expand: 'area' });
-  //   return boxes.map((b: any) => ({
-  //     id: b.id,
-  //     numero: b.number,
-  //     area_id: b.expand?.area?.id || null,
-  //     double: b.double,
-  //     covered: b.covered,
-  //   }));
-  // }
-
   async loadBoxes(): Promise<BoxOption[]> {
     const boxes = await this.pb.getAll('box', 200, { expand: 'area' });
 

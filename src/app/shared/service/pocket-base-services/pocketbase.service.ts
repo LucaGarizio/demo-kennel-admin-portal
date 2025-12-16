@@ -90,9 +90,6 @@ export class PocketbaseService {
     }
   }
 
-  // SIGNATURE
-  // --- SESSIONE FIRMA --- //
-
   async createSignSession(model: any) {
     const sessionId = crypto.randomUUID();
 

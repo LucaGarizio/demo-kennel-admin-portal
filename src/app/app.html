@@ -4,10 +4,11 @@
 
 <router-outlet></router-outlet>
 
+@if (reminder.currentStay) {
 <app-dialog-reminder
-  *ngIf="reminder.currentStay"
   [(visible)]="reminder.dialogVisible"
   [stay]="reminder.currentStay"
   (visibleChange)="!$event && reminder.onDialogClosed()"
   (postponeStay)="reminder.onPostpone($event)"
-></app-dialog-reminder>
+/>
+}

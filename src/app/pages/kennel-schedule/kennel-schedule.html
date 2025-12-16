@@ -38,12 +38,13 @@
     [rows]="rows"
     [boxes]="boxes"
     [data]="data"
+    [expandedMonthKey]="expandedMonthKey"
     (selectCell)="onSelectCell($event)"
-  />
+  ></app-kennel-table>
   }
-
+  <!-- Dialog -->
+  @if(showDialog) {
   <app-kennel-dialog
-    *ngIf="showDialog"
     [showDialog]="showDialog"
     [pendingBox]="pendingBox"
     [pendingDay]="pendingDay"
@@ -54,6 +55,7 @@
     (close)="showDialog = false"
     (requestMove)="openMoveDialog($event)"
   />
+  }
 
   <app-kennel-move-dialog
     [show]="showMoveDialog"

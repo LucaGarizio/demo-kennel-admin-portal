@@ -10,7 +10,7 @@ import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog';
 import { DialogModule } from 'primeng/dialog';
 import { OwnerDialogComponent } from './owner-dialog/owner-dialog';
 
-import { STAY_LIST_COLUMNS, STAY_LIST_LABELS } from './config/config-column';
+import { STAY_LIST_COLUMNS, STAY_LIST_LABELS } from '../config/config-column';
 
 import { FilterComponent } from '../../../shared/filter/filters-component/filters';
 import { FiltersService } from '../../../shared/filter/filter-service/filter.service';

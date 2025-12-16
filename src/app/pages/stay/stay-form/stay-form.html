@@ -1,7 +1,13 @@
 <p-card class="card">
   <form class="p-fluid" #f="ngForm" (ngSubmit)="f.form.markAllAsTouched(); onSubmit()" novalidate>
     <div class="text-right my-3">
-      <button pButton label="Salva" icon="pi pi-check" type="submit"></button>
+      <button
+        pButton
+        label="Salva"
+        icon="pi pi-check"
+        [disabled]="blockSave"
+        type="submit"
+      ></button>
     </div>
 
     <div class="grid justify-content-start">
@@ -17,6 +23,7 @@
           #id_proprietario="ngModel"
           placeholder="Seleziona Proprietario"
           class="w-full"
+          [filter]="true"
           (onChange)="ownerChange.emit($event.value)"
         ></p-select>
 

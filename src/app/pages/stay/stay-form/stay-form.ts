@@ -32,6 +32,7 @@ export class StayFormComponent {
   @Input() ownerOptions: any[] = [];
   @Input() dogOptions: any[] = [];
   @Input() areaOptions: any[] = [];
+  @Input() blockSave = false;
 
   @Output() save = new EventEmitter<any>();
   @Output() ownerChange = new EventEmitter<string>();

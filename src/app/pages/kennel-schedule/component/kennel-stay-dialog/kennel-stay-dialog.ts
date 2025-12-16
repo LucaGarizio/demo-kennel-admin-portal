@@ -93,49 +93,7 @@ export class KennelDialogComponent {
     const presentDog = occ.expand?.['dog'];
     return presentDog?.id !== this.selectedDog?.id;
   }
-  // private async saveCurrentAssignment() {
-  //   const payload = {
-  //     arrival_date: toPocketDate(this.startDate!),
-  //     departure_date: toPocketDate(this.endDate!),
-  //   };
 
-  //   try {
-  //     if (this.pendingBox.double) {
-  //       await this.assignDoubleBox(payload);
-  //     } else {
-  //       await this.assignSingleBox(payload);
-  //     }
-  //     if (this.pendingBox.double) {
-  //       for (const d of this.selectedDogs) {
-  //         const stays = await this.pb.getAll('stays', 10, {
-  //           filter: `dog_ids.id = "${d.id}"`,
-  //         });
-
-  //         if (stays.length) {
-  //           await this.pb.updateRecord('stays', stays[0].id, {
-  //             id_area: this.pendingBox.expand?.area?.id ?? null,
-  //             id_box: this.pendingBox.id,
-  //           });
-  //         }
-  //       }
-  //     } else {
-  //       const stays = await this.pb.getAll('stays', 10, {
-  //         filter: `dog_ids.id = "${this.selectedDog.id}"`,
-  //       });
-
-  //       if (stays.length) {
-  //         await this.pb.updateRecord('stays', stays[0].id, {
-  //           id_area: this.pendingBox.expand?.area?.id ?? null,
-  //           id_box: this.pendingBox.id,
-  //         });
-  //       }
-  //     }
-
-  //     this.confirm.emit();
-  //   } catch (err) {
-  //     console.error('Errore durante salvataggio:', err);
-  //   }
-  // }
   private async saveCurrentAssignment() {
     if (!this.startDate || !this.endDate || !this.pendingBox) return;
 
@@ -145,12 +103,8 @@ export class KennelDialogComponent {
     };
 
     try {
-      // 🔑 LA LOGICA SEGUE LA MODALITÀ, NON IL TIPO DI BOX
       if (this.isMultiMode) {
-        // assegnazione multipla
         await this.assignDoubleBox(payload);
-
-        // aggiorna stays per TUTTI i cani selezionati
         for (const d of this.selectedDogs) {
           const stays = await this.pb.getAll('stays', 10, {
             filter: `dog_ids.id = "${d.id}"`,
@@ -164,7 +118,6 @@ export class KennelDialogComponent {
           }
         }
       } else {
-        // spostamento singolo
         if (!this.selectedDog) return;
 
         await this.assignSingleBox(payload);
@@ -207,38 +160,10 @@ export class KennelDialogComponent {
     });
   }
 
-  // private async assignDoubleBox(payload: any) {
-  //   const boxId = this.pendingBox.id;
-  //   const selectedIds = this.selectedDogs.map((d) => d.id);
-
-  //   const existing = await this.pb.getAll('occupations', 50, {
-  //     filter: `box.id="${boxId}"`,
-  //     expand: 'dog',
-  //   });
-
-  //   const map = new Map(existing.map((o) => [o.expand?.['dog']?.id, o]));
-
-  //   for (const dogId of selectedIds) {
-  //     const occ = map.get(dogId);
-  //     const body = { dog: dogId, box: boxId, ...payload };
-
-  //     occ
-  //       ? await this.pb.updateRecord('occupations', occ.id, body)
-  //       : await this.pb.createRecord('occupations', body);
-  //   }
-
-  //   for (const occ of existing) {
-  //     const dogId = occ.expand?.['dog']?.id;
-  //     if (dogId && !selectedIds.includes(dogId)) {
-  //       await this.pb.deleteRecord('occupations', occ.id);
-  //     }
-  //   }
-  // }
   private async assignDoubleBox(payload: any) {
     const boxId = this.pendingBox.id;
     const selectedIds = this.selectedDogs.map((d) => d.id);
 
-    // 🔑 1. elimina TUTTE le occupation dei cani selezionati (in QUALSIASI box)
     for (const dogId of selectedIds) {
       const existingForDog = await this.pb.getAll('occupations', 50, {
         filter: `dog.id="${dogId}" && ${this.buildRangeFilter()}`,
@@ -249,7 +174,6 @@ export class KennelDialogComponent {
       }
     }
 
-    // 🔑 2. crea le nuove occupation nel box corrente
     for (const dogId of selectedIds) {
       await this.pb.createRecord('occupations', {
         dog: dogId,
@@ -294,50 +218,21 @@ export class KennelDialogComponent {
     this.confirm.emit();
   }
 
-  // canConfirm(): boolean {
-  //   if (!this.pendingBox || !this.startDate || !this.endDate) return false;
-  //   return this.pendingBox.double ? this.selectedDogs.length > 0 : !!this.selectedDog;
-  // }
-
   canConfirm(): boolean {
     if (!this.pendingBox || !this.startDate || !this.endDate) return false;
-
-    // 🔑 segue la MODALITÀ, non il tipo di box
     return this.isMultiMode ? this.selectedDogs.length > 0 : !!this.selectedDog;
   }
 
-  // async ngOnChanges() {
-  //   if (!this.pendingBox || !this.pendingDay) return;
-  //   this.resetState();
-  //   this.selectedArea = this.pendingBox?.expand?.area || null;
-  //   this.filterBoxes();
-  //   const occs = await this.pb.getAll('occupations', 5, {
-  //     filter: `box.id="${this.pendingBox.id}" && ${this.buildRangeFilter()}`,
-  //     expand: 'dog,box',
-  //   });
-
-  //   if (occs.length === 0) {
-  //     this.dialogTitle = 'Assegna cane';
-  //     return;
-  //   }
-  //   this.setEditState(occs);
-  // }
   async ngOnChanges() {
-    // 👉 la logica parte SOLO quando la dialog viene aperta
     if (!this.showDialog) return;
     if (!this.pendingBox || !this.pendingDay) return;
-
-    // reset iniziale (solo all’apertura)
     this.resetState();
 
-    // 🔑 MODALITÀ DECISA ALL’APERTURA
-    // NON deve cambiare se l’utente cambia box dopo
     this.isMultiMode = !!this.pendingBox?.double;
 
     this.selectedArea = this.pendingBox?.expand?.area || null;
     this.filterBoxes();
 
-    // carico eventuali occupation esistenti
     const occs = await this.pb.getAll('occupations', 5, {
       filter: `box.id="${this.pendingBox.id}" && ${this.buildRangeFilter()}`,
       expand: 'dog,box',
@@ -347,8 +242,6 @@ export class KennelDialogComponent {
       this.dialogTitle = 'Assegna cane';
       return;
     }
-
-    // modalità edit
     this.setEditState(occs);
   }
 

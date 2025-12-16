@@ -9,52 +9,17 @@
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 3rem"></th>
-        <th style="white-space: nowrap" *ngFor="let col of columns">
+
+        @for (col of columns; track col) {
+        <th style="white-space: nowrap">
           {{ columnLabels[col] || col }}
         </th>
+        }
       </tr>
     </ng-template>
 
-    <!-- <ng-template pTemplate="body" let-row>
-      <tr>
-        <td>
-          <button
-            pButton
-            icon="pi pi-pencil"
-            class="p-button-text p-button-sm"
-            (click)="edit.emit(row)"
-          ></button>
-        </td>
-
-        @for (c of columns; track c)
-        { @if (isOwnerColumn(c)) {
-        <td (click)="handleCellClick(c, row)" [ngStyle]="getClickableStyle()">
-          {{ getCellValue(row, c) }}
-        </td>
-        } @else if (isDocumentsColumn(c)) {
-        <td style="white-space: nowrap; cursor: pointer" (click)="openDocumentsDialog(row)">
-          @let docs = getDocuments(row); @if (docs.length > 0) { @for (doc of docs; track $index) {
-          <div style="color: #42a5f5">
-            {{ getFileLabel($index, doc) }}
-          </div>
-          } } @else {
-          <span>Nessun documento</span>
-          }
-        </td>
-        } @else {
-        <td style="white-space: nowrap" [ngClass]="{ 'paid-cell': isPaidCell(c, row) }">
-          @if (isCurrencyColumn(c)) {
-          {{ getCellValue(row, c) | currency : 'EUR' : 'symbol' : '1.2-2' : 'it-IT' }}
-          } @else {
-          {{ getCellValue(row, c) }}
-          }
-        </td>
-        } }
-      </tr>
-    </ng-template> -->
     <ng-template pTemplate="body" let-row>
       <tr>
-        <!-- AZIONI -->
         <td>
           <button
             pButton
