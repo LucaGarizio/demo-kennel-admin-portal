@@ -1,0 +1,57 @@
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1rem;
+}
+.b {
+  border: 1px solid white;
+}
+.filter-item {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+}
+
+.filters-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.input-clear-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-clear-container input {
+  width: 100%;
+  padding-right: 2rem !important;
+}
+
+::placeholder {
+  color: white !important;
+  opacity: 1 !important;
+}
+
+input::-webkit-input-placeholder {
+  color: white !important;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #aaa;
+  user-select: none;
+}
+
+.clear-btn:hover {
+  color: #ddd;
+}
