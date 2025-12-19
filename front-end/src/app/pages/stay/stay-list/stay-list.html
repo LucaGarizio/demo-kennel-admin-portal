@@ -9,6 +9,8 @@
 <div class="grid">
   <app-filter type="text" field="dog_name" label="Cane" placeholder="Nome cane"></app-filter>
   <app-filter type="select" field="period" [config]="periodFiltersConfig"></app-filter>
+  <app-filter type="select" field="year" [config]="yearFilterConfig"> </app-filter>
+  <app-filter type="select" field="month" [config]="monthFilterConfig"> </app-filter>
   <app-filter type="select" field="payment_type" [config]="paymentFilterConfig"> </app-filter>
 </div>
 <app-index-table
