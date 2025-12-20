@@ -1,0 +1,75 @@
+.fade-wrapper {
+  opacity: 0;
+  animation: fadeIn 0.5s forwards ease;
+  transition: opacity 0.5s ease;
+}
+
+.title {
+  font-size: 3rem;
+  text-transform: uppercase;
+  margin-bottom: 0;
+}
+.sub-title {
+  font-size: 2rem;
+}
+.text {
+  font-size: 1.2rem;
+  font-size: 1.2rem;
+}
+.loading-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.content-wrapper {
+  margin: 2rem 2rem;
+}
+
+.firma-box {
+  width: 300px;
+  height: 90px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+}
+
+.firma-label {
+  text-align: end;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.fade-out {
+  opacity: 0 !important;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.regolamento-list {
+  padding-left: 1.2rem;
+  margin: 1.5rem 0 0;
+  list-style-type: disc;
+  font-size: 1.2rem;
+
+  li {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+}
+
+.button-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center;
+  width: 100%;
+}
+
+button {
+  font-size: 1rem;
+}

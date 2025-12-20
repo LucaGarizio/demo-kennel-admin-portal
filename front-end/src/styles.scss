@@ -1,0 +1,26 @@
+@import 'primeicons/primeicons.css';
+@import 'primeflex/primeflex.css';
+
+* {
+  box-sizing: border-box;
+}
+
+.p-select .p-select-label {
+  color: #ffffff;
+}
+
+.p-select .p-select-dropdown {
+  color: #ffffff;
+}
+
+.p-select .p-select-dropdown svg {
+  fill: #ffffff;
+}
+
+.p-multiselect .p-multiselect-label {
+  color: #ffffff;
+}
+
+.p-multiselect.p-multiselect-filled .p-multiselect-label {
+  color: #ffffff;
+}

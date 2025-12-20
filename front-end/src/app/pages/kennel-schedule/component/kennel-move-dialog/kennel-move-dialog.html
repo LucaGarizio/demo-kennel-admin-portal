@@ -1,0 +1,90 @@
+<p-dialog
+  [(visible)]="show"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '35rem', borderRadius: '12px' }"
+  [header]="'Sposta ' + (conflictDog?.name || '')"
+  contentStyle="padding: 2rem; background: #1e1e1e; color: #fff"
+  (onHide)="close.emit()"
+>
+  <div class="p-fluid flex flex-column gap-4">
+    <div>
+      <label class="font-semibold mb-2 block">Area</label>
+      <p-select
+        [options]="availableAreas"
+        [(ngModel)]="selectedArea"
+        optionLabel="nome_area"
+        dataKey="id"
+        placeholder="Seleziona area"
+        class="w-full"
+        (onChange)="filterBoxes()"
+      ></p-select>
+    </div>
+    <div>
+      <label class="font-semibold mb-2 block">Nuovo box</label>
+      <p-select
+        [options]="filteredBoxes"
+        [(ngModel)]="newBox"
+        optionLabel="number"
+        dataKey="id"
+        placeholder="Seleziona un box"
+        class="w-full"
+      />
+    </div>
+
+    <div>
+      <label class="font-semibold mb-2 block">Cane da spostare</label>
+      <p-select
+        [options]="[conflictDog]"
+        [(ngModel)]="conflictDog"
+        optionLabel="name"
+        class="w-full"
+        disabled="true"
+      ></p-select>
+    </div>
+
+    <div>
+      <label class="font-semibold mb-2 block">Nuova data di arrivo</label>
+      <p-datePicker
+        [(ngModel)]="newStart"
+        dateFormat="dd/mm/yy"
+        showIcon="true"
+        locale="it"
+        appendTo="body"
+        class="w-full"
+        disabled="true"
+      />
+    </div>
+
+    <div>
+      <label class="font-semibold mb-2 block">Nuova data di partenza</label>
+      <p-datePicker
+        [(ngModel)]="newEnd"
+        dateFormat="dd/mm/yy"
+        showIcon="true"
+        appendTo="body"
+        class="w-full"
+        disabled="true"
+      />
+    </div>
+
+    <div class="flex justify-content-end gap-3 mt-4">
+      <button
+        pButton
+        label="Annulla"
+        icon="pi pi-times"
+        class="p-button-primary"
+        (click)="close.emit()"
+      ></button>
+
+      <button
+        pButton
+        label="Conferma spostamento"
+        icon="pi pi-check"
+        class="p-button-success"
+        (click)="confirmMove()"
+        [disabled]="!newBox || !newStart || !newEnd"
+      ></button>
+    </div>
+  </div>
+</p-dialog>

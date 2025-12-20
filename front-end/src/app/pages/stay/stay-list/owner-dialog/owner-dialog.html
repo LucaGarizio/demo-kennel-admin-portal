@@ -1,0 +1,120 @@
+<p-dialog
+  header="Dettagli Proprietario"
+  [(visible)]="visible"
+  [modal]="true"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  [closable]="true"
+  [style]="{ width: '35rem', borderRadius: '12px' }"
+  styleClass="owner-dialog"
+  (onHide)="onClose()"
+>
+  @if (owner) {
+  <div class="grid justify-content-start">
+    <div class="col-12 md:col-6">
+      <label>Nome</label>
+      <input pInputText disabled class="w-full" [value]="owner.name" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Cognome</label>
+      <input pInputText disabled class="w-full" [value]="owner.surname" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Luogo di nascita</label>
+      <input
+        pInputText
+        disabled
+        class="w-full"
+        [value]="owner.place_of_birth || 'Non specificato'"
+      />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Data di nascita</label>
+      <input pInputText disabled class="w-full" [value]="owner.birth_date | date : 'dd/MM/yyyy'" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Provincia</label>
+      <input pInputText disabled class="w-full" [value]="owner.province || 'Non specificato'" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Residenza</label>
+      <input pInputText disabled class="w-full" [value]="owner.residence || 'Non specificato'" />
+    </div>
+
+    <div class="col-12">
+      <label>Indirizzo</label>
+      <input pInputText disabled class="w-full" [value]="owner.address || 'Non specificato'" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Codice fiscale</label>
+      <input pInputText disabled class="w-full" [value]="owner.tax_code || 'Non specificato'" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Cellulare</label>
+      <input pInputText disabled class="w-full" [value]="owner.phone_number || 'Non specificato'" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Email</label>
+      <input pInputText disabled class="w-full" [value]="owner.email || 'Non specificato'" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>N° Carta identità</label>
+      <input
+        pInputText
+        disabled
+        class="w-full"
+        [value]="owner.id_card_number || 'Non specificato'"
+      />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Rilascio carta</label>
+      <input
+        pInputText
+        disabled
+        class="w-full"
+        [value]="owner.id_card_issue_date | date : 'dd/MM/yyyy'"
+      />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Scadenza carta</label>
+      <input
+        pInputText
+        disabled
+        class="w-full"
+        [value]="owner.id_card_expiration_date | date : 'dd/MM/yyyy'"
+      />
+    </div>
+
+    <div class="col-12">
+      <label>Note</label>
+      <textarea
+        pInputTextarea
+        disabled
+        class="w-full"
+        rows="4"
+        [value]="owner.notes || 'Nessuna nota'"
+      ></textarea>
+    </div>
+  </div>
+  <div class="mt-4 text-right">
+    <button
+      pButton
+      label="Aggiorna"
+      icon="pi pi-pencil"
+      class="p-button-primary"
+      (click)="goToOwner()"
+    ></button>
+  </div>
+  }
+</p-dialog>

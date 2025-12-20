@@ -1,0 +1,333 @@
+<p-card class="card">
+  <form class="p-fluid" #f="ngForm" (ngSubmit)="f.form.markAllAsTouched(); onSubmit()" novalidate>
+    <div class="text-right my-3">
+      <button pButton label="Salva" icon="pi pi-check" type="submit"></button>
+    </div>
+
+    <div class="grid justify-content-start">
+      <div class="col-12 md:col-6">
+        <label>Nome</label>
+        <input
+          pInputText
+          [(ngModel)]="model.nome"
+          name="nome"
+          required
+          #nome="ngModel"
+          class="w-full"
+        />
+        @if(nome.invalid && nome.touched){
+        <small class="p-error"> Questo campo è obbligatorio</small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Cognome</label>
+        <input
+          pInputText
+          [(ngModel)]="model.cognome"
+          name="cognome"
+          required
+          #cognome="ngModel"
+          class="w-full"
+        />
+        @if(cognome.invalid && cognome.touched){
+        <small class="p-error"> Questo campo è obbligatorio </small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Codice fiscale</label>
+        <input
+          pInputText
+          [(ngModel)]="model.codice_fiscale"
+          name="codice_fiscale"
+          required
+          #codice_fiscale="ngModel"
+          class="w-full"
+        />
+        @if(codice_fiscale.invalid && codice_fiscale.touched){
+        <small class="p-error"> Questo campo è obbligatorio </small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Luogo di nascita</label>
+        <input
+          pInputText
+          [(ngModel)]="model.luogo_di_nascita"
+          name="luogo_di_nascita"
+          required
+          #luogo_di_nascita="ngModel"
+          class="w-full"
+        />
+        @if(luogo_di_nascita.invalid && luogo_di_nascita.touched){
+        <small class="p-error"> Questo campo è obbligatorio</small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Data di nascita</label>
+        <p-datePicker
+          class="date"
+          [(ngModel)]="model.data_di_nascita"
+          name="data_di_nascita"
+          required
+          #data_di_nascita="ngModel"
+          dateFormat="dd/mm/yy"
+        />
+        @if (data_di_nascita.invalid && data_di_nascita.touched){
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Provincia</label>
+        <input
+          pInputText
+          [(ngModel)]="model.provincia"
+          name="provincia"
+          required
+          #provincia="ngModel"
+          class="w-full"
+        />
+        @if (provincia.invalid && provincia.touched) {
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Residenza</label>
+        <input
+          pInputText
+          [(ngModel)]="model.residenza"
+          name="residenza"
+          required
+          #residenza="ngModel"
+          class="w-full"
+        />
+        @if (residenza.invalid && residenza.touched) {
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Indirizzo</label>
+        <input
+          pInputText
+          [(ngModel)]="model.indirizzo"
+          name="indirizzo"
+          required
+          #indirizzo="ngModel"
+          class="w-full"
+        />
+        @if (indirizzo.invalid && indirizzo.touched) {
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>N° carta identità</label>
+        <input
+          pInputText
+          [(ngModel)]="model.n_carta_identita"
+          name="n_carta_identita"
+          required
+          #n_carta_identita="ngModel"
+          class="w-full"
+        />
+        @if(n_carta_identita.invalid && n_carta_identita.touched){
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Rilascio carta</label>
+        <p-datePicker
+          class="date"
+          [(ngModel)]="model.rilascio_carta"
+          name="rilascio_carta"
+          required
+          #rilascio_carta="ngModel"
+          dateFormat="dd/mm/yy"
+        />
+        @if(rilascio_carta.invalid && rilascio_carta.touched) {
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Scadenza carta</label>
+        <p-datePicker
+          class="date"
+          [(ngModel)]="model.scadenza_carta"
+          name="scadenza_carta"
+          required
+          #scadenza_carta="ngModel"
+          dateFormat="dd/mm/yy"
+        />
+        @if(scadenza_carta.invalid && scadenza_carta.touched) {
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Cellulare</label>
+        <input
+          pInputText
+          [(ngModel)]="model.cell"
+          name="cell"
+          required
+          #cell="ngModel"
+          class="w-full"
+        />
+        @if(cell.invalid && cell.touched) {
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Email</label>
+        <input
+          pInputText
+          [(ngModel)]="model.email"
+          name="email"
+          required
+          email
+          #email="ngModel"
+          class="w-full"
+        />
+        @if(email.invalid && email.touched) {
+        <small class="p-error">Questo campo è obbligatorio</small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Note</label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="model.note"
+          name="extra"
+          rows="5"
+          class="w-full"
+        ></textarea>
+      </div>
+
+      <div class="col-12 md:col-12 mb-5">
+        <label>Documenti (PDF/JPG/PNG)</label>
+
+        <div class="upload-wrapper" [class.needs-upload]="uploadNeeded">
+          <p-fileUpload
+            #fu
+            name="documents"
+            mode="advanced"
+            [customUpload]="true"
+            (uploadHandler)="onFilesPicked($event.files); fu.clear(); uploadNeeded = false"
+            (onSelect)="onFilesPicked($event.files)"
+            [multiple]="true"
+            chooseLabel="Scegli file"
+            [files]="existingFiles"
+            [showUploadButton]="true"
+            [showCancelButton]="false"
+            uploadLabel="Carica"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="grid align-items-center mb-4">
+      <div class="col-4">
+        <button
+          type="button"
+          pButton
+          label="Anteprima PDF"
+          (click)="previewVisible = true"
+        ></button>
+      </div>
+
+      <div class="col-4 col-offset-4 text-right">
+        <button
+          type="button"
+          pButton
+          label="Richiedi firma"
+          class="p-button-sm"
+          (click)="requestSign()"
+        ></button>
+      </div>
+    </div>
+
+    <div class="text-center mb-4">
+      <h2 class="m-0">Norme e Regolamento del Canile</h2>
+    </div>
+
+    <div class="grid">
+      <div class="col-12">
+        <p class="text my-5">
+          Io sottoscritto/a <strong>{{ model.nome }} {{ model.cognome }}</strong
+          >, nato/a a <strong>{{ model.luogo_di_nascita }}</strong> il
+          <strong>{{ model.data_di_nascita | date : 'dd/MM/yyyy' }}</strong
+          >, residente a <strong>{{ model.residenza }}</strong> in
+          <strong> {{ model.indirizzo }}</strong
+          >, dichiaro di aver letto, compreso e accettato il seguente regolamento relativo
+          all'ospitalità del mio animale presso la struttura.
+        </p>
+
+        <ul class="regolamento-list">
+          <li>
+            Il proprietario è tenuto a presentare il libretto sanitario aggiornato, comprensivo di
+            vaccinazioni obbligatorie e profilassi antiparassitarie valide.
+          </li>
+
+          <li>
+            I cani devono arrivare puliti e privi di parassiti esterni; in caso contrario, il canile
+            può applicare un trattamento obbligatorio a carico del proprietario.
+          </li>
+
+          <li>
+            Le visite al proprio animale sono consentite solo previo accordo con il personale.
+          </li>
+
+          <li>
+            L'orario di ingresso e uscita deve essere concordato; ritardi possono comportare costi.
+          </li>
+
+          <li>Acconti versati non sono rimborsabili in caso di rinuncia o modifica.</li>
+
+          <li>La giornata di entrata viene sempre conteggiata come giorno completo.</li>
+
+          <li>
+            Il canile declina ogni responsabilità per malattie, fuga, morte o danni derivanti da
+            condizioni preesistenti o non dichiarate.
+          </li>
+
+          <li>Foro competente: BIELLA.</li>
+
+          <li>
+            Dichiaro che le informazioni fornite sono veritiere e mi assumo ogni responsabilità per
+            eventuali omissioni o dichiarazioni scorrette.
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-6">
+        <div class="data-box"><strong>Data:</strong> {{ displayDate | date : 'dd/MM/yyyy' }}</div>
+      </div>
+
+      <div class="col-6">
+        <div class="firma-box">
+          @if (firmaUrl) {
+          <img [src]="firmaUrl" class="firma-img" />
+          } @else {
+          <span>Firma</span>
+          }
+        </div>
+      </div>
+    </div>
+  </form>
+</p-card>
+
+<app-preview-dialog
+  [(visible)]="previewVisible"
+  [model]="model"
+  [displayDate]="displayDate"
+  [firmaUrl]="firmaUrl"
+></app-preview-dialog>

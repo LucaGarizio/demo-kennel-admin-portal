@@ -1,0 +1,138 @@
+<div class="table-wrapper">
+  <p-table
+    [value]="data"
+    [loading]="loading"
+    [rows]="25"
+    [paginator]="true"
+    [rowsPerPageOptions]="[25, 50, 75]"
+  >
+    <ng-template pTemplate="header">
+      <tr class="white-space-nowrap">
+        <th></th>
+
+        @for (col of columns; track col) {
+        <th>
+          {{ columnLabels[col] || col }}
+        </th>
+        }
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-row>
+      <tr>
+        <td>
+          <button
+            pButton
+            icon="pi pi-pencil"
+            class="p-button-text p-button-sm"
+            (click)="edit.emit(row)"
+          ></button>
+        </td>
+
+        @for (c of columns; track c) {
+
+        <!-- OWNER CLICK -->
+        @if (isOwnerColumn(c)) {
+        <td (click)="handleCellClick(c, row)" [ngStyle]="getClickableStyle()">
+          {{ getCellValue(row, c) }}
+        </td>
+        }
+        <!-- DOCUMENTS -->
+        @else if (isDocumentsColumn(c)) { @let docs = getDocuments(row);
+        <td
+          class="white-space-nowrap"
+          [class.cursor-pointer]="docs.length > 0"
+          (click)="docs.length > 0 && openDocumentsDialog(row)"
+        >
+          @if (docs.length > 0) { @for (doc of docs; track $index) {
+          <div class="document-link">
+            {{ getFileLabel($index, doc) }}
+          </div>
+          } } @else {
+          <span>Nessun documento</span>
+          }
+        </td>
+        }
+
+        <!-- SIGNATURE -->
+        @else if (c === 'signature') {
+        <td>
+          @if (row.signature) {
+          <img [src]="getSignatureUrl(row)" class="signature-thumb" alt="Firma" />
+          } @else {
+          <span></span>
+          }
+        </td>
+        } @else if (c === 'notes') {
+        <td>
+          @if (row.notes && row.notes.trim().length > 0) {
+          <span>Sì</span>
+          } @else {
+          <span>No</span>
+          }
+        </td>
+        } @else {
+        <td class="white-space-nowrap" [ngClass]="{ 'paid-cell': isPaidCell(c, row) }">
+          @if (isCurrencyColumn(c)) {
+          {{ getCellValue(row, c) | currency : 'EUR' : 'symbol' : '1.2-2' : 'it-IT' }}
+          } @else {
+          {{ getCellValue(row, c) }}
+          }
+        </td>
+        } }
+      </tr>
+    </ng-template>
+    @if(showFooter){
+    <ng-template pTemplate="footer">
+      <tr>
+        <td>
+          <b>Totali:</b>
+        </td>
+        <td [attr.colspan]="columns.indexOf('total_due')"></td>
+        <td>
+          <b>{{ totals | currency : 'EUR' : 'symbol' : '1.2-2' : 'it-IT' }}</b>
+        </td>
+        @if (columns.indexOf('total_due') < columns.length - 1) {
+        <td [attr.colspan]="columns.length - columns.indexOf('total_due') - 1"></td>
+        }
+      </tr>
+    </ng-template>
+    }
+  </p-table>
+
+  <p-dialog
+    [(visible)]="showDocsDialog"
+    [modal]="true"
+    styleClass="documents-dialog"
+    [dismissableMask]="true"
+    [style]="{ width: '70vw' }"
+  >
+    <ng-template pTemplate="header">
+      <div class="grid align-items-center w-full">
+        <div class="col-4 text-left">
+          <p-button
+            icon="pi pi-download"
+            label="Scarica Documenti PDF"
+            (onClick)="downloadDocumentsPdf()"
+          ></p-button>
+        </div>
+        <div class="col-4 text-center font-semibold text-lg">Documenti</div>
+        <div class="col-4"></div>
+      </div>
+    </ng-template>
+
+    <p-carousel
+      [value]="currentDocs"
+      [numVisible]="1"
+      [numScroll]="1"
+      [circular]="true"
+      [autoplayInterval]="0"
+    >
+      <ng-template pTemplate="item" let-doc>
+        <div class="text-center">
+          <img class="img" [src]="getDocumentUrl(currentRow, doc)" />
+        </div>
+      </ng-template>
+    </p-carousel>
+  </p-dialog>
+</div>

@@ -1,0 +1,219 @@
+<p-card class="card">
+  <form class="p-fluid" #f="ngForm" (ngSubmit)="f.form.markAllAsTouched(); onSubmit()" novalidate>
+    <div class="text-right my-3">
+      <button
+        pButton
+        label="Salva"
+        icon="pi pi-check"
+        [disabled]="blockSave"
+        type="submit"
+      ></button>
+    </div>
+
+    <div class="grid justify-content-start">
+      <div class="col-12 md:col-6">
+        <label>Proprietario</label>
+        <p-select
+          [options]="ownerOptions"
+          optionLabel="nomeCompleto"
+          optionValue="id"
+          [(ngModel)]="model.id_proprietario"
+          name="id_proprietario"
+          required
+          #id_proprietario="ngModel"
+          placeholder="Seleziona Proprietario"
+          class="w-full"
+          [filter]="true"
+          (onChange)="ownerChange.emit($event.value)"
+        ></p-select>
+
+        @if (id_proprietario.invalid && id_proprietario.touched) {
+        <small class="p-error"> Questo campo è obbligatorio </small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Cani</label>
+        <p-multiSelect
+          [options]="dogOptions"
+          optionLabel="nome"
+          optionValue="id"
+          [(ngModel)]="model.id_cani"
+          name="id_cani"
+          required
+          #id_cani="ngModel"
+          placeholder="Seleziona cane/i"
+          class="w-full"
+          display="chip"
+          (onChange)="dogsChange.emit(model.id_cani)"
+        ></p-multiSelect>
+
+        @if (id_cani.invalid && id_cani.touched) {
+        <small class="p-error"> Devi selezionare almeno un cane </small>
+        }
+      </div>
+
+      @for (cane of model.cani; track cane.dog_id; let i = $index) {
+      <div class="col-12 py-0" style="height: inherit">
+        <h4 class="mb-3 mt-3">Cane: {{ getDogName(cane.dog_id) }}</h4>
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Area</label>
+        <p-select
+          [options]="areaOptions"
+          optionLabel="nome_area"
+          optionValue="id"
+          [(ngModel)]="model.cani[i].id_area"
+          name="area_{{ i }}"
+          (onChange)="areaChange.emit({ index: i, area: model.cani[i].id_area })"
+          [ngModelOptions]="{ standalone: true }"
+          class="w-full"
+          placeholder="Seleziona area"
+        ></p-select>
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Box</label>
+        <p-select
+          [options]="model.cani[i].boxOptions"
+          optionLabel="label"
+          optionValue="id"
+          [(ngModel)]="model.cani[i].id_box"
+          name="box_{{ i }}"
+          (onChange)="boxChange.emit({ index: i, box: model.cani[i].id_box })"
+          [ngModelOptions]="{ standalone: true }"
+          class="w-full"
+          placeholder="Seleziona box"
+          [emptyMessage]="getEmptyMessage(i)"
+        ></p-select>
+      </div>
+      }
+
+      <div class="col-12 md:col-6">
+        <label>Data arrivo</label>
+        <p-datePicker
+          [(ngModel)]="model.data_arrivo"
+          name="data_arrivo"
+          required
+          #data_arrivo="ngModel"
+          class="w-full"
+          dateFormat="dd/mm/yy"
+          [showTime]="true"
+          hourFormat="24"
+          appendTo="body"
+          manualMode="true"
+          [hideOnDateTimeSelect]="false"
+          (onSelect)="arrivalChange.emit($event)"
+        ></p-datePicker>
+
+        @if (data_arrivo.invalid && data_arrivo.touched) {
+        <small class="p-error"> Campo obbligatorio </small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Data uscita</label>
+        <p-datePicker
+          [(ngModel)]="model.data_uscita"
+          name="data_uscita"
+          required
+          #data_uscita="ngModel"
+          class="w-full"
+          dateFormat="dd/mm/yy"
+          [showTime]="true"
+          hourFormat="24"
+          appendTo="body"
+          manualMode="true"
+          [hideOnDateTimeSelect]="false"
+          (onSelect)="departureChange.emit($event)"
+        ></p-datePicker>
+
+        @if (data_uscita.invalid && data_uscita.touched) {
+        <small class="p-error"> Campo obbligatorio </small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Retta (€)</label>
+        <input
+          pInputText
+          type="number"
+          [(ngModel)]="model.retta"
+          name="retta"
+          required
+          #retta="ngModel"
+          class="w-full"
+        />
+
+        @if (retta.invalid && retta.touched) {
+        <small class="p-error"> Campo obbligatorio </small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Acconto (€)</label>
+        <input
+          pInputText
+          type="number"
+          [(ngModel)]="model.acconto"
+          name="acconto"
+          (input)="depositChange.emit()"
+          class="w-full"
+        />
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Rimanente (€)</label>
+        <input
+          pInputText
+          type="number"
+          [(ngModel)]="model.rimanente"
+          name="rimanente"
+          class="w-full"
+        />
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Totale Dovuto (€)</label>
+        <input
+          pInputText
+          type="number"
+          [(ngModel)]="model.totale_dovuto"
+          name="totale_dovuto"
+          required
+          #totale_dovuto="ngModel"
+          class="w-full"
+        />
+
+        @if (totale_dovuto.invalid && totale_dovuto.touched) {
+        <small class="p-error"> Campo obbligatorio </small>
+        }
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label>Tipo di pagamento</label>
+        <p-select
+          [options]="tenderOptions"
+          optionLabel="label"
+          optionValue="value"
+          [(ngModel)]="model.tipo_pagamento"
+          name="tipo_pagamento"
+          placeholder="Seleziona metodo"
+          class="w-full"
+        ></p-select>
+      </div>
+
+      <div class="col-12">
+        <label>Note</label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="model.note"
+          name="note"
+          rows="4"
+          class="w-full"
+        ></textarea>
+      </div>
+    </div>
+  </form>
+</p-card>

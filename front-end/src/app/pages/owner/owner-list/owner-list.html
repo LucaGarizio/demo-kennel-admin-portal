@@ -1,0 +1,44 @@
+<app-page-header
+  title="Lista Proprietari"
+  [showCreate]="true"
+  (create)="onCreate()"
+></app-page-header>
+
+<div class="grid">
+  <app-filter
+    type="text"
+    field="owner_surname"
+    label="Proprietario"
+    placeholder="Cerca per Cognome"
+  ></app-filter>
+
+  <app-filter
+    type="text"
+    field="phone_number"
+    label="Numero di telefono"
+    placeholder="N° Telefono"
+  ></app-filter>
+</div>
+
+<p-card class="custom-card">
+  <app-index-table
+    [data]="records"
+    [columns]="columns"
+    [columnLabels]="columnLabels"
+    [loading]="loading"
+    [showCreate]="shouldShowCreate()"
+    (create)="onCreate()"
+    (edit)="onEdit($event)"
+    (delete)="openConfirm($event)"
+    [getFileUrl]="getOwnerFileUrl"
+    [getSignatureFileUrl]="getOwnerSignatureUrl"
+    (downloadDocuments)="onDownloadOwnerDocuments($event)"
+  ></app-index-table>
+</p-card>
+
+<app-confirm-dialog
+  [(visible)]="confirmVisible"
+  [title]="'Conferma eliminazione'"
+  [message]="confirmMessage"
+  (confirmed)="onConfirmResult($event)"
+></app-confirm-dialog>
