@@ -1,6 +1,5 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/pioppeto-portal",
-  "framework": null,
+  "outputDirectory": "front-end/dist/pioppeto-portal",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
