@@ -9,7 +9,6 @@
     <ng-template pTemplate="header">
       <tr class="white-space-nowrap">
         <th></th>
-
         @for (col of columns; track col) {
         <th>
           {{ columnLabels[col] || col }}
@@ -105,7 +104,7 @@
     [modal]="true"
     styleClass="documents-dialog"
     [dismissableMask]="true"
-    [style]="{ width: '70vw' }"
+    [style]="{ width: '50vw' }"
   >
     <ng-template pTemplate="header">
       <div class="grid align-items-center w-full">

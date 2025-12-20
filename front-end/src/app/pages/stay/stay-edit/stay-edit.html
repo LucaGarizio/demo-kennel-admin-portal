@@ -23,7 +23,9 @@
   [style]="{ width: '30rem' }"
 >
   <div class="p-fluid">
-    <h2 class="mt-0 mb-4 text-center">Box occupato</h2>
+    <h2 class="mt-0 mb-4 text-center">
+      {{ isDoubleBoxConflict ? 'Box doppio occupato da:' : 'Box occupato da:' }}
+    </h2>
 
     <div class="field mb-3">
       <label>Cane</label>
@@ -57,9 +59,26 @@
         disabled
       ></p-select>
     </div>
+    <div *ngIf="isDoubleBoxConflict" class="text-center mt-4 mb-2 text-sm text-gray-300">
+      <h3>
+        Vuoi comunque aggiungere
+        <strong>{{ getIncomingDogName() }}</strong>
+        a questo box?
+      </h3>
+    </div>
   </div>
 
-  <ng-template pTemplate="footer">
+  <!-- <ng-template pTemplate="footer">
     <p-button label="Conferma" class="p-button-text" (click)="onConflictDialogClose()"></p-button>
+  </ng-template> -->
+  <ng-template pTemplate="footer">
+    <ng-container *ngIf="isDoubleBoxConflict; else singleBoxFooter">
+      <p-button label="No" class="p-button-text" (click)="onConflictCancel()"></p-button>
+      <p-button label="Sì" class="p-button-text" (click)="onConflictConfirm()"></p-button>
+    </ng-container>
+
+    <ng-template #singleBoxFooter>
+      <p-button label="Conferma" class="p-button-text" (click)="onConflictDialogClose()"></p-button>
+    </ng-template>
   </ng-template>
 </p-dialog>

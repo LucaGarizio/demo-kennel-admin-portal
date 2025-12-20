@@ -164,6 +164,7 @@
           required
           #scadenza_carta="ngModel"
           dateFormat="dd/mm/yy"
+          [disabled]="!model.rilascio_carta"
         />
         @if(scadenza_carta.invalid && scadenza_carta.touched) {
         <small class="p-error">Questo campo è obbligatorio</small>
@@ -216,7 +217,7 @@
         <label>Documenti (PDF/JPG/PNG)</label>
 
         <div class="upload-wrapper" [class.needs-upload]="uploadNeeded">
-          <p-fileUpload
+          <!-- <p-fileUpload
             #fu
             name="documents"
             mode="advanced"
@@ -229,9 +230,40 @@
             [showUploadButton]="true"
             [showCancelButton]="false"
             uploadLabel="Carica"
+          /> -->
+          <p-fileUpload
+            #fu
+            name="documents"
+            mode="advanced"
+            [customUpload]="true"
+            (uploadHandler)="onFilesPicked($event.files); fu.clear(); uploadNeeded = false"
+            (onSelect)="onFilesPicked($event.files)"
+            [multiple]="true"
+            chooseLabel="Scegli file"
+            [showUploadButton]="true"
+            [showCancelButton]="false"
+            uploadLabel="Carica"
           />
         </div>
       </div>
+      @if( model.documents?.length){
+
+      <div class="col-12 mb-5">
+        <div class="existing-wrapper" *ngFor="let doc of model.documents">
+          <a class="url" [href]="getFileUrl(model, doc)" target="_blank">
+            {{ doc }}
+          </a>
+
+          <button
+            type="button"
+            pButton
+            icon="pi pi-trash"
+            class="p-button-text p-button-danger"
+            (click)="onDeleteDocument(doc)"
+          ></button>
+        </div>
+      </div>
+      }
     </div>
 
     <div class="grid align-items-center mb-4">
