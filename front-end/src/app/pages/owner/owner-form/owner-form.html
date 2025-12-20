@@ -217,20 +217,6 @@
         <label>Documenti (PDF/JPG/PNG)</label>
 
         <div class="upload-wrapper" [class.needs-upload]="uploadNeeded">
-          <!-- <p-fileUpload
-            #fu
-            name="documents"
-            mode="advanced"
-            [customUpload]="true"
-            (uploadHandler)="onFilesPicked($event.files); fu.clear(); uploadNeeded = false"
-            (onSelect)="onFilesPicked($event.files)"
-            [multiple]="true"
-            chooseLabel="Scegli file"
-            [files]="existingFiles"
-            [showUploadButton]="true"
-            [showCancelButton]="false"
-            uploadLabel="Carica"
-          /> -->
           <p-fileUpload
             #fu
             name="documents"

@@ -1,10 +1,13 @@
 <div class="page-container">
   <app-page-header title="Modifica Soggiorno"></app-page-header>
+
   <app-stay-form
     [model]="model"
     [ownerOptions]="ownerOptions"
     [dogOptions]="dogOptions"
     [areaOptions]="areaOptions"
+    [boxOptions]="boxOptions"
+    [blockSave]="hasBlockingConflict"
     (areaChange)="onAreaSelected($event)"
     (boxChange)="onBoxSelected($event)"
     (ownerChange)="onOwnerSelected($event)"
@@ -16,69 +19,77 @@
   ></app-stay-form>
 </div>
 <p-dialog
-  header=""
   [(visible)]="showConflictDialog"
   [modal]="true"
   [closable]="false"
+  [draggable]="false"
+  [resizable]="false"
   [style]="{ width: '30rem' }"
 >
   <div class="p-fluid">
     <h2 class="mt-0 mb-4 text-center">
-      {{ isDoubleBoxConflict ? 'Box doppio occupato da:' : 'Box occupato da:' }}
+      {{ isDoubleBoxConflict ? 'Box doppio parzialmente occupato da:' : 'Box occupato da:' }}
     </h2>
 
     <div class="field mb-3">
-      <label>Cane</label>
+      <label class="font-bold">Ospite attuale</label>
       <p-select
         class="w-full"
         [options]="[{ label: getConflictDogName(), value: 'x' }]"
         [(ngModel)]="conflictSelectValue"
-        [ngModelOptions]="{ standalone: true }"
         disabled
       ></p-select>
     </div>
 
-    <div class="field mb-3">
-      <label>Dal</label>
-      <p-select
-        class="w-full"
-        [options]="[{ label: getConflictFrom(), value: 'x' }]"
-        [(ngModel)]="conflictSelectValue"
-        [ngModelOptions]="{ standalone: true }"
-        disabled
-      ></p-select>
+    <div class="grid">
+      <div class="col-6 field mb-3">
+        <label class="font-bold">Dalla data</label>
+        <p-select
+          class="w-full"
+          [options]="[{ label: getConflictFrom(), value: 'x' }]"
+          [(ngModel)]="conflictSelectValue"
+          disabled
+        ></p-select>
+      </div>
+
+      <div class="col-6 field mb-3">
+        <label class="font-bold">Alla data</label>
+        <p-select
+          class="w-full"
+          [options]="[{ label: getConflictTo(), value: 'x' }]"
+          [(ngModel)]="conflictSelectValue"
+          disabled
+        ></p-select>
+      </div>
     </div>
 
-    <div class="field mb-3">
-      <label>Al</label>
-      <p-select
-        class="w-full"
-        [options]="[{ label: getConflictTo(), value: 'x' }]"
-        [(ngModel)]="conflictSelectValue"
-        [ngModelOptions]="{ standalone: true }"
-        disabled
-      ></p-select>
-    </div>
-    <div *ngIf="isDoubleBoxConflict" class="text-center mt-4 mb-2 text-sm text-gray-300">
-      <h3>
-        Vuoi comunque aggiungere
-        <strong>{{ getIncomingDogName() }}</strong>
-        a questo box?
-      </h3>
+    <div class="text-center mt-4">
+      @if (isDoubleBoxConflict) {
+      <p class="text-lg">
+        Il box è doppio. Vuoi inserire comunque <strong>{{ getIncomingDogName() }}</strong
+        >?
+      </p>
+      } @else {
+      <p class="text-lg text-red-400">Il box non può ospitare altri cani in questo periodo.</p>
+      }
     </div>
   </div>
 
-  <!-- <ng-template pTemplate="footer">
-    <p-button label="Conferma" class="p-button-text" (click)="onConflictDialogClose()"></p-button>
-  </ng-template> -->
   <ng-template pTemplate="footer">
-    <ng-container *ngIf="isDoubleBoxConflict; else singleBoxFooter">
-      <p-button label="No" class="p-button-text" (click)="onConflictCancel()"></p-button>
-      <p-button label="Sì" class="p-button-text" (click)="onConflictConfirm()"></p-button>
-    </ng-container>
-
-    <ng-template #singleBoxFooter>
-      <p-button label="Conferma" class="p-button-text" (click)="onConflictDialogClose()"></p-button>
-    </ng-template>
+    <div class="flex justify-content-end gap-2">
+      @if (isDoubleBoxConflict) {
+      <p-button
+        class="p-button-text"
+        label="No, annulla"
+        icon="pi pi-times"
+        severity="secondary"
+        variant="text"
+        (click)="onConflictCancel()"
+      ></p-button>
+      <p-button label="Sì, procedi" icon="pi pi-check" (click)="onConflictConfirm()"></p-button>
+      } @else {
+      <p-button label="Chiudi" class="p-button-text" (click)="onConflictDialogClose()"></p-button>
+      }
+    </div>
   </ng-template>
 </p-dialog>

@@ -1,8 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { SelectModule } from 'primeng/select';
 import { StayFormComponent } from '../stay-form/stay-form';
+import { PageHeaderComponent } from '../../../shared/component/page-header/page-headercomponent';
+
 import { StayFormService } from '../../../shared/service/stay-service/stay.service';
+import { StayLogicService } from '../stay-logic-service/stay-logic.service';
+import { PocketbaseService } from '../../../shared/service/pocket-base-services/pocketbase.service';
+
 import {
   OwnerOption,
   DogOption,
@@ -10,18 +20,8 @@ import {
   BoxOption,
   StayFormModel,
 } from '../../../shared/types/stay.types';
-import { PocketbaseService } from '../../../shared/service/pocket-base-services/pocketbase.service';
 import { formatDateTime, normalizeDate, toPocketDateTime } from '../../../shared/utils/date-utils';
-import {
-  calculateDailyRate,
-  calculateTotal,
-  calculateRemaining,
-} from '../../../shared/service/stay-service/stay-price.service';
-import { PageHeaderComponent } from '../../../shared/component/page-header/page-headercomponent';
-import { DialogModule } from 'primeng/dialog';
-import { ButtonModule } from 'primeng/button';
-import { SelectModule } from 'primeng/select';
-import { FormsModule } from '@angular/forms';
+import { calculateRemaining } from '../../../shared/service/stay-service/stay-price.service';
 
 @Component({
   selector: 'app-stay-create',
@@ -38,67 +38,45 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './stay-create.html',
   styleUrls: ['./stay-create.scss'],
 })
-export class StayCreateComponent {
-  model: StayFormModel = this.initModel();
-
+export class StayCreateComponent implements OnInit {
+  model: StayFormModel;
   ownerOptions: OwnerOption[] = [];
   dogOptions: DogOption[] = [];
   allDogs: DogOption[] = [];
-
   areaOptions: AreaOption[] = [];
   boxOptions: BoxOption[] = [];
   allBoxes: BoxOption[] = [];
-
+  conflictSelectValue = 'x';
   showConflictDialog = false;
   conflictOccupation: any = null;
-  conflictSelectValue = 'x';
+  conflictOccupations: any[] = [];
   hasBlockingConflict = false;
+  isDoubleBoxConflict = false;
+  allowDespiteConflict = false;
+  dogInConflictName = '';
 
   constructor(
     private stayForm: StayFormService,
+    private logic: StayLogicService,
     private pb: PocketbaseService,
     private router: Router
-  ) {}
-
-  async ngOnInit() {
-    const [owners, dogs, areas, boxes] = await Promise.all([
-      this.stayForm.loadOwners(),
-      this.stayForm.loadDogs(),
-      this.stayForm.loadAreas(),
-      this.stayForm.loadBoxes(),
-    ]);
-
-    this.ownerOptions = owners;
-    this.allDogs = dogs;
-    this.dogOptions = dogs;
-
-    this.areaOptions = areas;
-    this.allBoxes = boxes;
-    this.boxOptions = boxes;
+  ) {
+    this.model = this.logic.initModel();
   }
 
-  private initModel(): StayFormModel {
-    return {
-      id_proprietario: null,
-      id_cani: [],
-      cani: [],
+  async ngOnInit() {
+    const opts = await this.logic.loadAllOptions();
 
-      data_arrivo: null,
-      data_uscita: null,
-
-      retta: 0,
-      acconto: 0,
-      rimanente: 0,
-      totale_dovuto: 0,
-
-      tipo_pagamento: null,
-      note: '',
-    };
+    this.ownerOptions = opts.owners;
+    this.allDogs = opts.dogs;
+    this.dogOptions = opts.dogs;
+    this.areaOptions = opts.areas;
+    this.allBoxes = opts.boxes;
+    this.boxOptions = opts.boxes;
   }
 
   onOwnerSelected(ownerId: string) {
     this.model.id_proprietario = ownerId;
-
     this.dogOptions = ownerId ? this.stayForm.filterDogs(ownerId, this.allDogs) : this.allDogs;
 
     this.model.id_cani = this.model.id_cani.filter((cid) =>
@@ -109,29 +87,27 @@ export class StayCreateComponent {
 
   onDogsChanged() {
     const selected = this.model.id_cani;
-    const previous = this.model.cani;
+    this.model.cani = this.model.cani.filter((c) => selected.includes(c.dog_id));
 
-    this.model.cani = selected.map((dog_id) => {
-      const found = previous.find((c) => c.dog_id === dog_id);
-      return (
-        found || {
-          dog_id,
+    selected.forEach((cid) => {
+      if (!this.model.cani.some((c) => c.dog_id === cid)) {
+        this.model.cani.push({
+          dog_id: cid,
           id_area: null,
           id_box: null,
           boxOptions: [],
-        }
-      );
+        });
+      }
     });
+
     this.updateAll();
   }
 
   onAreaSelected(e: { index: number; area: string | null }) {
     const { index, area } = e;
-
     this.model.cani[index].id_area = area;
 
     const filtered = area ? this.stayForm.filterBoxes(area, this.allBoxes) : [];
-
     this.model.cani[index].boxOptions = filtered;
 
     if (!filtered.some((b) => b.id === this.model.cani[index].id_box)) {
@@ -139,24 +115,20 @@ export class StayCreateComponent {
     }
   }
 
-  onBoxSelected(e: { index: number; box: string | null }) {
-    const { index, box } = e;
-    this.model.cani[index].id_box = box;
+  async onBoxSelected(e: { index: number; box: string | null }) {
+    this.model.cani[e.index].id_box = e.box;
+    if (this.model.data_arrivo && this.model.data_uscita) {
+      await this.checkBoxConflictsOnDates();
+    }
   }
 
   onArrivalDateChange() {
-    this.hasBlockingConflict = false;
-    this.conflictOccupation = null;
-    this.showConflictDialog = false;
-
+    this.resetConflictState();
     this.updateAll();
   }
 
   async onDepartureDateChange() {
-    this.hasBlockingConflict = false;
-    this.conflictOccupation = null;
-    this.showConflictDialog = false;
-
+    this.resetConflictState();
     this.updateAll();
     await this.checkBoxConflictsOnDates();
   }
@@ -169,32 +141,55 @@ export class StayCreateComponent {
   }
 
   private updateAll() {
-    const dogs = this.allDogs.filter((d) => this.model.id_cani.includes(d.id));
-    this.model.retta = calculateDailyRate(dogs);
+    this.logic.updateTotals(this.model, this.allDogs);
+  }
 
-    if (this.model.data_arrivo && this.model.data_uscita) {
-      const start = normalizeDate(this.model.data_arrivo)!;
-      const end = normalizeDate(this.model.data_uscita)!;
-      this.model.totale_dovuto = calculateTotal(this.model.retta, start, end);
+  async checkBoxConflictsOnDates() {
+    const result = await this.logic.checkConflicts(this.model, this.allBoxes, this.allDogs);
+
+    if (result) {
+      this.conflictOccupations = result.conflicts;
+      this.conflictOccupation = result.conflicts[0];
+      this.hasBlockingConflict = result.hasBlocking;
+      this.isDoubleBoxConflict = result.isDoubleBoxConflict;
+      this.dogInConflictName = result.incomingDogName;
+      this.showConflictDialog = true;
+      this.allowDespiteConflict = false;
+    } else {
+      this.resetConflictState();
     }
+  }
 
-    this.model.rimanente = calculateRemaining(
-      Number(this.model.totale_dovuto || 0),
-      Number(this.model.acconto || 0)
-    );
+  private resetConflictState() {
+    this.showConflictDialog = false;
+    this.conflictOccupation = null;
+    this.conflictOccupations = [];
+    this.hasBlockingConflict = false;
+    this.isDoubleBoxConflict = false;
+    this.allowDespiteConflict = false;
+  }
+
+  onConflictConfirm() {
+    this.allowDespiteConflict = true;
+    this.showConflictDialog = false;
+  }
+
+  onConflictCancel() {
+    this.resetConflictState();
+  }
+
+  onConflictDialogClose() {
+    this.resetConflictState();
   }
 
   async onSubmit(frontModel: StayFormModel) {
     if (this.hasBlockingConflict) return;
+    if (this.isDoubleBoxConflict && !this.allowDespiteConflict) return;
 
-    const arrival = normalizeDate(frontModel.data_arrivo);
-    const departure = normalizeDate(frontModel.data_uscita);
-    if (!arrival || !departure) {
-      console.error('Date non valide', { arrival, departure });
-      return;
-    }
+    const arrival = normalizeDate(frontModel.data_arrivo)!;
+    const departure = normalizeDate(frontModel.data_uscita)!;
 
-    const stayPayload = {
+    const stay = await this.pb.createRecord('stays', {
       owner_id: frontModel.id_proprietario,
       dog_ids: frontModel.id_cani,
       arrival_date: toPocketDateTime(arrival),
@@ -205,9 +200,7 @@ export class StayCreateComponent {
       total_due: frontModel.totale_dovuto,
       payment_type: frontModel.tipo_pagamento,
       notes: frontModel.note || '',
-    };
-
-    const stay = await this.pb.createRecord('stays', stayPayload);
+    });
 
     for (const entry of frontModel.cani) {
       if (!entry.id_area || !entry.id_box) continue;
@@ -225,58 +218,19 @@ export class StayCreateComponent {
     this.router.navigate(['/lista-soggiorni']);
   }
 
-  private async checkBoxConflictsOnDates() {
-    const arrival = normalizeDate(this.model.data_arrivo);
-    const departure = normalizeDate(this.model.data_uscita);
-
-    if (!arrival || !departure) return;
-
-    for (const cane of this.model.cani) {
-      if (!cane.id_box) continue;
-
-      const conflicts = await this.pb.getAll('occupations', 1, {
-        filter: `
-        box = "${cane.id_box}"
-        && arrival_date <= "${toPocketDateTime(departure)}"
-        && departure_date >= "${toPocketDateTime(arrival)}"
-      `,
-        expand: 'dog',
-      });
-
-      if (conflicts.length > 0) {
-        this.conflictOccupation = conflicts[0];
-        this.showConflictDialog = true;
-        this.hasBlockingConflict = true;
-        return;
-      }
-    }
-    this.hasBlockingConflict = false;
-    this.conflictOccupation = null;
-    this.showConflictDialog = false;
-  }
-
   getConflictDogName(): string {
-    const occ = this.conflictOccupation;
-    if (!occ) return '';
-    return occ.expand?.dog?.nome || occ.expand?.dog?.name || 'Altro cane';
+    return this.logic.getConflictDogNames(this.conflictOccupations);
   }
 
   getConflictFrom(): string {
-    const occ = this.conflictOccupation;
-    return occ ? formatDateTime(occ.arrival_date) : '';
+    return this.conflictOccupation ? formatDateTime(this.conflictOccupation.arrival_date) : '';
   }
 
   getConflictTo(): string {
-    const occ = this.conflictOccupation;
-    return occ ? formatDateTime(occ.departure_date) : '';
+    return this.conflictOccupation ? formatDateTime(this.conflictOccupation.departure_date) : '';
   }
 
-  onConflictDialogClose() {
-    this.showConflictDialog = false;
-    this.hasBlockingConflict = false;
-    this.conflictOccupation = null;
-    this.model.data_arrivo = null;
-    this.model.data_uscita = null;
-    this.updateAll();
+  getIncomingDogName(): string {
+    return this.dogInConflictName || 'questo cane';
   }
 }
