@@ -1,5 +1,4 @@
 export const environment = {
-  production: true,
-  pbUrl: 'https://pioppeto-portal.pockethost.io',
+  production: false,
+  pbUrl: 'http://127.0.0.1:8090',
 };
-// trigger deploy
