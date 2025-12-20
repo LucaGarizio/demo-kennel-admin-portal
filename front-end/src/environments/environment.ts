@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
-  pbUrl: 'http://localhost:8090',
+  production: true,
+  pbUrl: 'https://pioppeto-portal.pockethost.io',
 };
