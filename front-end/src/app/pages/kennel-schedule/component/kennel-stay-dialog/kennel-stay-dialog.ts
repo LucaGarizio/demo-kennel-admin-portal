@@ -228,6 +228,11 @@ export class KennelDialogComponent {
     if (!this.pendingBox || !this.pendingDay) return;
     this.resetState();
 
+    this.availableBoxes = this.availableBoxes.map((b) => ({
+      ...b,
+      label: this.formatBoxLabel(b),
+    }));
+
     this.isMultiMode = !!this.pendingBox?.double;
 
     this.selectedArea = this.pendingBox?.expand?.area || null;
@@ -278,5 +283,13 @@ export class KennelDialogComponent {
         (b) => b.expand?.area?.id === this.selectedArea.id
       );
     }
+  }
+
+  private formatBoxLabel(b: any): string {
+    const parts: string[] = [];
+    if (b.covered) parts.push('coperto');
+    if (b.double) parts.push('doppio');
+    if (parts.length === 0) return b.number;
+    return `${b.number} (${parts.join(', ')})`;
   }
 }

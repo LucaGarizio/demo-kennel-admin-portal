@@ -16,6 +16,9 @@ interface Dog {
 interface Box {
   id: string;
   number: string;
+  covered?: boolean;
+  double?: boolean;
+  label?: string;
   area?: {
     id: string;
     nome_area: string;
@@ -61,6 +64,11 @@ export class KennelMoveDialogComponent {
 
   ngOnChanges() {
     if (!this.conflictOccupation || !this.targetBox) return;
+    this.availableBoxes = this.availableBoxes.map((b) => ({
+      ...b,
+      label: this.formatBoxLabel(b),
+    }));
+
     this.selectedArea = this.targetBox?.area || null;
     this.filterBoxes();
     this.newStart = normalizeDate(this.conflictOccupation.arrival_date);
@@ -140,5 +148,13 @@ export class KennelMoveDialogComponent {
     } else {
       this.filteredBoxes = this.availableBoxes.filter((b) => b.area?.id === this.selectedArea.id);
     }
+  }
+
+  private formatBoxLabel(b: Box): string {
+    const parts: string[] = [];
+    if (b.covered) parts.push('coperto');
+    if (b.double) parts.push('doppio');
+    if (parts.length === 0) return b.number;
+    return `${b.number} (${parts.join(', ')})`;
   }
 }

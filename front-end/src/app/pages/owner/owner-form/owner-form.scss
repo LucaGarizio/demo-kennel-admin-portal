@@ -130,6 +130,20 @@ label {
   flex-direction: column;
 }
 
+.existing-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  background: var(--p-inputtext-background) !important;
+  border: 1px solid grey;
+
+  .url {
+    padding: 1rem;
+    text-decoration: none;
+    color: #00ffa6 !important;
+  }
+}
+
 ::ng-deep .upload-wrapper .p-fileupload-header {
   position: sticky;
   top: 0;

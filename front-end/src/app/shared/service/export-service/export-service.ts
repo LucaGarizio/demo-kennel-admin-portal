@@ -84,22 +84,23 @@ export class ExportService {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    let y = 10;
+    const cardWidth = 90;
+    const cardHeight = 60;
+
+    let y = 20;
 
     for (let i = 0; i < imageUrls.length; i++) {
       const imgData = await this.loadImageAsBase64(imageUrls[i]);
 
-      const imgProps = doc.getImageProperties(imgData);
-      const imgWidth = pageWidth - 20;
-      const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+      const x = (pageWidth - cardWidth) / 2;
 
-      if (y + imgHeight > pageHeight - 10) {
+      if (y + cardHeight > pageHeight - 20) {
         doc.addPage();
-        y = 10;
+        y = 20;
       }
 
-      doc.addImage(imgData, 'JPEG', 10, y, imgWidth, imgHeight);
-      y += imgHeight + 10;
+      doc.addImage(imgData, 'JPEG', x, y, cardWidth, cardHeight);
+      y += cardHeight + 10;
     }
 
     doc.save(filename.endsWith('.pdf') ? filename : `${filename}.pdf`);
