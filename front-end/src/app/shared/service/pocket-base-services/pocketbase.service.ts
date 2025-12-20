@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import PocketBase, { RecordListOptions } from 'pocketbase';
-import { environment } from '../../../../enviroments/enviroment';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PocketbaseService {
