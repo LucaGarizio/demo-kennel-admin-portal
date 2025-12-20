@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import PocketBase, { RecordListOptions } from 'pocketbase';
+import { environment } from '../../../../enviroments/enviroment';
 
 @Injectable({ providedIn: 'root' })
 export class PocketbaseService {
   readonly pb: PocketBase;
 
   constructor() {
-    this.pb = new PocketBase(`http://${location.hostname}:8090`);
+    this.pb = new PocketBase(environment.pbUrl);
+
     const authData = localStorage.getItem('pb_auth');
     if (authData) {
       const parsed = JSON.parse(authData);

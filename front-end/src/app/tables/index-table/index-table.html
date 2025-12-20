@@ -7,9 +7,9 @@
     [rowsPerPageOptions]="[25, 50, 75]"
   >
     <ng-template pTemplate="header">
-      <tr>
+      <tr class="white-space-nowrap">
         <th></th>
-        <!-- class="white-space-nowrap" -->
+
         @for (col of columns; track col) {
         <th>
           {{ columnLabels[col] || col }}
