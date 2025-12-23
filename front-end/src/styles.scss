@@ -21,7 +21,6 @@
 }
 
 // TABLE STYLE
-/* 1. Assicuriamoci che l'overflow sia attivo per scrollare */
 .p-datatable-table-container {
   overflow-y: auto !important;
   overflow-x: auto !important;
@@ -47,9 +46,9 @@
 }
 
 .p-datatable-table-container::-webkit-scrollbar-track:horizontal {
-  // background: #f1f1f1 !important;
   visibility: visible !important;
 }
+
 // INPUT STYLE
 .p-select .p-select-label {
   color: #ffffff;
