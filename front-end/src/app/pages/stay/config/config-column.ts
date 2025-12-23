@@ -1,9 +1,9 @@
 export const STAY_LIST_COLUMNS = [
   'owner',
   'dogs',
+  'is_picked_up',
   'area',
   'box',
-  'is_picked_up',
   'arrival_date',
   'departure_date',
   'notes',
@@ -17,11 +17,11 @@ export const STAY_LIST_COLUMNS = [
 export const STAY_LIST_LABELS: Record<string, string> = {
   owner: 'Proprietario',
   dogs: 'Cani',
+  is_picked_up: 'Ritirato',
   area: 'Area',
   box: 'Box',
   arrival_date: 'Arrivo',
   departure_date: 'Uscita',
-  is_picked_up: 'Ritirato',
   notes: 'Note',
   boarding_fee: 'Retta',
   deposit: 'Acconto',
