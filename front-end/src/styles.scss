@@ -4,7 +4,34 @@
 * {
   box-sizing: border-box;
 }
+// FORM CARD
+.card {
+  height: fit-content;
+  overflow-y: auto;
+  min-height: 80vh;
+  max-height: 81vh;
 
+  scrollbar-width: none;
+
+  -ms-overflow-style: none;
+}
+
+.card::-webkit-scrollbar {
+  display: none;
+}
+
+// TABLE STYLE
+.p-datatable-table-container {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.p-datatable-table-container::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+// INPUT STYLE
 .p-select .p-select-label {
   color: #ffffff;
 }

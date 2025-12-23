@@ -1,6 +1,22 @@
 :host ::ng-deep .p-datatable {
   animation: fadeInTable 0.5s ease-in;
 }
+:host ::ng-deep .p-datatable-wrapper {
+  /* mantiene lo scroll */
+  overflow-y: auto;
+
+  /* Firefox */
+  scrollbar-width: none;
+
+  /* IE / Edge legacy */
+  -ms-overflow-style: none;
+}
+
+/* Chrome / Safari / Edge */
+:host ::ng-deep .p-datatable-wrapper::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
 
 @keyframes fadeInTable {
   from {

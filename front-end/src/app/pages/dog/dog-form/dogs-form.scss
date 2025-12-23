@@ -1,12 +1,6 @@
 :host ::ng-deep p-datepicker .p-inputtext {
   width: 100% !important;
 }
-.card {
-  height: fit-content;
-  overflow-y: auto;
-  min-height: 81vh;
-  max-height: 81vh;
-}
 
 textarea {
   background: var(--p-inputtext-background);
