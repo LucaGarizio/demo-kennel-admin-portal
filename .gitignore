@@ -19,3 +19,5 @@ pb_data/
 # System files
 .DS_Store
 Thumbs.db
+.vercel
+.env*.local

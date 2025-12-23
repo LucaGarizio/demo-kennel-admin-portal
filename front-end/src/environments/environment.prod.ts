@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  pbUrl: 'https://pioppeto-portal.pockethost.io',
+  pbUrl: 'https://api.il-pio-ppe-to.it',
 };

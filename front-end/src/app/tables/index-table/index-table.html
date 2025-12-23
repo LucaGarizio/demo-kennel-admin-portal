@@ -4,7 +4,10 @@
     [loading]="loading"
     [rows]="25"
     [paginator]="true"
+    [scrollable]="true"
     [rowsPerPageOptions]="[25, 50, 75]"
+    styleClass="p-datatable-striped overflow-x-auto "
+    [style]="tableHeight ? { height: tableHeight } : {}"
   >
     <ng-template pTemplate="header">
       <tr class="white-space-nowrap">

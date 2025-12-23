@@ -13,6 +13,7 @@
   <app-filter type="select" field="month" [config]="monthFilterConfig"> </app-filter>
   <app-filter type="select" field="payment_type" [config]="paymentFilterConfig"> </app-filter>
 </div>
+
 <app-index-table
   [data]="records"
   [columns]="columns"
@@ -24,6 +25,7 @@
   [totals]="totals"
   (delete)="openConfirm($event)"
   (cellClick)="onCellClick($event)"
+  tableHeight="71vh"
 ></app-index-table>
 
 <app-confirm-dialog

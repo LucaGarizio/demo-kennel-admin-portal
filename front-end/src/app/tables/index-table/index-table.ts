@@ -24,7 +24,7 @@ export class IndexTableComponent {
   @Input() totals: number = 0;
   @Input() getFileUrl!: (row: any, fileName: string) => string;
   @Input() getSignatureFileUrl?: (row: any) => string;
-
+  @Input() tableHeight: string = '';
   @Output() create = new EventEmitter<void>();
   @Output() view = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
