@@ -29,6 +29,7 @@ export class StayLogicService {
       totale_dovuto: 0,
       tipo_pagamento: null,
       note: '',
+      ritirato: false,
     };
   }
 

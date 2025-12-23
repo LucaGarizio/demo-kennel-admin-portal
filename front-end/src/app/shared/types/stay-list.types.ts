@@ -13,6 +13,7 @@ export interface StayListRecord {
   outstanding_balance: number;
   total_due: number;
   payment_type: string | null;
+  is_picked_up: string;
   raw: any;
 }
 

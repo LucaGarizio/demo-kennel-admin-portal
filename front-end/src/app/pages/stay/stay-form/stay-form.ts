@@ -9,6 +9,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { CardModule } from 'primeng/card';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { StayFormModel } from '../../../shared/types/stay.types';
 
 @Component({
   selector: 'app-stay-form',
@@ -49,6 +50,11 @@ export class StayFormComponent {
     { label: 'Pagamento elettronico', value: 'electronic' },
   ];
 
+  pickedUpOptions = [
+    { label: 'No', value: false },
+    { label: 'Sì', value: true },
+  ];
+
   getDogName(id: string): string {
     return this.dogOptions.find((d) => d.id === id)?.nome ?? '';
   }
@@ -69,5 +75,15 @@ export class StayFormComponent {
 
   onSubmit() {
     this.save.emit(this.model);
+  }
+
+  onPickedUpChange(value: boolean) {
+    if (value === true) {
+      this.model.cani.forEach((c: StayFormModel['cani'][number]) => {
+        c.id_area = null;
+        c.id_box = null;
+        c.boxOptions = [];
+      });
+    }
   }
 }

@@ -73,6 +73,7 @@ export class StayListService {
       outstanding_balance: stay.outstanding_balance,
       total_due: stay.total_due,
       payment_type: this.formatPayment(stay.payment_type),
+      is_picked_up: stay.is_picked_up ? 'Sì' : 'No',
 
       raw: stay,
     };

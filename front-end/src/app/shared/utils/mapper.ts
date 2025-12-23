@@ -106,6 +106,7 @@ export function toBackendStay(front: any) {
     outstanding_balance: Number(front.rimanente) || 0,
     notes: front.note || '',
     payment_type: front.tipo_pagamento || null,
+    is_picked_up: front.ritirato === true,
   };
 }
 
@@ -130,5 +131,6 @@ export function fromBackendStay(back: any) {
         : back.payment_type === 'Pagamento elettronico'
         ? 'electronic'
         : back.payment_type || null,
+    ritirato: back.is_picked_up ?? false,
   };
 }

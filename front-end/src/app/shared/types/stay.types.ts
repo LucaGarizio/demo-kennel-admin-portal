@@ -90,6 +90,7 @@ export interface StayFormModel {
   tipo_pagamento: string | null;
 
   note: string;
+  ritirato: boolean;
 }
 
 export interface OwnerOption {
