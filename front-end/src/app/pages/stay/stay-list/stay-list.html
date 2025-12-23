@@ -14,19 +14,22 @@
   <app-filter type="select" field="payment_type" [config]="paymentFilterConfig"> </app-filter>
 </div>
 
-<app-index-table
-  [data]="records"
-  [columns]="columns"
-  [columnLabels]="columnLabels"
-  [loading]="loading"
-  (create)="onCreate()"
-  (edit)="onEdit($event)"
-  [showFooter]="true"
-  [totals]="totals"
-  (delete)="openConfirm($event)"
-  (cellClick)="onCellClick($event)"
-  tableHeight="71vh"
-></app-index-table>
+<p-card class="custom-card">
+  <app-index-table
+    [data]="records"
+    [columns]="columns"
+    [columnLabels]="columnLabels"
+    [loading]="loading"
+    (create)="onCreate()"
+    (edit)="onEdit($event)"
+    [showFooter]="true"
+    [totals]="totals"
+    (delete)="openConfirm($event)"
+    (cellClick)="onCellClick($event)"
+    tableHeight="72vh"
+    [tableScrollHeight]="'65vh'"
+  ></app-index-table>
+</p-card>
 
 <app-confirm-dialog
   [(visible)]="confirmVisible"
