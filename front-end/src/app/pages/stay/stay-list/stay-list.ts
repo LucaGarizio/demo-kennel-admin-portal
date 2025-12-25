@@ -8,7 +8,7 @@ import { StayListRecord, StayListRow } from '../../../shared/types/stay-list.typ
 import { IndexTableComponent } from '../../../tables/index-table/index-table';
 import { ConfirmDialogComponent } from '../../../shared/component/dialogs/confirm-dialog/confirm-dialog';
 import { DialogModule } from 'primeng/dialog';
-import { OwnerDialogComponent } from './owner-dialog/owner-dialog';
+import { DetailsDialogComponent } from '../../../shared/component/dialogs/details-dialog/details-dialog';
 
 import { STAY_LIST_COLUMNS, STAY_LIST_LABELS } from '../config/config-column';
 
@@ -27,7 +27,7 @@ import { ExportService } from '../../../shared/service/export-service/export-ser
     IndexTableComponent,
     ConfirmDialogComponent,
     DialogModule,
-    OwnerDialogComponent,
+    DetailsDialogComponent,
     FilterComponent,
     CardModule,
     PageHeaderComponent,
@@ -48,13 +48,22 @@ export class StayList implements OnInit {
   selectedRecord: StayListRow | null = null;
 
   hoverTimeout: any = null;
+  // showOwnerPreview = false;
+  // hoverOwnerData: any = null;
   showOwnerPreview = false;
+  showDogPreview = false;
+
+  // hoverOwnerData: any = null;
+  // hoverDogData: any = null;
+  showDetailsPreview = false;
+
   hoverOwnerData: any = null;
+  hoverDogData: any = null;
 
   periodFiltersConfig: FilterConfig[] = [
     {
       key: 'period',
-      label: 'Filtri arrivi / uscite',
+      label: 'Arrivi / Uscite',
       type: 'select',
       options: [
         { label: 'Visualizza tutto', value: 'all' },
@@ -67,11 +76,11 @@ export class StayList implements OnInit {
   paymentFilterConfig: FilterConfig[] = [
     {
       key: 'payment_type',
-      label: 'Filtri Pagamento',
+      label: 'Tipo Pagamento',
       type: 'select',
       options: [
         { label: 'Tutti', value: 'all' },
-        { label: 'Contanti', value: 'cash' },
+        { label: 'Contante', value: 'cash' },
         { label: 'Pagamento elettronico', value: 'electronic' },
       ],
     },
@@ -278,15 +287,69 @@ export class StayList implements OnInit {
     await this.loadRecords(this.filtersS.getSnapshot());
   }
 
-  onCellClick(event: { column: string; row: StayListRecord }) {
-    if (event.column !== 'owner') return;
-    const owner = event.row.raw.expand?.owner_id;
-    if (!owner) return;
-    this.hoverOwnerData = owner;
-    this.showOwnerPreview = true;
+  // onCellClick(event: { column: string; row: StayListRecord }) {
+  //   if (event.column !== 'owner') return;
+  //   const owner = event.row.raw.expand?.owner_id;
+  //   if (!owner) return;
+  //   this.hoverOwnerData = owner;
+  //   this.showOwnerPreview = true;
+  // }
+
+  // onCellClick(event: { column: string; row: StayListRecord }) {
+  //   this.hoverOwnerData = null;
+  //   this.hoverDogData = null;
+
+  //   if (event.column === 'owner') {
+  //     const owner = event.row.raw.expand?.owner_id;
+  //     if (!owner) return;
+
+  //     this.hoverOwnerData = owner;
+  //     this.showDetailsPreview = true;
+  //     return;
+  //   }
+
+  //   if (event.column === 'dogs') {
+  //     const dog = event.row.raw.expand?.dog_ids?.[0];
+  //     if (!dog) return;
+
+  //     this.hoverDogData = dog;
+  //     this.showDetailsPreview = true;
+  //     return;
+  //   }
+  // }
+
+  onCellClick(event: { column: string; row: StayListRecord; index?: number }) {
+    this.hoverOwnerData = null;
+    this.hoverDogData = null;
+
+    if (event.column === 'owner') {
+      const owner = event.row.raw.expand?.owner_id;
+      if (!owner) return;
+      this.hoverOwnerData = owner;
+      this.showDetailsPreview = true;
+      return;
+    }
+
+    if (event.column === 'dogs') {
+      // Usiamo l'indice ricevuto per prendere il cane corretto
+      const dogIndex = event.index ?? 0;
+      const dog = event.row.raw.expand?.dog_ids?.[dogIndex];
+
+      if (!dog) return;
+
+      this.hoverDogData = dog;
+      this.showDetailsPreview = true;
+      return;
+    }
   }
 
   isFullyPaid(record: StayListRecord) {
     return record.outstanding_balance === 0;
+  }
+
+  closeDetails() {
+    this.showDetailsPreview = false;
+    this.hoverOwnerData = null;
+    this.hoverDogData = null;
   }
 }

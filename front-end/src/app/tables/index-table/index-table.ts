@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { LoadingSpinnerComponent } from '../../shared/component/loading-spinner/loading-spinner-component';
-import { DocumentsDialogComponent } from '../../documents-dialog-component/documents-dialog-component';
+import { DocumentsDialogComponent } from '../../shared/component/dialogs/documents-dialog-component/documents-dialog-component';
 
 @Component({
   selector: 'app-index-table',
@@ -34,7 +34,13 @@ export class IndexTableComponent {
   @Output() view = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
-  @Output() cellClick = new EventEmitter<{ column: string; value: any; row: any }>();
+  // @Output() cellClick = new EventEmitter<{ column: string; value: any; row: any }>();
+  @Output() cellClick = new EventEmitter<{
+    column: string;
+    value: any;
+    row: any;
+    index?: number;
+  }>();
   @Output() downloadDocuments = new EventEmitter<{
     row: any;
     documents: string[];
@@ -50,6 +56,9 @@ export class IndexTableComponent {
   isOwnerColumn(col: string): boolean {
     return col === 'owner' || col === 'owner_id';
   }
+  isDogsColumn(col: string): boolean {
+    return col === 'dogs' || col === 'dog_ids';
+  }
 
   isDocumentsColumn(col: string): boolean {
     return col === 'documents';
@@ -62,7 +71,20 @@ export class IndexTableComponent {
   handleCellClick(col: string, row: any) {
     this.cellClick.emit({ column: col, value: row[col], row });
   }
+  getDogArray(row: any, col: string): string[] {
+    const value = this.getCellValue(row, col);
+    if (!value) return [];
+    // Split e trim per rimuovere eventuali spazi bianchi accidentali
+    return value.split(',').map((name: string) => name.trim());
+  }
+  // Aggiungi questo metodo
+  handleDogClick(col: string, row: any, index: number) {
+    // Inviamo l'indice del cane cliccato insieme ai dati della riga
+    this.cellClick.emit({ column: col, value: row[col], row, index });
+  }
 
+  // Opzionale: aggiorna l'interfaccia dell'output se usi TypeScript rigoroso
+  // @Output() cellClick = new EventEmitter<{ column: string; value: any; row: any; index?: number }>();
   getClickableStyle() {
     return { cursor: 'pointer', color: 'rgb(52, 211, 153)' };
   }

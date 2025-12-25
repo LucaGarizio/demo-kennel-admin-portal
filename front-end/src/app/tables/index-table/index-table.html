@@ -37,8 +37,18 @@
 
         <!-- OWNER CLICK -->
         @if (isOwnerColumn(c)) {
-        <td (click)="handleCellClick(c, row)" [ngStyle]="getClickableStyle()">
+        <td
+          class="hover:underline"
+          (click)="handleCellClick(c, row)"
+          [ngStyle]="getClickableStyle()"
+        >
           {{ getCellValue(row, c) }}
+        </td>
+        } @else if (isDogsColumn(c)) {
+        <td [ngStyle]="getClickableStyle()">
+          @for (dogName of getDogArray(row, c); track $index) {
+          <span (click)="handleDogClick(c, row, $index)" class="hover:underline">{{ dogName }}</span
+          >@if (!$last) {<span>, </span>} }
         </td>
         }
         <!-- DOCUMENTS -->

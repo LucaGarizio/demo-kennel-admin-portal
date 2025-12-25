@@ -126,7 +126,7 @@ export function fromBackendStay(back: any) {
     rimanente: back.outstanding_balance,
     note: back.notes || '',
     tipo_pagamento:
-      back.payment_type === 'Contanti'
+      back.payment_type === 'Contante'
         ? 'cash'
         : back.payment_type === 'Pagamento elettronico'
         ? 'electronic'

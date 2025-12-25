@@ -21,7 +21,7 @@ import { Router } from '@angular/router';
 import { PocketbaseService } from '../../../shared/service/pocket-base-services/pocketbase.service';
 import { toBackendOwner } from '../../../shared/utils/mapper';
 import { PreviewDialogComponent } from '../../../shared/component/dialogs/preview-dialog/preview-dialog';
-import { DocumentsDialogComponent } from '../../../documents-dialog-component/documents-dialog-component';
+import { DocumentsDialogComponent } from '../../../shared/component/dialogs/documents-dialog-component/documents-dialog-component';
 import { ConfirmDialogComponent } from '../../../shared/component/dialogs/confirm-dialog/confirm-dialog';
 @Component({
   selector: 'app-owner-form',

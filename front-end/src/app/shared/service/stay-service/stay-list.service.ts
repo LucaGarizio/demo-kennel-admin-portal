@@ -8,7 +8,7 @@ export class StayListService {
   constructor(private pb: PocketbaseService) {}
 
   private formatPayment(type: string | null | undefined): string {
-    return type === 'cash' ? 'Contanti' : type === 'electronic' ? 'Pagamento elettronico' : '';
+    return type === 'cash' ? 'Contante' : type === 'electronic' ? 'Pagamento elettronico' : '';
   }
 
   getTotal(stays: any[]): number {
