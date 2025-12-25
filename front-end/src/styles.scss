@@ -52,6 +52,21 @@
 .documents-dialog [data-pc-section='headeractions'] {
   display: none !important;
 }
+.p-dialog .p-dialog-header {
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
+}
+.p-dialog .p-dialog-content {
+  border-bottom-left-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+  overflow-y: auto !important;
+  scrollbar-width: none;
+}
+
+.p-dialog .p-dialog-content::-webkit-scrollbar {
+  width: 0 !important;
+  display: none !important;
+}
 
 .documents-dialog .img {
   max-width: 50%;

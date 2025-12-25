@@ -103,7 +103,7 @@ export class PreviewDialogComponent {
       const firmaWidth = 70;
       const firmaHeight = 20;
 
-      const boxTopY = 245;
+      const boxTopY = 260;
       const boxLeftX = 120;
       const offsetX = 2.5;
       const offsetY = 2.5;
