@@ -12,6 +12,7 @@ import { KennelRow } from './types';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { LoadingSpinnerComponent } from '../../shared/component/loading-spinner/loading-spinner-component';
 
 @Component({
   selector: 'app-kennel-schedule',
@@ -26,6 +27,7 @@ import { ActivatedRoute } from '@angular/router';
     KennelMoveDialogComponent,
     DatePickerModule,
     FormsModule,
+    LoadingSpinnerComponent,
   ],
   templateUrl: './kennel-schedule.html',
   styleUrls: ['./kennel-schedule.scss'],

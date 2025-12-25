@@ -1,5 +1,5 @@
 <p-dialog
-  header="Dettagli Proprietario"
+  [header]="dialogTitle"
   [(visible)]="visible"
   [modal]="true"
   [dismissableMask]="true"
@@ -114,6 +114,66 @@
       icon="pi pi-pencil"
       class="p-button-primary"
       (click)="goToOwner()"
+    ></button>
+  </div>
+  }
+  <!-- dogs -->
+  @if (dogs) {
+  <div class="grid justify-content-start">
+    <div class="col-12 md:col-6">
+      <label>Nome</label>
+      <input pInputText disabled class="w-full" [value]="dogs.name" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Sesso</label>
+      <input pInputText disabled class="w-full" [value]="dogs.sex" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Razza</label>
+      <input pInputText disabled class="w-full" [value]="dogs.race" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Microchip</label>
+      <input pInputText disabled class="w-full" [value]="dogs.microchip || 'N/A'" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Vaccinato</label>
+      <input pInputText disabled class="w-full" [value]="dogs.vax ? 'Sì' : 'No'" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Spaventato</label>
+      <input pInputText disabled class="w-full" [value]="dogs.scared ? 'Sì' : 'No'" />
+    </div>
+
+    <div class="col-12 md:col-6">
+      <label>Taglia</label>
+      <input pInputText disabled class="w-full" [value]="translateSize(dogs.size)" />
+    </div>
+
+    <div class="col-12">
+      <label>Note</label>
+      <textarea
+        pInputTextarea
+        disabled
+        class="w-full"
+        rows="4"
+        [value]="dogs.notes || 'Nessuna nota'"
+      ></textarea>
+    </div>
+  </div>
+
+  <div class="mt-4 text-right">
+    <button
+      pButton
+      label="Aggiorna"
+      icon="pi pi-pencil"
+      class="p-button-primary"
+      (click)="goToDog()"
     ></button>
   </div>
   }

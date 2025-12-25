@@ -20,7 +20,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { PocketbaseService } from '../../../shared/service/pocket-base-services/pocketbase.service';
 import { toBackendOwner } from '../../../shared/utils/mapper';
-import { PreviewDialogComponent } from '../../../dialogs/preview-dialog/preview-dialog';
+import { PreviewDialogComponent } from '../../../shared/component/dialogs/preview-dialog/preview-dialog';
+import { DocumentsDialogComponent } from '../../../shared/component/dialogs/documents-dialog-component/documents-dialog-component';
+import { ConfirmDialogComponent } from '../../../shared/component/dialogs/confirm-dialog/confirm-dialog';
 @Component({
   selector: 'app-owner-form',
   standalone: true,
@@ -37,6 +39,8 @@ import { PreviewDialogComponent } from '../../../dialogs/preview-dialog/preview-
     FileUpload,
     HttpClientModule,
     PreviewDialogComponent,
+    DocumentsDialogComponent,
+    ConfirmDialogComponent,
   ],
   templateUrl: './owner-form.html',
   styleUrls: ['./owner-form.scss'],
@@ -54,6 +58,10 @@ export class OwnerFormComponent implements OnChanges {
   uploadNeeded = false;
   signatureUrl: string | null = null;
   displayDate!: Date;
+  showDocsDialog = false;
+  currentDocs: string[] = [];
+  confirmVisible = false;
+  docToDelete: string | null = null;
 
   constructor(
     private pb: PocketbaseService,
@@ -205,10 +213,29 @@ export class OwnerFormComponent implements OnChanges {
     }, 2000);
   }
 
-  openPreview() {
-    this.previewVisible = true;
+  openDocumentsDialog(): void {
+    this.currentDocs = this.model.documents || [];
+    this.showDocsDialog = true;
   }
-  closePreview() {
-    this.previewVisible = false;
+
+  askDeleteDocument(doc: string) {
+    this.docToDelete = doc;
+    this.confirmVisible = true;
   }
+
+  onConfirmDelete(result: boolean) {
+    if (result && this.docToDelete) {
+      this.onDeleteDocument(this.docToDelete);
+    }
+
+    this.docToDelete = null;
+    this.confirmVisible = false;
+  }
+
+  // openPreview() {
+  //   this.previewVisible = true;
+  // }
+  // closePdfPreview() {
+  //   this.previewVisible = false;
+  // }
 }

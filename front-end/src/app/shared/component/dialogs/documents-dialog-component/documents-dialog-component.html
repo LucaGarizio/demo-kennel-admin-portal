@@ -1,0 +1,36 @@
+<p-dialog
+  [(visible)]="showDocsDialog"
+  [modal]="true"
+  styleClass="documents-dialog"
+  [dismissableMask]="true"
+  [style]="{ width: '50vw' }"
+  (visibleChange)="showDocsDialogChange.emit($event)"
+>
+  <ng-template pTemplate="header">
+    <div class="grid align-items-center w-full">
+      <div class="col-4 text-left">
+        <p-button
+          icon="pi pi-download"
+          label="Scarica Documenti PDF"
+          (onClick)="downloadDocumentsPdf.emit()"
+        ></p-button>
+      </div>
+      <div class="col-4 text-center font-semibold text-lg">Documenti</div>
+      <div class="col-4"></div>
+    </div>
+  </ng-template>
+
+  <p-carousel
+    [value]="currentDocs"
+    [numVisible]="1"
+    [numScroll]="1"
+    [circular]="true"
+    [autoplayInterval]="0"
+  >
+    <ng-template pTemplate="item" let-doc>
+      <div class="text-center">
+        <img class="img" [src]="getDocumentUrl(currentRow, doc)" />
+      </div>
+    </ng-template>
+  </p-carousel>
+</p-dialog>

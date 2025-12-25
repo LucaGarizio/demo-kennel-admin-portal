@@ -6,7 +6,7 @@ import { CardModule } from 'primeng/card';
 import { RippleModule } from 'primeng/ripple';
 
 import { IndexTableComponent } from '../../../tables/index-table/index-table';
-import { ConfirmDialogComponent } from '../../../dialogs/confirm-dialog/confirm-dialog';
+import { ConfirmDialogComponent } from '../../../shared/component/dialogs/confirm-dialog/confirm-dialog';
 
 import { OwnerListService } from '../../../shared/service/owner-service/owner-list.service';
 import { OwnerListRecord, OwnerListRow } from '../../../shared/types/owner-list.types';

@@ -46,7 +46,7 @@ export class StayFormComponent {
   @Input() boxOptions: any[] = [];
 
   tenderOptions = [
-    { label: 'Contanti', value: 'cash' },
+    { label: 'Contante', value: 'cash' },
     { label: 'Pagamento elettronico', value: 'electronic' },
   ];
 

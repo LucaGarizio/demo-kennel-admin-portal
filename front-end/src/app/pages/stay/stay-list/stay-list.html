@@ -38,8 +38,9 @@
   (confirmed)="onConfirmResult($event)"
 ></app-confirm-dialog>
 
-<app-owner-dialog
-  [visible]="showOwnerPreview"
+<app-details-dialog
+  [visible]="showDetailsPreview"
   [owner]="hoverOwnerData"
-  (close)="showOwnerPreview = false"
-></app-owner-dialog>
+  [dogs]="hoverDogData"
+  (close)="closeDetails()"
+></app-details-dialog>

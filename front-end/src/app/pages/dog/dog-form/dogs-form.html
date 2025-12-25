@@ -58,7 +58,9 @@
           name="microchip"
           required
           #microchip="ngModel"
+          maxlength="15"
           class="w-full"
+          (beforeinput)="onBeforeInput($event)"
         />
         @if(microchip.invalid && microchip.touched) {
         <small class="p-error"> Questo campo è obbligatorio </small>

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { PocketbaseService } from '../shared/service/pocket-base-services/pocketbase.service';
+import { PocketbaseService } from '../../shared/service/pocket-base-services/pocketbase.service';
 import { CommonModule } from '@angular/common';
 
 @Component({

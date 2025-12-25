@@ -1,10 +1,9 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
-import { formatDateTime } from '../../shared/utils/date-utils';
-import { Stay } from '../../shared/types/stay.types';
+import { formatDateTime } from '../../../utils/date-utils';
+import { Stay } from '../../../types/stay.types';
 import { ButtonModule } from 'primeng/button';
-import { DatePicker } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 
 import { SelectModule } from 'primeng/select';

@@ -5,7 +5,7 @@ import { RippleModule } from 'primeng/ripple';
 import { Router } from '@angular/router';
 
 import { IndexTableComponent } from '../../../tables/index-table/index-table';
-import { ConfirmDialogComponent } from '../../../dialogs/confirm-dialog/confirm-dialog';
+import { ConfirmDialogComponent } from '../../../shared/component/dialogs/confirm-dialog/confirm-dialog';
 
 import { DogListService } from '../../../shared/service/dog/dog-list.service';
 import { DogListRecord, DogListRow } from '../../../shared/types/dog-list.types';
@@ -14,6 +14,7 @@ import { FiltersService } from '../../../shared/filter/filter-service/filter.ser
 import { FilterConfig } from '../../../shared/filter/types/filter.types';
 import { DOG_LIST_COLUMNS, DOG_LIST_LABELS } from '../config/config-column';
 import { PageHeaderComponent } from '../../../shared/component/page-header/page-headercomponent';
+import { DetailsDialogComponent } from '../../../shared/component/dialogs/details-dialog/details-dialog';
 
 @Component({
   selector: 'app-dog-list',
@@ -26,6 +27,7 @@ import { PageHeaderComponent } from '../../../shared/component/page-header/page-
     ConfirmDialogComponent,
     PageHeaderComponent,
     FilterComponent,
+    DetailsDialogComponent,
   ],
   templateUrl: './dog-list.html',
   styleUrls: ['./dog-list.scss'],
@@ -40,6 +42,8 @@ export class DogList implements OnInit {
   selectedRecord: DogListRow | null = null;
   confirmVisible = false;
   confirmMessage = '';
+  showOwnerPreview = false;
+  hoverOwnerData: any = null;
 
   constructor(
     private dogListSvc: DogListService,
@@ -116,10 +120,19 @@ export class DogList implements OnInit {
     this.selectedRecord = null;
   }
 
+  // onCellClick(event: { column: string; row: DogListRecord }) {
+  //   if (event.column === 'owner_id' && event.row.raw.expand?.owner_id?.id) {
+  //     const ownerId = event.row.raw.expand.owner_id.id;
+  //     this.router.navigate(['/proprietario', ownerId]);
+  //   }
+  // }
   onCellClick(event: { column: string; row: DogListRecord }) {
-    if (event.column === 'owner_id' && event.row.raw.expand?.owner_id?.id) {
-      const ownerId = event.row.raw.expand.owner_id.id;
-      this.router.navigate(['/proprietario', ownerId]);
-    }
+    if (event.column !== 'owner_id') return;
+
+    const owner = event.row.raw.expand?.owner_id;
+    if (!owner) return;
+
+    this.hoverOwnerData = owner;
+    this.showOwnerPreview = true;
   }
 }
