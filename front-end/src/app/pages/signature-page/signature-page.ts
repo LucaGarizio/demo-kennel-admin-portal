@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { PocketbaseService } from '../shared/service/pocket-base-services/pocketbase.service';
+import { PocketbaseService } from '../../shared/service/pocket-base-services/pocketbase.service';
 import { ButtonDirective } from 'primeng/button';
 import { ButtonModule } from 'primeng/button';
 

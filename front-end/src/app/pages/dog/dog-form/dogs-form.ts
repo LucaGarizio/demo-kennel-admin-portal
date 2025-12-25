@@ -7,7 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { CardModule } from 'primeng/card';
 import { MultiSelectModule } from 'primeng/multiselect';
-
+import { InputNumberModule } from 'primeng/inputnumber';
 @Component({
   selector: 'app-dogs-form',
   standalone: true,
@@ -19,6 +19,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     SelectModule,
     CardModule,
     MultiSelectModule,
+    InputNumberModule,
   ],
   templateUrl: './dogs-form.html',
   styleUrls: ['./dogs-form.scss'],
@@ -36,5 +37,11 @@ export class DogsFormComponent {
 
   onSubmit() {
     this.save.emit(this.model);
+  }
+
+  onBeforeInput(e: InputEvent) {
+    if (e.data && /\D/.test(e.data)) {
+      e.preventDefault();
+    }
   }
 }

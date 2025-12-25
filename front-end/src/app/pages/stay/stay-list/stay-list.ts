@@ -6,7 +6,7 @@ import { StayListService } from '../../../shared/service/stay-service/stay-list.
 import { StayListRecord, StayListRow } from '../../../shared/types/stay-list.types';
 
 import { IndexTableComponent } from '../../../tables/index-table/index-table';
-import { ConfirmDialogComponent } from '../../../dialogs/confirm-dialog/confirm-dialog';
+import { ConfirmDialogComponent } from '../../../shared/component/dialogs/confirm-dialog/confirm-dialog';
 import { DialogModule } from 'primeng/dialog';
 import { OwnerDialogComponent } from './owner-dialog/owner-dialog';
 

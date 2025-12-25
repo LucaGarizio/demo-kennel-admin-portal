@@ -128,6 +128,7 @@
           [hideOnDateTimeSelect]="false"
           (onSelect)="departureChange.emit($event)"
           [disabled]="!model.data_arrivo"
+          [minDate]="model.data_arrivo"
         ></p-datePicker>
 
         @if (data_uscita.invalid && data_uscita.touched) {

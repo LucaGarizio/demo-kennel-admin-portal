@@ -18,6 +18,6 @@ export const DOG_LIST_LABELS: Record<string, string> = {
   microchip: 'Microchip',
   vax: 'Vaccinato',
   scared: 'Spaventato',
-  notes: 'note',
+  notes: 'Note',
   owner_id: 'Proprietario',
 };

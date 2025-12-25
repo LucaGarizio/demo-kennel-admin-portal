@@ -8,11 +8,9 @@
   /* Firefox */
   scrollbar-width: none;
 
-  /* IE / Edge legacy */
   -ms-overflow-style: none;
 }
 
-/* Chrome / Safari / Edge */
 :host ::ng-deep .p-datatable-wrapper::-webkit-scrollbar {
   width: 0;
   height: 0;
@@ -27,11 +25,6 @@
   }
 }
 
-.img {
-  max-width: 50%;
-  border-radius: 8px;
-}
-
 .paid-cell {
   color: rgb(52, 211, 153);
 }
@@ -42,11 +35,7 @@
   object-fit: contain;
 }
 
-:host ::ng-deep .documents-dialog [data-pc-section='headeractions'] {
-  display: none !important;
-}
-
 .document-link {
-  color: #42a5f5;
+  color: rgb(52, 211, 153);
   cursor: pointer;
 }

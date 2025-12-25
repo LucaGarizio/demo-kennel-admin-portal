@@ -1,0 +1,11 @@
+<div
+  class="flex justify-content-center align-items-center"
+  [ngStyle]="{ height: height }"
+  *ngIf="visible"
+>
+  <p-progressSpinner
+    [styleClass]="spinnerClass"
+    [strokeWidth]="strokeWidth"
+    [animationDuration]="animationDuration"
+  />
+</div>

@@ -39,3 +39,9 @@
   [message]="confirmMessage"
   (confirmed)="onConfirmResult($event)"
 ></app-confirm-dialog>
+
+<app-owner-dialog
+  [visible]="showOwnerPreview"
+  [owner]="hoverOwnerData"
+  (close)="showOwnerPreview = false"
+></app-owner-dialog>

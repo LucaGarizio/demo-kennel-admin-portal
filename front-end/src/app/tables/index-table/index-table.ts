@@ -2,15 +2,19 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
-import { CarouselModule } from 'primeng/carousel';
-import { CheckboxModule } from 'primeng/checkbox';
-import { ExportService } from '../../shared/service/export-service/export-service';
+import { LoadingSpinnerComponent } from '../../shared/component/loading-spinner/loading-spinner-component';
+import { DocumentsDialogComponent } from '../../documents-dialog-component/documents-dialog-component';
 
 @Component({
   selector: 'app-index-table',
   standalone: true,
-  imports: [CommonModule, TableModule, ButtonModule, CarouselModule, DialogModule, CheckboxModule],
+  imports: [
+    CommonModule,
+    TableModule,
+    ButtonModule,
+    LoadingSpinnerComponent,
+    DocumentsDialogComponent,
+  ],
   templateUrl: './index-table.html',
   styleUrls: ['./index-table.scss'],
 })
@@ -36,7 +40,7 @@ export class IndexTableComponent {
     documents: string[];
   }>();
 
-  expandedRow: any | null = null;
+  // expandedRow: any | null = null;
   showDocsDialog = false;
   currentDocs: string[] = [];
   currentRow: any = null;
@@ -44,7 +48,7 @@ export class IndexTableComponent {
 
   constructor() {}
   isOwnerColumn(col: string): boolean {
-    return col === 'owner';
+    return col === 'owner' || col === 'owner_id';
   }
 
   isDocumentsColumn(col: string): boolean {
@@ -60,19 +64,11 @@ export class IndexTableComponent {
   }
 
   getClickableStyle() {
-    return { cursor: 'pointer', color: '#42A5F5' };
+    return { cursor: 'pointer', color: 'rgb(52, 211, 153)' };
   }
 
   getDocuments(row: any): string[] {
     return row.documents || [];
-  }
-
-  getFileLabel(index: number, fileName: string): string {
-    return `doc_${index + 1}.${this.getExtension(fileName)}`;
-  }
-
-  getExtension(fileName: string): string {
-    return fileName.split('.').pop() || '';
   }
 
   getCellValue(row: any, col: string) {

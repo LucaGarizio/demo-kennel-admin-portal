@@ -4,7 +4,7 @@ import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 import { NavbarComponent } from './navbar/navbar';
-import { DialogReminderComponent } from './dialogs/dialog-reminder-component/dialog-reminder.component';
+import { DialogReminderComponent } from './shared/component/dialogs/dialog-reminder-component/dialog-reminder.component';
 import { PocketbaseService } from './shared/service/pocket-base-services/pocketbase.service';
 import { ReminderService } from './shared/service/reminder/reminder.service';
 

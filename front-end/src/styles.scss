@@ -28,7 +28,7 @@
 }
 
 .p-datatable-table-container::-webkit-scrollbar {
-  height: 8px !important;
+  height: 14px !important;
   width: 0px !important;
 }
 
@@ -47,6 +47,14 @@
 
 .p-datatable-table-container::-webkit-scrollbar-track:horizontal {
   visibility: visible !important;
+}
+// DOCUMENT DIALOG
+.documents-dialog [data-pc-section='headeractions'] {
+  display: none !important;
+}
+
+.documents-dialog .img {
+  max-width: 50%;
 }
 
 // INPUT STYLE

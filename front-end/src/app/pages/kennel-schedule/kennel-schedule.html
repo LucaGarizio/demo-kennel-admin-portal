@@ -19,11 +19,15 @@
     </p-tablist>
   </p-tabs>
 
-  @if (loading) {
-  <div class="flex justify-content-center align-items-center" style="height: 75vh">
-    <p-progressSpinner styleClass="w-4rem h-4rem" strokeWidth="8" animationDuration=".8s" />
-  </div>
-  } @else {
+  <app-loading-spinner
+    [visible]="loading"
+    height="70vh"
+    spinnerClass="w-4rem h-4rem"
+    strokeWidth="8"
+    animationDuration=".8s"
+  />
+
+  @if (!loading) {
   <div class="legend flex align-items-center gap-3 my-3">
     <div class="flex align-items-center gap-1">
       <span class="legend-box covered"></span>
@@ -34,6 +38,7 @@
       <span>Box doppio</span>
     </div>
   </div>
+
   <app-kennel-table
     [rows]="rows"
     [boxes]="boxes"
@@ -42,6 +47,7 @@
     (selectCell)="onSelectCell($event)"
   ></app-kennel-table>
   }
+
   <!-- Dialog -->
   @if(showDialog) {
   <app-kennel-dialog

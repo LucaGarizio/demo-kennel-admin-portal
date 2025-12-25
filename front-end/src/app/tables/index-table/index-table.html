@@ -1,7 +1,8 @@
+<app-loading-spinner [visible]="loading" height="72vh" />
+@if (!loading) {
 <div class="table-wrapper">
   <p-table
     [value]="data"
-    [loading]="loading"
     [rows]="25"
     [paginator]="true"
     [scrollable]="true"
@@ -46,12 +47,11 @@
           class="white-space-nowrap"
           [class.cursor-pointer]="docs.length > 0"
           (click)="docs.length > 0 && openDocumentsDialog(row)"
+          [ngStyle]="docs.length > 0 ? getClickableStyle() : null"
         >
-          @if (docs.length > 0) { @for (doc of docs; track $index) {
-          <div class="document-link">
-            {{ getFileLabel($index, doc) }}
-          </div>
-          } } @else {
+          @if (docs.length > 0) {
+          <span>Visualizza documenti</span>
+          } @else {
           <span>Nessun documento</span>
           }
         </td>
@@ -103,39 +103,12 @@
     }
   </p-table>
 
-  <p-dialog
-    [(visible)]="showDocsDialog"
-    [modal]="true"
-    styleClass="documents-dialog"
-    [dismissableMask]="true"
-    [style]="{ width: '50vw' }"
-  >
-    <ng-template pTemplate="header">
-      <div class="grid align-items-center w-full">
-        <div class="col-4 text-left">
-          <p-button
-            icon="pi pi-download"
-            label="Scarica Documenti PDF"
-            (onClick)="downloadDocumentsPdf()"
-          ></p-button>
-        </div>
-        <div class="col-4 text-center font-semibold text-lg">Documenti</div>
-        <div class="col-4"></div>
-      </div>
-    </ng-template>
-
-    <p-carousel
-      [value]="currentDocs"
-      [numVisible]="1"
-      [numScroll]="1"
-      [circular]="true"
-      [autoplayInterval]="0"
-    >
-      <ng-template pTemplate="item" let-doc>
-        <div class="text-center">
-          <img class="img" [src]="getDocumentUrl(currentRow, doc)" />
-        </div>
-      </ng-template>
-    </p-carousel>
-  </p-dialog>
+  <app-documents-dialog
+    [(showDocsDialog)]="showDocsDialog"
+    [currentDocs]="currentDocs"
+    [currentRow]="currentRow"
+    [getDocumentUrl]="getDocumentUrl.bind(this)"
+    (downloadDocumentsPdf)="downloadDocumentsPdf()"
+  ></app-documents-dialog>
 </div>
+}

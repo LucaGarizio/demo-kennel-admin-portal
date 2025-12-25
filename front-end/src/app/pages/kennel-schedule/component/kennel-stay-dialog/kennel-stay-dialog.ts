@@ -8,7 +8,7 @@ import { SelectModule } from 'primeng/select';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { PocketbaseService } from '../../../../shared/service/pocket-base-services/pocketbase.service';
 import { toPocketDate, parsePbDate, normalizeDate } from '../../../../shared/utils/date-utils';
-import { ConfirmDialogComponent } from '../../../../dialogs/confirm-dialog/confirm-dialog';
+import { ConfirmDialogComponent } from '../../../../shared/component/dialogs/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-kennel-dialog',
