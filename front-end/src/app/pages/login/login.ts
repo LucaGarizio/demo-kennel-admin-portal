@@ -39,7 +39,7 @@ export class Login {
       await this.pb.login(this.email(), this.password());
       this.router.navigate(['/lista-proprietari']);
     } catch (err) {
-      console.error('Errore login:', err);
+      // Handled globally
     } finally {
       this.loading.set(false);
     }

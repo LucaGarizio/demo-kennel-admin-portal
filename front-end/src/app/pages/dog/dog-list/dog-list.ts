@@ -91,7 +91,7 @@ export class DogList implements OnInit {
     try {
       this.records.set(await this.dogListSvc.loadDogs(filter));
     } catch (err) {
-      console.error('DOG-LIST: errore loadRecords:', err);
+      // Handled globally
     }
 
     this.loading.set(false);

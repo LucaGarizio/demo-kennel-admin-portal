@@ -169,7 +169,7 @@ export class KennelDialogComponent {
 
       this.confirm.emit();
     } catch (err) {
-      console.error('Errore durante salvataggio:', err);
+      // Handled globally
     }
   }
 

@@ -128,7 +128,7 @@ export class StayManageComponent implements OnInit {
         this.onOwnerSelected(this.model.id_proprietario!);
         this.updateAll();
     } catch(err) {
-        console.error(err);
+        // Handled globally
     } finally {
         this.loading.set(false);
     }

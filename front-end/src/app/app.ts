@@ -7,11 +7,12 @@ import { NavbarComponent } from './navbar/navbar';
 import { DialogReminderComponent } from './shared/component/dialogs/dialog-reminder-component/dialog-reminder.component';
 import { PocketbaseService } from './shared/service/pocket-base-services/pocketbase.service';
 import { ReminderService } from './shared/service/reminder/reminder.service';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, NavbarComponent, DialogReminderComponent],
+  imports: [CommonModule, RouterOutlet, NavbarComponent, DialogReminderComponent, ToastModule],
   templateUrl: './app.html',
 })
 export class App implements OnDestroy {

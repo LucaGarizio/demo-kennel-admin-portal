@@ -51,7 +51,7 @@ export class SignaturePage implements AfterViewChecked {
 
       this.loading.set(false);
     } catch (err) {
-      console.error('[SIGNATURE PAGE] Errore nel recupero sessione:', err);
+      // Handled globally
     }
   }
 

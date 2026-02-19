@@ -1,7 +1,8 @@
-import { Component, Input, Output, EventEmitter, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ElementRef, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
+import { MessageService } from 'primeng/api';
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -14,6 +15,7 @@ import jsPDF from 'jspdf';
   styleUrls: ['./preview-dialog.scss'],
 })
 export class PreviewDialogComponent {
+  private messageService = inject(MessageService);
   @ViewChild('pdfContent') pdfContent!: ElementRef<HTMLElement>;
 
   @Input() visible = false;
@@ -77,7 +79,12 @@ export class PreviewDialogComponent {
         firmaBase64 = await this.imageUrlToBase64(firmaBase64);
         firmaBase64 = await this.invertImageColors(firmaBase64);
       } catch (e) {
-        console.error('Errore conversione firma:', e);
+        this.messageService.add({
+            severity: 'warn',
+            summary: 'Errore Firma',
+            detail: 'Impossibile convertire la firma per il PDF.',
+            life: 3000
+        });
         firmaBase64 = null;
       }
     }
@@ -114,7 +121,12 @@ export class PreviewDialogComponent {
       try {
         pdf.addImage(firmaBase64, 'PNG', firmaX, firmaY, firmaWidth, firmaHeight);
       } catch (e) {
-        console.error('Errore inserimento firma nel PDF:', e);
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Errore Inserimento',
+            detail: 'Non è stato possibile inserire la firma nel documento.',
+            life: 3000
+        });
       }
     }
     const now = new Date();

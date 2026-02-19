@@ -76,7 +76,7 @@ export class ReminderService {
         this.tryOpenNext();
       }
     } catch (err) {
-      console.error('❌ Errore loadStaysWithReminder', err);
+      // Handled globally
     }
   }
 

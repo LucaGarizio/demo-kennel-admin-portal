@@ -65,7 +65,6 @@ export class DogManageComponent implements OnInit {
         this.loading.set(false);
       }
     } catch(err) {
-      console.error(err);
       this.loading.set(false);
     }
   }
@@ -76,7 +75,7 @@ export class DogManageComponent implements OnInit {
       const back = await this.dogService.loadDog(this.id);
       this.model.set(fromBackendDog(back));
     } catch (err) {
-      console.error('Errore caricamento cane:', err);
+      // Handled globally
     } finally {
       this.loading.set(false);
     }
@@ -91,7 +90,7 @@ export class DogManageComponent implements OnInit {
       }
       this.router.navigate(['/lista-cani']);
     } catch (err) {
-      console.error('Errore salvataggio cane:', err);
+      // Handled globally
     }
   }
 }

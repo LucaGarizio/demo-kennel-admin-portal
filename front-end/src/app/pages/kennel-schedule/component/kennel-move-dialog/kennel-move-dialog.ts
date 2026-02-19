@@ -147,7 +147,7 @@ export class KennelMoveDialogComponent {
 
       this.moved.emit();
     } catch (err) {
-      console.error('Errore durante il move:', err);
+      // Handled globally
     }
   }
 
