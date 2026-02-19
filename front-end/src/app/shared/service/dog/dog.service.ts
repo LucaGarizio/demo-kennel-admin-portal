@@ -16,12 +16,12 @@ export class DogService {
   }
 
   createDog(model: DogFormModel) {
-    const payload = toBackendDog(model);
+    const payload = toBackendDog(model as any);
     return this.pb.createRecord('dogs', payload);
   }
 
   updateDog(id: string, model: DogFormModel) {
-    const payload = toBackendDog(model);
+    const payload = toBackendDog(model as any);
     return this.pb.updateRecord('dogs', id, payload);
   }
 }

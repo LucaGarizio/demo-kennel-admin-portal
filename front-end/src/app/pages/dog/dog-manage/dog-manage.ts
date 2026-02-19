@@ -73,7 +73,7 @@ export class DogManageComponent implements OnInit {
     if (!this.id) return;
     try {
       const back = await this.dogService.loadDog(this.id);
-      this.model.set(fromBackendDog(back));
+      this.model.set(fromBackendDog(back) as any);
     } catch (err) {
       // Handled globally
     } finally {

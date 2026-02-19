@@ -60,6 +60,7 @@
           #microchip="ngModel"
           maxlength="15"
           class="w-full"
+          inputmode="numeric"
           (beforeinput)="onBeforeInput($event)"
         />
         @if(microchip.invalid && microchip.touched) {

@@ -2,6 +2,32 @@ import { Injectable } from '@angular/core';
 import { PocketbaseService } from '../pocket-base-services/pocketbase.service';
 import { StayListRecord, StayListRow } from '../../types/stay-list.types';
 import { formatDateTime } from '../../utils/date-utils';
+import { StayBackend, DogBackend, OwnerBackend } from '../../utils/mapper';
+
+export interface OccupationBackend {
+  id: string;
+  arrival_date: string;
+  departure_date: string;
+  expand?: {
+    dog?: DogBackend;
+    box?: {
+      numero?: string;
+      number?: string;
+      expand?: {
+        area?: {
+          nome_area?: string;
+        };
+      };
+    };
+  };
+}
+
+export type ExpandedStayBackend = StayBackend & {
+  expand?: {
+    owner_id?: OwnerBackend;
+    dog_ids?: DogBackend[];
+  }
+};
 
 @Injectable({ providedIn: 'root' })
 export class StayListService {
@@ -11,65 +37,67 @@ export class StayListService {
     return type === 'cash' ? 'Contante' : type === 'electronic' ? 'Pagamento elettronico' : '';
   }
 
-  getTotal(stays: any[]): number {
+  getTotal(stays: StayListRecord[]): number {
     return stays.reduce((sum, s) => sum + (s.total_due || 0), 0);
   }
 
   async loadStays(filter: string = ''): Promise<StayListRecord[]> {
-    const stays = await this.pb.getAll('stays', 200, {
+    const stays = await this.pb.getAll<ExpandedStayBackend>('stays', 200, {
       expand: 'owner_id,dog_ids',
       filter,
       requestKey: null,
     });
 
-    const occs = await this.pb.getAll('occupations', 500, {
+    const occs = await this.pb.getAll<OccupationBackend>('occupations', 500, {
       expand: 'dog,box,box.area',
       requestKey: null,
     });
 
     stays.sort(
-      (a: any, b: any) => new Date(b.arrival_date).getTime() - new Date(a.arrival_date).getTime()
+      (a: ExpandedStayBackend, b: ExpandedStayBackend) => 
+        new Date(b.arrival_date || 0).getTime() - new Date(a.arrival_date || 0).getTime()
     );
 
-    return stays.map((stay: any) => this.mapStayRecord(stay, occs));
+    return stays.map((stay: ExpandedStayBackend) => this.mapStayRecord(stay, occs));
   }
 
-  private mapStayRecord(stay: any, occupations: any[]): StayListRecord {
+  private mapStayRecord(stay: ExpandedStayBackend, occupations: OccupationBackend[]): StayListRecord {
     const dogs = stay.expand?.dog_ids ?? [];
 
-    const relatedOccs = occupations.filter((o: any) =>
-      dogs.some((d: any) => o.expand?.dog?.id === d.id)
+    const relatedOccs = occupations.filter((o: OccupationBackend) =>
+      dogs.some((d: DogBackend) => o.expand?.dog?.id === d.id)
     );
 
-    const validOccs = relatedOccs.filter((o: any) => {
-      return o.arrival_date <= stay.departure_date && o.departure_date >= stay.arrival_date;
+    const validOccs = relatedOccs.filter((o: OccupationBackend) => {
+      // Compare ISO strings directly or parse them, Pocketbase standardizes UTC strings so standard str compare works
+      return o.arrival_date <= (stay.departure_date || '') && o.departure_date >= (stay.arrival_date || '');
     });
 
     const areas = Array.from(
       new Set(
-        validOccs.map((o: any) => o.expand?.box?.expand?.area?.nome_area).filter((v: any) => !!v)
+        validOccs.map((o: OccupationBackend) => o.expand?.box?.expand?.area?.nome_area).filter((v: any) => !!v)
       )
     );
 
     const boxes = validOccs
-      .map((o: any) => o.expand?.box?.numero ?? o.expand?.box?.number)
+      .map((o: OccupationBackend) => o.expand?.box?.numero ?? o.expand?.box?.number)
       .filter((v: any) => !!v);
 
     return {
-      id: stay.id,
+      id: stay.id!,
       owner: stay.expand?.owner_id
         ? `${stay.expand.owner_id.name} ${stay.expand.owner_id.surname}`
         : '',
-      dogs: dogs.map((d: any) => d.name).join(', '),
+      dogs: dogs.map((d: DogBackend) => d.name).join(', '),
       area: areas.join(', '),
       box: boxes.join(', '),
 
-      arrival_date: formatDateTime(stay.arrival_date),
-      departure_date: formatDateTime(stay.departure_date),
+      arrival_date: formatDateTime(stay.arrival_date as string | Date | undefined),
+      departure_date: formatDateTime(stay.departure_date as string | Date | undefined),
       notes: stay.notes || '',
       boarding_fee: stay.boarding_fee,
       deposit: stay.deposit,
-      amount_paid: stay.amount_paid,
+      amount_paid: (stay as any).amount_paid, // Assuming it's coming internally if mixed
       outstanding_balance: stay.outstanding_balance,
       total_due: stay.total_due,
       payment_type: this.formatPayment(stay.payment_type),
@@ -79,17 +107,17 @@ export class StayListService {
     };
   }
 
-  private findOccupation(dogId: string, stay: any, occupations: any[]) {
-    return occupations.find((o: any) => {
+  private findOccupation(dogId: string, stay: ExpandedStayBackend, occupations: OccupationBackend[]) {
+    return occupations.find((o: OccupationBackend) => {
       return (
         o.expand?.dog?.id === dogId &&
-        o.arrival_date <= stay.departure_date &&
-        o.departure_date >= stay.arrival_date
+        o.arrival_date <= (stay.departure_date || '') &&
+        o.departure_date >= (stay.arrival_date || '')
       );
     });
   }
 
-  private extractAreaBox(occ: any) {
+  private extractAreaBox(occ: OccupationBackend) {
     return {
       area: occ.expand?.box?.expand?.area?.nome_area ?? '',
       box: occ.expand?.box?.number ?? '',

@@ -181,6 +181,8 @@
           required
           #cell="ngModel"
           class="w-full"
+          inputmode="numeric"
+          (beforeinput)="onBeforeInput($event)"
         />
         @if(cell.invalid && cell.touched) {
         <small class="p-error">Questo campo è obbligatorio</small>

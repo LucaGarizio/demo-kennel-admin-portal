@@ -100,9 +100,9 @@ export class StayManageComponent implements OnInit {
     try {
         const stay = await this.pb.getOne('stays', this.id, { expand: 'owner_id,dog_ids' });
         const stayModel = fromBackendStay(stay);
-        const dogIds = stayModel.id_cani;
+        const dogIds = stayModel.id_cani || [];
     
-        const occupations = await this.pb.getAll('occupations', 200, {
+        const occupations = await this.pb.getAll<any>('occupations', 200, {
           expand: 'dog,box,box.area',
           filter: dogIds.map((id: string) => `dog="${id}"`).join(' || '),
         });
@@ -110,7 +110,7 @@ export class StayManageComponent implements OnInit {
         this.existingOccupation = occupations;
     
         const cani = dogIds.map((cid: string) => {
-          const occ = occupations.find((o) => o.expand?.['dog']?.id === cid);
+          const occ = occupations.find((o: any) => o.expand?.['dog']?.id === cid);
           const areaId = occ?.expand?.['box']?.expand?.area?.id ?? null;
           return {
             dog_id: cid,
@@ -120,7 +120,7 @@ export class StayManageComponent implements OnInit {
           };
         });
     
-        this.model = { ...stayModel, cani };
+        this.model = { ...stayModel, cani } as any;
     
         this.originalArrival = normalizeDate(this.model.data_arrivo);
         this.originalDeparture = normalizeDate(this.model.data_uscita);
@@ -253,7 +253,7 @@ export class StayManageComponent implements OnInit {
     const departure = normalizeDate(frontModel.data_uscita)!;
 
     if (this.isEdit() && this.id) {
-        const payload = toBackendStay(frontModel);
+        const payload = toBackendStay(frontModel as any);
         await this.pb.updateRecord('stays', this.id, payload);
         for (const occ of this.existingOccupation) {
           await this.pb.deleteRecord('occupations', occ.id);

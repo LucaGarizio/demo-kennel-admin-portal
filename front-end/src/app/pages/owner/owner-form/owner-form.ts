@@ -133,6 +133,12 @@ export class OwnerFormComponent {
     this.save.emit(this.localModel);
   }
 
+  onBeforeInput(e: InputEvent) {
+    if (e.data && /\D/.test(e.data)) {
+      e.preventDefault();
+    }
+  }
+
   ngAfterViewInit() {
     document.addEventListener(
       'click',
@@ -164,7 +170,7 @@ export class OwnerFormComponent {
 
       const fd = new FormData();
       for (const [k, v] of Object.entries(payload)) {
-        fd.append(k, v ?? '');
+        fd.append(k, v !== null && v !== undefined ? String(v) : '');
       }
 
       const created = await this.pb.pb.collection('owner').create(fd);

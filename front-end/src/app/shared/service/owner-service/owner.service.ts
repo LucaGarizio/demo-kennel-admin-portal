@@ -16,7 +16,7 @@ export class OwnerService {
 
     const fd = new FormData();
     for (const [k, v] of Object.entries(payload)) {
-      fd.append(k, v ?? '');
+      fd.append(k, v !== null && v !== undefined ? String(v) : '');
     }
     for (const f of files) fd.append('documents', f);
 
@@ -30,7 +30,7 @@ export class OwnerService {
     }
     const fd = new FormData();
     for (const [k, v] of Object.entries(payload)) {
-      fd.append(k, v ?? '');
+      fd.append(k, v !== null && v !== undefined ? String(v) : '');
     }
     for (const f of files) fd.append('documents', f);
     console.log('OWNER EXTRA:', model.note);

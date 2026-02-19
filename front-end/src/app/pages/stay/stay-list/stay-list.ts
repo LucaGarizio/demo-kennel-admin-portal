@@ -283,36 +283,7 @@ export class StayList implements OnInit {
     await this.loadRecords(this.filtersS.getSnapshot());
   }
 
-  // onCellClick(event: { column: string; row: StayListRecord }) {
-  //   if (event.column !== 'owner') return;
-  //   const owner = event.row.raw.expand?.owner_id;
-  //   if (!owner) return;
-  //   this.hoverOwnerData = owner;
-  //   this.showOwnerPreview = true;
-  // }
 
-  // onCellClick(event: { column: string; row: StayListRecord }) {
-  //   this.hoverOwnerData = null;
-  //   this.hoverDogData = null;
-
-  //   if (event.column === 'owner') {
-  //     const owner = event.row.raw.expand?.owner_id;
-  //     if (!owner) return;
-
-  //     this.hoverOwnerData = owner;
-  //     this.showDetailsPreview = true;
-  //     return;
-  //   }
-
-  //   if (event.column === 'dogs') {
-  //     const dog = event.row.raw.expand?.dog_ids?.[0];
-  //     if (!dog) return;
-
-  //     this.hoverDogData = dog;
-  //     this.showDetailsPreview = true;
-  //     return;
-  //   }
-  // }
 
   onCellClick(event: { column: string; row: StayListRecord; index?: number }) {
     this.hoverOwnerData.set(null);
@@ -327,7 +298,6 @@ export class StayList implements OnInit {
     }
 
     if (event.column === 'dogs') {
-      // Usiamo l'indice ricevuto per prendere il cane corretto
       const dogIndex = event.index ?? 0;
       const dog = event.row.raw.expand?.dog_ids?.[dogIndex];
 
