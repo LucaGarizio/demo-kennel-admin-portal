@@ -3,6 +3,7 @@ import { AuthGuard } from './auth.guard';
 
 export const routes: Routes = [
   { path: '', loadComponent: () => import('./pages/login/login').then(m => m.Login) },
+  { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.DashboardComponent), canActivate: [AuthGuard] },
 
   { path: 'lista-cani', loadComponent: () => import('./pages/dog/dog-list/dog-list').then(m => m.DogList), canActivate: [AuthGuard] },
   { path: 'cane/:id', loadComponent: () => import('./pages/dog/dog-manage/dog-manage').then(m => m.DogManageComponent), canActivate: [AuthGuard] },

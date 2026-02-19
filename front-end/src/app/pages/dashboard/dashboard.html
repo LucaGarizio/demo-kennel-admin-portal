@@ -1,0 +1,125 @@
+<div class="dashboard-container">
+  <app-loading-spinner [visible]="loading()" />
+
+  @if (!loading()) {
+    <!-- Stats Cards -->
+    <div class="grid">
+      @for (stat of stats(); track stat.label) {
+        <div class="col-12 md:col-4">
+          <p-card class="stat-card shadow-2 border-round">
+            <div class="flex justify-content-between mb-3">
+              <div>
+                <span class="block text-500 font-medium mb-3">{{ stat.label }}</span>
+                <div class="text-900 font-bold text-4xl">{{ stat.value }}</div>
+              </div>
+              <div class="flex align-items-center justify-content-center border-round" 
+                   [style.background-color]="stat.color + '20'" 
+                   style="width:3.5rem;height:3.5rem">
+                <i [class]="stat.icon + ' text-3xl'" [style.color]="stat.color"></i>
+              </div>
+            </div>
+            <span class="text-500">{{ stat.description }}</span>
+          </p-card>
+        </div>
+      }
+    </div>
+
+    <div class="grid flex-grow-1">
+      <!-- Arrivals List -->
+      <div class="col-12 lg:col-6">
+        <p-card header="Arrivi di Oggi" class="shadow-2 h-full flex flex-column">
+          @if (todayArrivals().length === 0) {
+            <div class="flex flex-column align-items-center justify-content-center p-5 text-500 flex-grow-1">
+              <i class="pi pi-calendar-times text-4xl mb-3"></i>
+              <span>Nessun arrivo previsto per oggi</span>
+            </div>
+          } @else {
+            <p-table [value]="todayArrivals()" [scrollable]="true" scrollHeight="calc(100vh - 380px)" responsiveLayout="scroll">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Proprietario</th>
+                  <th>Cellulare</th>
+                  <th>Cane/i</th>
+                  <th>Area</th>
+                  <th>Box</th>
+                  <th>Arrivo Previsto</th>
+                  <th style="width: 4rem"></th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-stay>
+                <tr>
+                  <td>{{ stay.owner }}</td>
+                  <td>{{ stay.owner_phone }}</td>
+                  <td>{{ stay.dogs }}</td>
+                  <td>{{ stay.area }}</td>
+                  <td>{{ stay.box }}</td>
+                  <td>{{ stay.arrival_time }}</td>
+                  <td>
+                    <p-button icon="pi pi-search" severity="secondary" [rounded]="true" [text]="true" (onClick)="goToStay(stay.id)" />
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          }
+        </p-card>
+      </div>
+
+      <!-- Departures List -->
+      <div class="col-12 lg:col-6">
+        <p-card header="Partenze di Oggi" class="shadow-2 h-full flex flex-column">
+          @if (todayDepartures().length === 0) {
+            <div class="flex flex-column align-items-center justify-content-center p-5 text-500 flex-grow-1">
+              <i class="pi pi-calendar-times text-4xl mb-3"></i>
+              <span>Nessuna partenza prevista per oggi</span>
+            </div>
+          } @else {
+            <p-table [value]="todayDepartures()" [scrollable]="true" scrollHeight="calc(100vh - 380px)" responsiveLayout="scroll">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Proprietario</th>
+                  <th>Cellulare</th>
+                  <th>Cane/i</th>
+                  <th>Area</th>
+                  <th>Box</th>
+                  <th>Uscita Prevista</th>
+                  <th style="width: 4rem"></th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-stay>
+                <tr [class.text-red-500]="stay.overdue" [class.font-bold]="stay.overdue" [attr.title]="stay.overdue ? 'Soggiorno scaduto e non ritirato' : null">
+                  <td>{{ stay.owner }}</td>
+                  <td>{{ stay.owner_phone }}</td>
+                  <td>{{ stay.dogs }}</td>
+                  <td>{{ stay.area }}</td>
+                  <td>{{ stay.box }}</td>
+                  <td>{{ stay.departure_time }}</td>
+                  <td>
+                    <p-button icon="pi pi-search" severity="secondary" [rounded]="true" [text]="true" (onClick)="goToStay(stay.id)" />
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          }
+        </p-card>
+      </div>
+    </div>
+
+    <!-- Quick Access -->
+    <div class="col-12 p-0 mt-auto">
+      <p-card class="quick-access shadow-2 surface-card border-none pointer-events-auto" (click)="goToKennel()">
+        <div class="flex align-items-center justify-content-between">
+          <div class="flex align-items-center">
+             <div class="flex align-items-center justify-content-center bg-blue-100 border-round mr-4" style="width:4rem;height:4rem">
+                <i class="pi pi-th-large text-blue-600 text-3xl"></i>
+             </div>
+             <div>
+               <h3 class="m-0 text-900">Tabellone Occupazione Box</h3>
+               <p class="m-0 text-500">Visualizza e gestisci la disposizione dei cani nei box per tutto l'anno</p>
+             </div>
+          </div>
+          <i class="pi pi-chevron-right text-300 text-2xl"></i>
+        </div>
+      </p-card>
+    </div>
+  }
+</div>

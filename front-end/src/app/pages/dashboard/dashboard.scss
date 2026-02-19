@@ -1,0 +1,39 @@
+.dashboard-container {
+    animation: fadeIn 0.5s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    height: 92vh; 
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 0.5rem 1.5rem 1rem 1.5rem; /* Further reduced top padding */
+    gap: 1.5rem;
+}
+
+.stat-card, .quick-access {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+}
+
+:host ::ng-deep .p-card-body {
+    height: 100%;
+}
+
+:host ::ng-deep .p-datatable-wrapper {
+    border-radius: 4px;
+}
+
+.quick-access {
+    cursor: pointer;
+    // transition: background-color 0.2s;
+    // &:hover {
+    //     background-color: var(--surface-hover) !important;
+    // }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

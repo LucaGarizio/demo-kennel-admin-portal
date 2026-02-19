@@ -1,4 +1,4 @@
-export function toPocketDate(value?: string | Date): string | null {
+export function toPocketDate(value?: string | Date | null): string | null {
   if (!value) return null;
   const d = new Date(value);
   if (isNaN(d.getTime())) return null;
@@ -8,7 +8,7 @@ export function toPocketDate(value?: string | Date): string | null {
   return `${y}-${m}-${day}`;
 }
 
-export function toPocketDateTime(value?: string | Date): string | null {
+export function toPocketDateTime(value?: string | Date | null): string | null {
   if (!value) return null;
   const d = value instanceof Date ? value : new Date(value);
   if (isNaN(d.getTime())) return null;
@@ -21,7 +21,7 @@ export function toPocketDateTime(value?: string | Date): string | null {
   return `${y}-${m}-${day} ${hh}:${mm}:00`;
 }
 
-export function formatDateTime(value?: string | Date): string {
+export function formatDateTime(value?: string | Date | null): string {
   if (!value) return '';
 
   const d = normalizeDate(value);
@@ -36,9 +36,10 @@ export function formatDateTime(value?: string | Date): string {
   return `${dd}/${mm}/${yyyy}, ${hh}:${min}`;
 }
 
-export function formatDateIt(value?: string | Date): string {
+export function formatDateIt(value?: string | Date | null): string {
   if (!value) return '';
-  const d = new Date(value);
+  const d = normalizeDate(value);
+  if (!d) return '';
   return d.toLocaleDateString('it-IT', {
     day: '2-digit',
     month: '2-digit',
@@ -69,4 +70,24 @@ export function formatYmdLocal(d: Date): string {
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
+}
+/**
+ * Format date as DD/MM
+ */
+export function formatShortDateIt(date: Date | string | null | undefined): string {
+  if (!date) return '';
+  const d = normalizeDate(date);
+  if (!d) return '';
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  return `${day}/${month}`;
+}
+
+export function formatTime(value?: string | Date | null): string {
+  if (!value) return '';
+  const d = normalizeDate(value);
+  if (!d) return '';
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return `${hh}:${mm}`;
 }

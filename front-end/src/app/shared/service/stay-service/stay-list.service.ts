@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PocketbaseService } from '../pocket-base-services/pocketbase.service';
 import { StayListRecord, StayListRow } from '../../types/stay-list.types';
-import { formatDateTime } from '../../utils/date-utils';
+import { formatDateTime, formatDateIt, formatTime, formatYmdLocal, formatShortDateIt, normalizeDate } from '../../utils/date-utils';
 import { StayBackend, DogBackend, OwnerBackend } from '../../utils/mapper';
 
 export interface OccupationBackend {
@@ -83,17 +83,31 @@ export class StayListService {
       .map((o: OccupationBackend) => o.expand?.box?.numero ?? o.expand?.box?.number)
       .filter((v: any) => !!v);
 
+    const now = new Date();
+    const today = formatYmdLocal(now);
+    
+    const arrivalDate = normalizeDate(stay.arrival_date);
+    const isArrivalToday = arrivalDate ? formatYmdLocal(arrivalDate) === today : false;
+
+    const departureDate = normalizeDate(stay.departure_date);
+    const isDepartureToday = departureDate ? formatYmdLocal(departureDate) === today : false;
+
     return {
       id: stay.id!,
       owner: stay.expand?.owner_id
         ? `${stay.expand.owner_id.name} ${stay.expand.owner_id.surname}`
         : '',
+      owner_phone: stay.expand?.owner_id?.phone_number || '',
       dogs: dogs.map((d: DogBackend) => d.name).join(', '),
       area: areas.join(', '),
       box: boxes.join(', '),
 
-      arrival_date: formatDateTime(stay.arrival_date as string | Date | undefined),
-      departure_date: formatDateTime(stay.departure_date as string | Date | undefined),
+      arrival_date: formatDateTime(stay.arrival_date as string | Date | null),
+      arrival_time: formatTime(stay.arrival_date as string | Date | null),
+      departure_date: formatDateTime(stay.departure_date as string | Date | null),
+      departure_time: isDepartureToday
+        ? formatTime(stay.departure_date as string | Date | null)
+        : `${formatShortDateIt(stay.departure_date as string | Date | null)} ${formatTime(stay.departure_date as string | Date | null)}`,
       notes: stay.notes || '',
       boarding_fee: stay.boarding_fee,
       deposit: stay.deposit,
@@ -102,6 +116,7 @@ export class StayListService {
       total_due: stay.total_due,
       payment_type: this.formatPayment(stay.payment_type),
       is_picked_up: stay.is_picked_up ? 'Sì' : 'No',
+      overdue: !stay.is_picked_up && departureDate ? departureDate < now : false,
 
       raw: stay,
     };
