@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OwnerForm } from './owner-form';
+import { OwnerFormComponent } from './owner-form';
 
-describe('OwnerForm', () => {
-  let component: OwnerForm;
-  let fixture: ComponentFixture<OwnerForm>;
+describe('OwnerFormComponent', () => {
+  let component: OwnerFormComponent;
+  let fixture: ComponentFixture<OwnerFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OwnerForm]
+      imports: [OwnerFormComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(OwnerForm);
+    fixture = TestBed.createComponent(OwnerFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

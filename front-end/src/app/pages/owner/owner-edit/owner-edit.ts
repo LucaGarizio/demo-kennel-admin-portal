@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -17,9 +17,9 @@ import { PageHeaderComponent } from '../../../shared/component/page-header/page-
 })
 export class OwnerEditComponent {
   id!: string;
-  model!: OwnerFormModel;
-  selectedFiles: File[] = [];
-  loading = true;
+  model = signal<OwnerFormModel | null>(null);
+  selectedFiles = signal<File[]>([]);
+  loading = signal(true);
 
   constructor(
     private ownerSvc: OwnerService,
@@ -35,20 +35,20 @@ export class OwnerEditComponent {
   async loadOwner() {
     try {
       const back = await this.ownerSvc.loadOwner(this.id);
-      this.model = { ...back, ...fromBackendOwner(back) };
-      this.loading = false;
+      this.model.set({ ...back, ...fromBackendOwner(back) });
+      this.loading.set(false);
     } catch (err) {
       console.error(err);
     }
   }
 
   onFilesSelected(files: File[]) {
-    this.selectedFiles = files;
+    this.selectedFiles.set(files);
   }
 
   async onSubmit(front: OwnerFormModel) {
     try {
-      await this.ownerSvc.updateOwner(this.id, front, this.selectedFiles);
+      await this.ownerSvc.updateOwner(this.id, front, this.selectedFiles());
       this.router.navigate(['/lista-proprietari']);
     } catch (err) {
       console.error(err);
@@ -56,8 +56,10 @@ export class OwnerEditComponent {
   }
 
   async onDeleteDoc(filename: string) {
-    const updated = this.model.documents.filter((d) => d !== filename);
+    const currentModel = this.model();
+    if (!currentModel) return;
+    const updated = currentModel.documents.filter((d) => d !== filename);
     await this.ownerSvc.deleteDocument(this.id, updated);
-    this.model.documents = updated;
+    this.model.update(m => m ? { ...m, documents: updated } : null);
   }
 }

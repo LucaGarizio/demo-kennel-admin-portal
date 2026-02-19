@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StayCreate } from './stay-create';
+import { StayCreateComponent } from './stay-create';
 
-describe('StayCreate', () => {
-  let component: StayCreate;
-  let fixture: ComponentFixture<StayCreate>;
+describe('StayCreateComponent', () => {
+  let component: StayCreateComponent;
+  let fixture: ComponentFixture<StayCreateComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StayCreate]
+      imports: [StayCreateComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(StayCreate);
+    fixture = TestBed.createComponent(StayCreateComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

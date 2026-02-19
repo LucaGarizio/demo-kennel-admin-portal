@@ -1,5 +1,5 @@
 <p-table
-  [value]="rows"
+  [value]="rows()"
   scrollable
   scrollHeight="68vh"
   styleClass="p-datatable-sm p-datatable-gridlines kennel-table"
@@ -7,7 +7,7 @@
   <ng-template pTemplate="header">
     <tr>
       <th>Data</th>
-      @for (box of boxes; track box.id) {
+      @for (box of boxes(); track box.id) {
       <th [ngStyle]="getHeaderStyle(box)">{{ box.number }}</th>
       }
     </tr>
@@ -16,7 +16,7 @@
   <ng-template pTemplate="body" let-row>
     @if (row.kind === 'month') {
     <tr class="month-sep" (click)="toggleMonth(row.key)">
-      <td [attr.colspan]="boxes.length + 1" class="month-header">
+      <td [attr.colspan]="boxes().length + 1" class="month-header">
         <i class="pi" [ngClass]="expandedMonths[row.key] ? 'pi-caret-down' : 'pi-caret-right'"></i>
         <span class="month-label mx-2">{{ row.label }}</span>
         <i class="pi" [ngClass]="expandedMonths[row.key] ? 'pi-caret-down' : 'pi-caret-left'"></i>
@@ -28,15 +28,15 @@
         {{ row.display }}
       </td>
 
-      @for (box of boxes; track box.id) {
+      @for (box of boxes(); track box.id) {
       <td
         [ngStyle]="getCellStyle(row, box)"
-        [class.cursor-pointer]="!isDisabledDay(row) && !!data[row.key]?.[box.number]"
-        (click)="!isDisabledDay(row) && !!data[row.key]?.[box.number] && onCellClick(row.key, box)"
+        [class.cursor-pointer]="!isDisabledDay(row) && !!data()[row.key]?.[box.number]"
+        (click)="!isDisabledDay(row) && !!data()[row.key]?.[box.number] && onCellClick(row.key, box)"
         [pTooltip]="getTooltip(row)"
         tooltipPosition="top"
       >
-        {{ data[row.key]?.[box.number] || '' }}
+        {{ data()[row.key]?.[box.number] || '' }}
       </td>
 
       }

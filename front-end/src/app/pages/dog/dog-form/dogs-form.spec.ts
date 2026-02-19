@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DogsForm } from './dogs-form';
+import { DogsFormComponent } from './dogs-form';
 
-describe('DogsForm', () => {
-  let component: DogsForm;
-  let fixture: ComponentFixture<DogsForm>;
+describe('DogsFormComponent', () => {
+  let component: DogsFormComponent;
+  let fixture: ComponentFixture<DogsFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DogsForm]
+      imports: [DogsFormComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DogsForm);
+    fixture = TestBed.createComponent(DogsFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

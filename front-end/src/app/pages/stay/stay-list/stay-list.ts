@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, effect, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -39,26 +39,21 @@ export class StayList implements OnInit {
   columns = [...STAY_LIST_COLUMNS];
   columnLabels = STAY_LIST_LABELS;
 
-  records: StayListRecord[] = [];
-  loading = false;
-  totals = 0;
+  records = signal<StayListRecord[]>([]);
+  loading = signal(false);
+  totals = signal(0);
 
-  confirmVisible = false;
-  confirmMessage = '';
-  selectedRecord: StayListRow | null = null;
+  confirmVisible = signal(false);
+  confirmMessage = signal('');
+  selectedRecord = signal<StayListRow | null>(null);
 
   hoverTimeout: any = null;
-  // showOwnerPreview = false;
-  // hoverOwnerData: any = null;
-  showOwnerPreview = false;
-  showDogPreview = false;
+  showOwnerPreview = signal(false);
+  showDogPreview = signal(false);
+  showDetailsPreview = signal(false);
 
-  // hoverOwnerData: any = null;
-  // hoverDogData: any = null;
-  showDetailsPreview = false;
-
-  hoverOwnerData: any = null;
-  hoverDogData: any = null;
+  hoverOwnerData = signal<any>(null);
+  hoverDogData = signal<any>(null);
 
   periodFiltersConfig: FilterConfig[] = [
     {
@@ -86,7 +81,7 @@ export class StayList implements OnInit {
     },
   ];
 
-  yearFilterConfig: FilterConfig[] = [
+  yearFilterConfig = signal<FilterConfig[]>([
     {
       key: 'year',
       label: 'Anno',
@@ -96,7 +91,7 @@ export class StayList implements OnInit {
         { label: new Date().getFullYear().toString(), value: new Date().getFullYear().toString() },
       ],
     },
-  ];
+  ]);
 
   monthFilterConfig: FilterConfig[] = [
     {
@@ -126,7 +121,11 @@ export class StayList implements OnInit {
     private router: Router,
     private filtersS: FiltersService,
     private exportSvc: ExportService
-  ) {}
+  ) {
+    effect(() => {
+      this.loadRecords(this.filtersS.state());
+    });
+  }
 
   exportColumnsPDF = [
     { key: 'dogs', header: 'Cani' },
@@ -146,10 +145,6 @@ export class StayList implements OnInit {
     this.filtersS.set('year', currentYear);
     this.filtersS.set('month', 'all');
 
-    this.filtersS.watch().subscribe(async (filters) => {
-      await this.loadRecords(filters);
-    });
-
     try {
       const allRecords = await this.stayListSvc.loadStays('');
       this.buildYearFilterFromRecords(allRecords);
@@ -159,7 +154,7 @@ export class StayList implements OnInit {
   }
 
   async loadRecords(filters: Record<string, any> = {}) {
-    this.loading = true;
+    this.loading.set(true);
     const clauses: string[] = [];
 
     const dogClause = await this.buildDogFilter(filters);
@@ -178,12 +173,12 @@ export class StayList implements OnInit {
 
     try {
       const result = await this.stayListSvc.loadStays(filter);
-      this.records = result;
-      this.totals = this.stayListSvc.getTotal(result);
+      this.records.set(result);
+      this.totals.set(this.stayListSvc.getTotal(result));
     } catch (err) {
       console.error(err);
     }
-    this.loading = false;
+    this.loading.set(false);
   }
 
   private async buildDogFilter(filters: Record<string, any>): Promise<string | null> {
@@ -246,7 +241,7 @@ export class StayList implements OnInit {
 
     const sortedYears = Array.from(years).sort((a, b) => b.localeCompare(a));
 
-    this.yearFilterConfig = [
+    this.yearFilterConfig.set([
       {
         key: 'year',
         label: 'Anno',
@@ -256,11 +251,11 @@ export class StayList implements OnInit {
           ...sortedYears.map((y) => ({ label: y, value: y })),
         ],
       },
-    ];
+    ]);
   }
 
   exportData() {
-    this.exportSvc.exportPDF('soggiorni.pdf', this.records, this.exportColumnsPDF);
+    this.exportSvc.exportPDF('soggiorni.pdf', this.records(), this.exportColumnsPDF);
   }
 
   onCreate() {
@@ -272,18 +267,19 @@ export class StayList implements OnInit {
   }
 
   openConfirm(row: StayListRecord) {
-    this.selectedRecord = row.raw;
+    this.selectedRecord.set(row.raw);
     const dogNames = row.dogs.split(',').map((d) => d.trim());
-    this.confirmMessage =
+    this.confirmMessage.set(
       dogNames.length > 1
         ? `Vuoi eliminare il soggiorno per i cani:<br><b>${dogNames.join(', ')}</b>?`
-        : `Vuoi eliminare il soggiorno per il cane:<br><b>${dogNames[0]}</b>?`;
-    this.confirmVisible = true;
+        : `Vuoi eliminare il soggiorno per il cane:<br><b>${dogNames[0]}</b>?`
+    );
+    this.confirmVisible.set(true);
   }
 
   async onConfirmResult(ok: boolean) {
-    if (!ok || !this.selectedRecord) return;
-    await this.stayListSvc.deleteStayAndOccupation(this.selectedRecord);
+    if (!ok || !this.selectedRecord()) return;
+    await this.stayListSvc.deleteStayAndOccupation(this.selectedRecord()!);
     await this.loadRecords(this.filtersS.getSnapshot());
   }
 
@@ -319,14 +315,14 @@ export class StayList implements OnInit {
   // }
 
   onCellClick(event: { column: string; row: StayListRecord; index?: number }) {
-    this.hoverOwnerData = null;
-    this.hoverDogData = null;
+    this.hoverOwnerData.set(null);
+    this.hoverDogData.set(null);
 
     if (event.column === 'owner') {
       const owner = event.row.raw.expand?.owner_id;
       if (!owner) return;
-      this.hoverOwnerData = owner;
-      this.showDetailsPreview = true;
+      this.hoverOwnerData.set(owner);
+      this.showDetailsPreview.set(true);
       return;
     }
 
@@ -337,8 +333,8 @@ export class StayList implements OnInit {
 
       if (!dog) return;
 
-      this.hoverDogData = dog;
-      this.showDetailsPreview = true;
+      this.hoverDogData.set(dog);
+      this.showDetailsPreview.set(true);
       return;
     }
   }
@@ -348,8 +344,8 @@ export class StayList implements OnInit {
   }
 
   closeDetails() {
-    this.showDetailsPreview = false;
-    this.hoverOwnerData = null;
-    this.hoverDogData = null;
+    this.showDetailsPreview.set(false);
+    this.hoverOwnerData.set(null);
+    this.hoverDogData.set(null);
   }
 }

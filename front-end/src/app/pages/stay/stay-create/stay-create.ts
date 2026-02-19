@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -40,20 +40,20 @@ import { calculateRemaining } from '../../../shared/service/stay-service/stay-pr
 })
 export class StayCreateComponent implements OnInit {
   model: StayFormModel;
-  ownerOptions: OwnerOption[] = [];
-  dogOptions: DogOption[] = [];
+  ownerOptions = signal<OwnerOption[]>([]);
+  dogOptions = signal<DogOption[]>([]);
   allDogs: DogOption[] = [];
-  areaOptions: AreaOption[] = [];
-  boxOptions: BoxOption[] = [];
+  areaOptions = signal<AreaOption[]>([]);
+  boxOptions = signal<BoxOption[]>([]);
   allBoxes: BoxOption[] = [];
   conflictSelectValue = 'x';
-  showConflictDialog = false;
-  conflictOccupation: any = null;
-  conflictOccupations: any[] = [];
-  hasBlockingConflict = false;
-  isDoubleBoxConflict = false;
-  allowDespiteConflict = false;
-  dogInConflictName = '';
+  showConflictDialog = signal(false);
+  conflictOccupation = signal<any>(null);
+  conflictOccupations = signal<any[]>([]);
+  hasBlockingConflict = signal(false);
+  isDoubleBoxConflict = signal(false);
+  allowDespiteConflict = signal(false);
+  dogInConflictName = signal('');
 
   constructor(
     private stayForm: StayFormService,
@@ -67,20 +67,20 @@ export class StayCreateComponent implements OnInit {
   async ngOnInit() {
     const opts = await this.logic.loadAllOptions();
 
-    this.ownerOptions = opts.owners;
+    this.ownerOptions.set(opts.owners);
     this.allDogs = opts.dogs;
-    this.dogOptions = opts.dogs;
-    this.areaOptions = opts.areas;
+    this.dogOptions.set(opts.dogs);
+    this.areaOptions.set(opts.areas);
     this.allBoxes = opts.boxes;
-    this.boxOptions = opts.boxes;
+    this.boxOptions.set(opts.boxes);
   }
 
   onOwnerSelected(ownerId: string) {
     this.model.id_proprietario = ownerId;
-    this.dogOptions = ownerId ? this.stayForm.filterDogs(ownerId, this.allDogs) : this.allDogs;
+    this.dogOptions.set(ownerId ? this.stayForm.filterDogs(ownerId, this.allDogs) : this.allDogs);
 
     this.model.id_cani = this.model.id_cani.filter((cid) =>
-      this.dogOptions.some((d) => d.id === cid)
+      this.dogOptions().some((d) => d.id === cid)
     );
     this.updateAll();
   }
@@ -148,30 +148,30 @@ export class StayCreateComponent implements OnInit {
     const result = await this.logic.checkConflicts(this.model, this.allBoxes, this.allDogs);
 
     if (result) {
-      this.conflictOccupations = result.conflicts;
-      this.conflictOccupation = result.conflicts[0];
-      this.hasBlockingConflict = result.hasBlocking;
-      this.isDoubleBoxConflict = result.isDoubleBoxConflict;
-      this.dogInConflictName = result.incomingDogName;
-      this.showConflictDialog = true;
-      this.allowDespiteConflict = false;
+      this.conflictOccupations.set(result.conflicts);
+      this.conflictOccupation.set(result.conflicts[0]);
+      this.hasBlockingConflict.set(result.hasBlocking);
+      this.isDoubleBoxConflict.set(result.isDoubleBoxConflict);
+      this.dogInConflictName.set(result.incomingDogName);
+      this.showConflictDialog.set(true);
+      this.allowDespiteConflict.set(false);
     } else {
       this.resetConflictState();
     }
   }
 
   private resetConflictState() {
-    this.showConflictDialog = false;
-    this.conflictOccupation = null;
-    this.conflictOccupations = [];
-    this.hasBlockingConflict = false;
-    this.isDoubleBoxConflict = false;
-    this.allowDespiteConflict = false;
+    this.showConflictDialog.set(false);
+    this.conflictOccupation.set(null);
+    this.conflictOccupations.set([]);
+    this.hasBlockingConflict.set(false);
+    this.isDoubleBoxConflict.set(false);
+    this.allowDespiteConflict.set(false);
   }
 
   onConflictConfirm() {
-    this.allowDespiteConflict = true;
-    this.showConflictDialog = false;
+    this.allowDespiteConflict.set(true);
+    this.showConflictDialog.set(false);
   }
 
   onConflictCancel() {
@@ -183,8 +183,8 @@ export class StayCreateComponent implements OnInit {
   }
 
   async onSubmit(frontModel: StayFormModel) {
-    if (this.hasBlockingConflict) return;
-    if (this.isDoubleBoxConflict && !this.allowDespiteConflict) return;
+    if (this.hasBlockingConflict()) return;
+    if (this.isDoubleBoxConflict() && !this.allowDespiteConflict()) return;
 
     const arrival = normalizeDate(frontModel.data_arrivo)!;
     const departure = normalizeDate(frontModel.data_uscita)!;
@@ -219,18 +219,18 @@ export class StayCreateComponent implements OnInit {
   }
 
   getConflictDogName(): string {
-    return this.logic.getConflictDogNames(this.conflictOccupations);
+    return this.logic.getConflictDogNames(this.conflictOccupations());
   }
 
   getConflictFrom(): string {
-    return this.conflictOccupation ? formatDateTime(this.conflictOccupation.arrival_date) : '';
+    return this.conflictOccupation() ? formatDateTime(this.conflictOccupation().arrival_date) : '';
   }
 
   getConflictTo(): string {
-    return this.conflictOccupation ? formatDateTime(this.conflictOccupation.departure_date) : '';
+    return this.conflictOccupation() ? formatDateTime(this.conflictOccupation().departure_date) : '';
   }
 
   getIncomingDogName(): string {
-    return this.dogInConflictName || 'questo cane';
+    return this.dogInConflictName() || 'questo cane';
   }
 }

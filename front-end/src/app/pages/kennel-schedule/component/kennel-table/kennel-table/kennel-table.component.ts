@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { KennelRow } from '../../../types';
@@ -25,11 +25,12 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
   ],
 })
 export class KennelTableComponent {
-  @Input() rows: KennelRow[] = [];
-  @Input() boxes: any[] = [];
-  @Input() data: Record<string, Record<string, string>> = {};
-  @Output() selectCell = new EventEmitter<{ day: string; box: any }>();
-  @Input() expandedMonthKey: string | null = null;
+  rows = input<KennelRow[]>([]);
+  boxes = input<any[]>([]);
+  data = input<Record<string, Record<string, string>>>({});
+  expandedMonthKey = input<string | null>(null);
+
+  selectCell = output<{ day: string; box: any }>();
 
   expandedMonths: Record<string, boolean> = {};
 
@@ -40,7 +41,7 @@ export class KennelTableComponent {
       '0'
     )}`;
 
-    const uniqueMonths = new Set(this.rows.filter((r) => r.kind === 'month').map((r) => r.key));
+    const uniqueMonths = new Set(this.rows().filter((r) => r.kind === 'month').map((r) => r.key));
     uniqueMonths.forEach((key) => (this.expandedMonths[key] = false));
 
     if (this.expandedMonths[currentMonthKey] !== undefined) {
@@ -88,7 +89,7 @@ export class KennelTableComponent {
   }
 
   getCellStyle(row: any, box: any) {
-    const occupied = !!this.data[row.key]?.[box.number];
+    const occupied = !!this.data()[row.key]?.[box.number];
     return {
       backgroundColor: occupied ? '#00C85340' : '',
       color: occupied ? '#00E676' : '#E0E0E0',
@@ -96,7 +97,7 @@ export class KennelTableComponent {
   }
 
   onCellClick(day: string, box: any) {
-    const dog = this.data?.[day]?.[box.number];
+    const dog = this.data()?.[day]?.[box.number];
     if (!dog) return;
     this.selectCell.emit({ day, box });
   }

@@ -9,21 +9,21 @@
 <div class="grid">
   <app-filter type="text" field="dog_name" label="Cane" placeholder="Nome cane"></app-filter>
   <app-filter type="select" field="period" [config]="periodFiltersConfig"></app-filter>
-  <app-filter type="select" field="year" [config]="yearFilterConfig"> </app-filter>
+  <app-filter type="select" field="year" [config]="yearFilterConfig()"> </app-filter>
   <app-filter type="select" field="month" [config]="monthFilterConfig"> </app-filter>
   <app-filter type="select" field="payment_type" [config]="paymentFilterConfig"> </app-filter>
 </div>
 
 <p-card class="custom-card">
   <app-index-table
-    [data]="records"
+    [data]="records()"
     [columns]="columns"
     [columnLabels]="columnLabels"
-    [loading]="loading"
+    [loading]="loading()"
     (create)="onCreate()"
     (edit)="onEdit($event)"
     [showFooter]="true"
-    [totals]="totals"
+    [totals]="totals()"
     (delete)="openConfirm($event)"
     (cellClick)="onCellClick($event)"
     tableHeight="72vh"
@@ -32,15 +32,16 @@
 </p-card>
 
 <app-confirm-dialog
-  [(visible)]="confirmVisible"
+  [visible]="confirmVisible()"
+  (visibleChange)="confirmVisible.set($event)"
   [title]="'Conferma eliminazione'"
-  [message]="confirmMessage"
+  [message]="confirmMessage()"
   (confirmed)="onConfirmResult($event)"
 ></app-confirm-dialog>
 
 <app-details-dialog
-  [visible]="showDetailsPreview"
-  [owner]="hoverOwnerData"
-  [dogs]="hoverDogData"
+  [visible]="showDetailsPreview()"
+  [owner]="hoverOwnerData()"
+  [dogs]="hoverDogData()"
   (close)="closeDetails()"
 ></app-details-dialog>

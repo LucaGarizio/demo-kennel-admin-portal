@@ -2,12 +2,12 @@
   <app-page-header title="Aggiungi Nuovo Cane"></app-page-header>
 
   <app-dogs-form
-    [model]="model"
-    [sexOptions]="sexOptions"
-    [vaxOptions]="vaxOptions"
-    [pauraOptions]="pauraOptions"
-    [tagliaOptions]="tagliaOptions"
-    [ownerOptions]="ownerOptions"
+    [model]="model()"
+    [sexOptions]="sexOptions()"
+    [vaxOptions]="vaxOptions()"
+    [pauraOptions]="pauraOptions()"
+    [tagliaOptions]="tagliaOptions()"
+    [ownerOptions]="ownerOptions()"
     (save)="onSubmit($event)"
   ></app-dogs-form>
 </div>

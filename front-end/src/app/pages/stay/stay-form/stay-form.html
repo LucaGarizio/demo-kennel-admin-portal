@@ -5,7 +5,7 @@
         pButton
         label="Salva"
         icon="pi pi-check"
-        [disabled]="blockSave"
+        [disabled]="blockSave()"
         type="submit"
       ></button>
     </div>
@@ -14,10 +14,10 @@
       <div class="col-12 md:col-6">
         <label>Proprietario</label>
         <p-select
-          [options]="ownerOptions"
+          [options]="ownerOptions()"
           optionLabel="nomeCompleto"
           optionValue="id"
-          [(ngModel)]="model.id_proprietario"
+          [(ngModel)]="localModel.id_proprietario"
           name="id_proprietario"
           required
           #id_proprietario="ngModel"
@@ -35,17 +35,17 @@
       <div class="col-12 md:col-6">
         <label>Cani</label>
         <p-multiSelect
-          [options]="dogOptions"
+          [options]="dogOptions()"
           optionLabel="nome"
           optionValue="id"
-          [(ngModel)]="model.id_cani"
+          [(ngModel)]="localModel.id_cani"
           name="id_cani"
           required
           #id_cani="ngModel"
           placeholder="Seleziona cane/i"
           class="w-full"
           display="chip"
-          (onChange)="dogsChange.emit(model.id_cani)"
+          (onChange)="dogsChange.emit(localModel.id_cani)"
         ></p-multiSelect>
 
         @if (id_cani.invalid && id_cani.touched) {
@@ -53,7 +53,7 @@
         }
       </div>
 
-      @for (cane of model.cani; track cane.dog_id; let i = $index) {
+      @for (cane of localModel.cani; track cane.dog_id; let i = $index) {
       <div class="col-12 py-0" style="height: inherit">
         <h4 class="mb-3 mt-3">Cane: {{ getDogName(cane.dog_id) }}</h4>
       </div>
@@ -61,12 +61,12 @@
       <div class="col-12 md:col-6">
         <label>Area</label>
         <p-select
-          [options]="areaOptions"
+          [options]="areaOptions()"
           optionLabel="nome_area"
           optionValue="id"
-          [(ngModel)]="model.cani[i].id_area"
+          [(ngModel)]="localModel.cani[i].id_area"
           name="area_{{ i }}"
-          (onChange)="areaChange.emit({ index: i, area: model.cani[i].id_area })"
+          (onChange)="areaChange.emit({ index: i, area: localModel.cani[i].id_area })"
           [ngModelOptions]="{ standalone: true }"
           class="w-full"
           placeholder="Seleziona area"
@@ -76,12 +76,12 @@
       <div class="col-12 md:col-6">
         <label>Box</label>
         <p-select
-          [options]="model.cani[i].boxOptions"
+          [options]="localModel.cani[i].boxOptions"
           optionLabel="label"
           optionValue="id"
-          [(ngModel)]="model.cani[i].id_box"
+          [(ngModel)]="localModel.cani[i].id_box"
           name="box_{{ i }}"
-          (onChange)="boxChange.emit({ index: i, box: model.cani[i].id_box })"
+          (onChange)="boxChange.emit({ index: i, box: localModel.cani[i].id_box })"
           [ngModelOptions]="{ standalone: true }"
           class="w-full"
           placeholder="Seleziona box"
@@ -93,7 +93,7 @@
       <div class="col-12 md:col-6">
         <label>Data arrivo</label>
         <p-datePicker
-          [(ngModel)]="model.data_arrivo"
+          [(ngModel)]="localModel.data_arrivo"
           name="data_arrivo"
           required
           #data_arrivo="ngModel"
@@ -115,7 +115,7 @@
       <div class="col-12 md:col-6">
         <label>Data uscita</label>
         <p-datePicker
-          [(ngModel)]="model.data_uscita"
+          [(ngModel)]="localModel.data_uscita"
           name="data_uscita"
           required
           #data_uscita="ngModel"
@@ -127,8 +127,8 @@
           manualMode="true"
           [hideOnDateTimeSelect]="false"
           (onSelect)="departureChange.emit($event)"
-          [disabled]="!model.data_arrivo"
-          [minDate]="model.data_arrivo"
+          [disabled]="!localModel.data_arrivo"
+          [minDate]="localModel.data_arrivo"
         ></p-datePicker>
 
         @if (data_uscita.invalid && data_uscita.touched) {
@@ -142,7 +142,7 @@
           [options]="pickedUpOptions"
           optionLabel="label"
           optionValue="value"
-          [(ngModel)]="model.ritirato"
+          [(ngModel)]="localModel.ritirato"
           name="ritirato"
           class="w-full"
           (onChange)="onPickedUpChange($event.value)"
@@ -154,7 +154,7 @@
         <input
           pInputText
           type="number"
-          [(ngModel)]="model.retta"
+          [(ngModel)]="localModel.retta"
           name="retta"
           required
           #retta="ngModel"
@@ -171,7 +171,7 @@
         <input
           pInputText
           type="number"
-          [(ngModel)]="model.acconto"
+          [(ngModel)]="localModel.acconto"
           name="acconto"
           (input)="depositChange.emit()"
           class="w-full"
@@ -183,7 +183,7 @@
         <input
           pInputText
           type="number"
-          [(ngModel)]="model.rimanente"
+          [(ngModel)]="localModel.rimanente"
           name="rimanente"
           class="w-full"
         />
@@ -194,7 +194,7 @@
         <input
           pInputText
           type="number"
-          [(ngModel)]="model.totale_dovuto"
+          [(ngModel)]="localModel.totale_dovuto"
           name="totale_dovuto"
           required
           #totale_dovuto="ngModel"
@@ -212,7 +212,7 @@
           [options]="tenderOptions"
           optionLabel="label"
           optionValue="value"
-          [(ngModel)]="model.tipo_pagamento"
+          [(ngModel)]="localModel.tipo_pagamento"
           name="tipo_pagamento"
           placeholder="Seleziona metodo"
           class="w-full"
@@ -223,7 +223,7 @@
         <label>Note</label>
         <textarea
           pInputTextarea
-          [(ngModel)]="model.note"
+          [(ngModel)]="localModel.note"
           name="note"
           rows="4"
           class="w-full"

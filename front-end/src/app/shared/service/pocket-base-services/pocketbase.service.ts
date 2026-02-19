@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import PocketBase, { RecordListOptions } from 'pocketbase';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PocketbaseService {
   readonly pb: PocketBase;
+  readonly isAuth = signal<boolean>(false);
 
   constructor() {
     this.pb = new PocketBase(environment.pbUrl);
@@ -14,6 +15,8 @@ export class PocketbaseService {
       const parsed = JSON.parse(authData);
       this.pb.authStore.save(parsed.token, parsed.model);
     }
+    
+    this.isAuth.set(this.pb.authStore.isValid);
 
     this.pb.authStore.onChange(() => {
       localStorage.setItem(
@@ -23,15 +26,12 @@ export class PocketbaseService {
           model: this.pb.authStore.model,
         })
       );
+      this.isAuth.set(this.pb.authStore.isValid);
     });
   }
 
   get baseUrl(): string {
     return this.pb.baseUrl;
-  }
-
-  get isAuth() {
-    return this.pb.authStore.isValid;
   }
 
   async login(email: string, password: string) {

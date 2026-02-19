@@ -1,16 +1,16 @@
-@if(!loading){
-<div class="fade-wrapper" [class.fade-out]="loading">
+@if(!loading()){
+<div class="fade-wrapper" [class.fade-out]="loading()">
   <div class="grid justify-content-center">
     <div class="col-11">
       <h2 class="title text-primary text-center my-2">Il Pioppeto</h2>
       <h3 class="text-center sub-title mt-0 mb-5">Norme e Regolamento</h3>
 
       <p class="text my-5">
-        Io sottoscritto/a <strong>{{ model.nome }} {{ model.cognome }}</strong
-        >, nato/a a <strong>{{ model.luogo_di_nascita }}</strong> il
-        <strong>{{ model.data_di_nascita | date : 'dd/MM/yyyy' }}</strong
-        >, residente a <strong>{{ model.residenza }}</strong
-        >, <strong> {{ model.indirizzo }}</strong
+        Io sottoscritto/a <strong>{{ model().nome }} {{ model().cognome }}</strong
+        >, nato/a a <strong>{{ model().luogo_di_nascita }}</strong> il
+        <strong>{{ model().data_di_nascita | date : 'dd/MM/yyyy' }}</strong
+        >, residente a <strong>{{ model().residenza }}</strong
+        >, <strong> {{ model().indirizzo }}</strong
         >, dichiaro di aver letto, compreso e accettato il seguente regolamento relativo
         all’ospitalità del mio animale presso la struttura.
       </p>
@@ -56,7 +56,7 @@
     </div>
 
     <div class="col-11 col:md-6 mb-3">
-      <div class="data-box"><strong>Data:</strong> {{ displayDate | date : 'dd/MM/yyyy' }}</div>
+      <div class="data-box"><strong>Data:</strong> {{ displayDate() | date : 'dd/MM/yyyy' }}</div>
     </div>
 
     <div class="col-12 flex justify-content-center md:justify-content-end col:md-6">

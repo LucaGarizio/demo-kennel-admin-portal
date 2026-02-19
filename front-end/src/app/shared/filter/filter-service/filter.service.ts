@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal, inject, Injector } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 export interface FiltersState {
   year?: string;
@@ -15,33 +15,33 @@ export interface FiltersState {
 
 @Injectable({ providedIn: 'root' })
 export class FiltersService {
-  private state: FiltersState = {};
+  readonly state = signal<FiltersState>({});
 
-  private subject$ = new BehaviorSubject<FiltersState>({});
+  private injector = inject(Injector);
 
   watch() {
-    return this.subject$.asObservable();
+    return toObservable(this.state, { injector: this.injector });
   }
 
   set(key: keyof FiltersState, value: any) {
     const currentYear = new Date().getFullYear().toString();
 
-    if (key === 'year') {
-      this.state = { ...this.state, year: value, month: 'all' };
-    } else if (key === 'period' && value !== 'all') {
-      this.state = { ...this.state, period: value, year: currentYear, month: 'all' };
-    } else {
-      this.state = { ...this.state, [key]: value };
-    }
-
-    this.subject$.next({ ...this.state });
+    this.state.update(state => {
+      if (key === 'year') {
+        return { ...state, year: value, month: 'all' };
+      } else if (key === 'period' && value !== 'all') {
+        return { ...state, period: value, year: currentYear, month: 'all' };
+      } else {
+        return { ...state, [key]: value };
+      }
+    });
   }
+
   getSnapshot(): FiltersState {
-    return { ...this.state };
+    return this.state();
   }
 
   reset() {
-    this.state = {};
-    this.subject$.next({});
+    this.state.set({});
   }
 }

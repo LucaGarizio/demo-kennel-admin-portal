@@ -1,18 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { KennelSchedule } from './kennel-schedule';
+import { KennelScheduleComponent } from './kennel-schedule';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
-describe('KennelSchedule', () => {
-  let component: KennelSchedule;
-  let fixture: ComponentFixture<KennelSchedule>;
+describe('KennelScheduleComponent', () => {
+  let component: KennelScheduleComponent;
+  let fixture: ComponentFixture<KennelScheduleComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [KennelSchedule]
+      imports: [KennelScheduleComponent],
+      providers: [provideHttpClient(), provideRouter([])]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(KennelSchedule);
+    fixture = TestBed.createComponent(KennelScheduleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

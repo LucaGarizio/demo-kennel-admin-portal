@@ -1,19 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PreviewDialog } from './preview-dialog';
+import { PreviewDialogComponent } from './preview-dialog';
 
-describe('PreviewDialog', () => {
-  let component: PreviewDialog;
-  let fixture: ComponentFixture<PreviewDialog>;
+describe('PreviewDialogComponent', () => {
+  let component: PreviewDialogComponent;
+  let fixture: ComponentFixture<PreviewDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PreviewDialog]
+      imports: [PreviewDialogComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(PreviewDialog);
+    fixture = TestBed.createComponent(PreviewDialogComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('model', {});
     fixture.detectChanges();
   });
 

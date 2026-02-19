@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, effect, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -37,14 +37,15 @@ export class OwnerList implements OnInit {
   columns = [...OWNER_LIST_COLUMNS];
   columnLabels = OWNER_LIST_LABELS;
 
-  records: OwnerListRecord[] = [];
-  loading = false;
+  records = signal<OwnerListRecord[]>([]);
+  loading = signal(false);
 
-  confirmVisible = false;
-  confirmMessage = '';
-  selectedRecord: OwnerListRow | null = null;
-  previewVisible = false;
-  pdfPreviewUrl: string | null = null;
+  confirmVisible = signal(false);
+  confirmMessage = signal('');
+  selectedRecord = signal<OwnerListRow | null>(null);
+  previewVisible = signal(false);
+  pdfPreviewUrl = signal<string | null>(null);
+  showCreate = signal(false);
 
   constructor(
     private ownerListSvc: OwnerListService,
@@ -53,19 +54,19 @@ export class OwnerList implements OnInit {
     private filtersS: FiltersService,
     private exportService: ExportService,
     private pbSvc: PocketbaseService
-  ) {}
-
-  async ngOnInit() {
-    this.filtersS.reset();
-    await this.loadRecords();
-
-    this.filtersS.watch().subscribe(async (filters) => {
-      await this.loadRecords(filters);
+  ) {
+    effect(() => {
+      this.loadRecords(this.filtersS.state());
     });
   }
 
+  async ngOnInit() {
+    this.filtersS.reset();
+    this.showCreate.set(!this.route.snapshot.paramMap.get('id'));
+  }
+
   async loadRecords(filters: Record<string, any> = {}) {
-    this.loading = true;
+    this.loading.set(true);
 
     const clauses: string[] = [];
 
@@ -77,14 +78,12 @@ export class OwnerList implements OnInit {
 
     const filter = clauses.join(' && ');
 
-    this.records = await this.ownerListSvc.loadOwners(filter);
+    this.records.set(await this.ownerListSvc.loadOwners(filter));
 
-    this.loading = false;
+    this.loading.set(false);
   }
 
-  shouldShowCreate(): boolean {
-    return !this.route.snapshot.paramMap.get('id');
-  }
+
 
   onCreate() {
     this.router.navigate(['/proprietario/creazione']);
@@ -95,21 +94,21 @@ export class OwnerList implements OnInit {
   }
 
   openConfirm(rec: OwnerListRecord) {
-    this.selectedRecord = rec.raw;
+    this.selectedRecord.set(rec.raw);
 
-    this.confirmMessage = `
+    this.confirmMessage.set(`
       Vuoi davvero eliminare <b>${rec.name} ${rec.surname}</b>?<br>
       Verranno eliminati anche i cani associati.
-    `;
+    `);
 
-    this.confirmVisible = true;
+    this.confirmVisible.set(true);
   }
 
   async onConfirmResult(ok: boolean) {
-    if (!ok || !this.selectedRecord) return;
+    if (!ok || !this.selectedRecord()) return;
 
-    await this.ownerListSvc.deleteOwnerAndDogs(this.selectedRecord);
-    await this.loadRecords();
+    await this.ownerListSvc.deleteOwnerAndDogs(this.selectedRecord()!);
+    await this.loadRecords(this.filtersS.state());
   }
 
   private buildSurnameFilter(filters: Record<string, any>): string | null {

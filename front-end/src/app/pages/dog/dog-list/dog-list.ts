@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, effect, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
 import { RippleModule } from 'primeng/ripple';
@@ -36,31 +36,32 @@ export class DogList implements OnInit {
   columns = [...DOG_LIST_COLUMNS];
   columnLabels = DOG_LIST_LABELS;
 
-  records: DogListRecord[] = [];
-  loading = false;
+  records = signal<DogListRecord[]>([]);
+  loading = signal(false);
 
-  selectedRecord: DogListRow | null = null;
-  confirmVisible = false;
-  confirmMessage = '';
-  showOwnerPreview = false;
-  hoverOwnerData: any = null;
+  selectedRecord = signal<DogListRow | null>(null);
+  confirmVisible = signal(false);
+  confirmMessage = signal('');
+  showOwnerPreview = signal(false);
+  hoverOwnerData = signal<any>(null);
 
   constructor(
     private dogListSvc: DogListService,
     private router: Router,
     private filtersS: FiltersService
-  ) {}
-
-  async ngOnInit() {
-    this.filtersS.reset();
-    await this.loadRecords({});
-    this.filtersS.watch().subscribe(async (filters) => {
-      await this.loadRecords(filters);
+  ) {
+    effect(() => {
+      const filters = this.filtersS.state();
+      this.loadRecords(filters);
     });
   }
 
+  async ngOnInit() {
+    this.filtersS.reset();
+  }
+
   async loadRecords(filters: Record<string, any> = {}) {
-    this.loading = true;
+    this.loading.set(true);
 
     const clauses: string[] = [];
 
@@ -88,12 +89,12 @@ export class DogList implements OnInit {
     const filter = clauses.join(' && ');
 
     try {
-      this.records = await this.dogListSvc.loadDogs(filter);
+      this.records.set(await this.dogListSvc.loadDogs(filter));
     } catch (err) {
       console.error('DOG-LIST: errore loadRecords:', err);
     }
 
-    this.loading = false;
+    this.loading.set(false);
   }
 
   onCreate() {
@@ -105,34 +106,27 @@ export class DogList implements OnInit {
   }
 
   openConfirm(rec: DogListRecord) {
-    this.selectedRecord = rec.raw;
-
-    this.confirmMessage = `Vuoi davvero eliminare <b>${rec.name}</b>?`;
-    this.confirmVisible = true;
+    this.selectedRecord.set(rec.raw);
+    this.confirmMessage.set(`Vuoi davvero eliminare <b>${rec.name}</b>?`);
+    this.confirmVisible.set(true);
   }
 
   async onConfirmResult(confirmed: boolean) {
-    this.confirmVisible = false;
-    if (!confirmed || !this.selectedRecord) return;
+    this.confirmVisible.set(false);
+    if (!confirmed || !this.selectedRecord()) return;
 
-    await this.dogListSvc.deleteDog(this.selectedRecord);
-    await this.loadRecords();
-    this.selectedRecord = null;
+    await this.dogListSvc.deleteDog(this.selectedRecord()!);
+    await this.loadRecords(this.filtersS.state());
+    this.selectedRecord.set(null);
   }
 
-  // onCellClick(event: { column: string; row: DogListRecord }) {
-  //   if (event.column === 'owner_id' && event.row.raw.expand?.owner_id?.id) {
-  //     const ownerId = event.row.raw.expand.owner_id.id;
-  //     this.router.navigate(['/proprietario', ownerId]);
-  //   }
-  // }
   onCellClick(event: { column: string; row: DogListRecord }) {
     if (event.column !== 'owner_id') return;
 
     const owner = event.row.raw.expand?.owner_id;
     if (!owner) return;
 
-    this.hoverOwnerData = owner;
-    this.showOwnerPreview = true;
+    this.hoverOwnerData.set(owner);
+    this.showOwnerPreview.set(true);
   }
 }

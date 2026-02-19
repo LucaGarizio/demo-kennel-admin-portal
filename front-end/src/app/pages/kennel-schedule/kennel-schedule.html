@@ -3,7 +3,7 @@
     <label style="display: block" class="font-semibold mb-2">Anno:</label>
 
     <p-datepicker
-      [(ngModel)]="selectedYearDate"
+      [ngModel]="selectedYearDate()"
       view="year"
       dateFormat="yy"
       [showIcon]="true"
@@ -11,23 +11,23 @@
     />
   </div>
 
-  <p-tabs [value]="selectedArea?.id" (valueChange)="onAreaChange($event?.toString() || '')">
+  <p-tabs [value]="selectedArea()?.id" (valueChange)="onAreaChange($event?.toString() || '')">
     <p-tablist>
-      @for (area of areas; track area.id) {
+    @for (area of areas(); track area.id) {
       <p-tab [value]="area.id">{{ area.nome_area.toUpperCase() }}</p-tab>
       }
     </p-tablist>
   </p-tabs>
 
   <app-loading-spinner
-    [visible]="loading"
+    [visible]="loading()"
     height="70vh"
     spinnerClass="w-4rem h-4rem"
     strokeWidth="8"
     animationDuration=".8s"
   />
 
-  @if (!loading) {
+  @if (!loading()) {
   <div class="legend flex align-items-center gap-3 my-3">
     <div class="flex align-items-center gap-1">
       <span class="legend-box covered"></span>
@@ -40,40 +40,40 @@
   </div>
 
   <app-kennel-table
-    [rows]="rows"
-    [boxes]="boxes"
-    [data]="data"
-    [expandedMonthKey]="expandedMonthKey"
+    [rows]="rows()"
+    [boxes]="boxes()"
+    [data]="data()"
+    [expandedMonthKey]="expandedMonthKey()"
     (selectCell)="onSelectCell($event)"
   ></app-kennel-table>
   }
 
   <!-- Dialog -->
-  @if(showDialog) {
+  @if(showDialog()) {
   <app-kennel-dialog
-    [showDialog]="showDialog"
-    [pendingBox]="pendingBox"
-    [pendingDay]="pendingDay"
-    [availableAreas]="areas"
-    [availableBoxes]="allBoxes"
-    [availableDogs]="availableDogs"
+    [showDialog]="showDialog()"
+    [pendingBox]="pendingBox()"
+    [pendingDay]="pendingDay()"
+    [availableAreas]="areas()"
+    [availableBoxes]="allBoxes()"
+    [availableDogs]="availableDogs()"
     (confirm)="onConfirmDialog()"
-    (close)="showDialog = false"
+    (close)="showDialog.set(false)"
     (requestMove)="openMoveDialog($event)"
   />
   }
 
   <app-kennel-move-dialog
-    [show]="showMoveDialog"
-    [conflictOccupation]="moveDialogData?.conflictOccupation"
-    [conflictDog]="moveDialogData?.conflictDog"
-    [availableBoxes]="allBoxes"
-    [availableAreas]="areas"
-    [targetBox]="moveDialogData?.targetBox"
-    [targetDog]="moveDialogData?.targetDog"
-    [targetStart]="moveDialogData?.targetStart"
-    [targetEnd]="moveDialogData?.targetEnd"
-    (close)="showMoveDialog = false"
+    [show]="showMoveDialog()"
+    [conflictOccupation]="moveDialogData()?.conflictOccupation"
+    [conflictDog]="moveDialogData()?.conflictDog"
+    [availableBoxes]="allBoxes()"
+    [availableAreas]="areas()"
+    [targetBox]="moveDialogData()?.targetBox"
+    [targetDog]="moveDialogData()?.targetDog"
+    [targetStart]="moveDialogData()?.targetStart"
+    [targetEnd]="moveDialogData()?.targetEnd"
+    (close)="showMoveDialog.set(false)"
     (moved)="onMoveCompleted()"
   ></app-kennel-move-dialog>
 </div>

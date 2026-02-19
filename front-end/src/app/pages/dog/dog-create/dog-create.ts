@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -16,7 +16,7 @@ import { PageHeaderComponent } from '../../../shared/component/page-header/page-
   styleUrls: ['./dog-create.scss'],
 })
 export class DogCreateComponent implements OnInit {
-  model: DogFormModel = {
+  model = signal<DogFormModel>({
     nome: '',
     sesso: 'M',
     razza: '',
@@ -26,24 +26,24 @@ export class DogCreateComponent implements OnInit {
     paura: 'No',
     id_proprietario: null,
     note: '',
-  };
+  });
 
-  ownerOptions: OwnerOption[] = [];
+  ownerOptions = signal<OwnerOption[]>([]);
 
-  tagliaOptions = ['Piccola', 'Media', 'Grande'];
-  sexOptions = ['M', 'F'];
-  vaxOptions = ['Si', 'No'];
-  pauraOptions = ['Si', 'No'];
+  tagliaOptions = signal(['Piccola', 'Media', 'Grande']);
+  sexOptions = signal(['M', 'F']);
+  vaxOptions = signal(['Si', 'No']);
+  pauraOptions = signal(['Si', 'No']);
 
   constructor(private dogService: DogService, private router: Router) {}
 
   async ngOnInit() {
     const owners = await this.dogService.loadOwners();
     const mapped = owners.map((o: any) => fromBackendOwner(o));
-    this.ownerOptions = mapped.map((o: any) => ({
+    this.ownerOptions.set(mapped.map((o: any) => ({
       id: o.id,
       nomeCompleto: `${o.nome} ${o.cognome}`,
-    }));
+    })));
   }
 
   async onSubmit(model: DogFormModel) {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TabsModule } from 'primeng/tabs';
 import { TableModule } from 'primeng/table';
@@ -34,24 +34,24 @@ import { LoadingSpinnerComponent } from '../../shared/component/loading-spinner/
   providers: [KennelCalendarService, KennelDataService],
 })
 export class KennelScheduleComponent implements OnInit {
-  areas: any[] = [];
-  selectedArea: any = null;
-  rows: KennelRow[] = [];
-  boxes: any[] = [];
-  data: Record<string, Record<string, string>> = {};
-  loading = false;
-  allBoxes: any[] = [];
-  availableBoxes: any[] = [];
-  availableDogs: any[] = [];
+  areas = signal<any[]>([]);
+  selectedArea = signal<any>(null);
+  rows = signal<KennelRow[]>([]);
+  boxes = signal<any[]>([]);
+  data = signal<Record<string, Record<string, string>>>({});
+  loading = signal(false);
+  allBoxes = signal<any[]>([]);
+  availableBoxes = signal<any[]>([]);
+  availableDogs = signal<any[]>([]);
 
-  showDialog = false;
-  pendingBox: any = null;
-  pendingDay = '';
+  showDialog = signal(false);
+  pendingBox = signal<any>(null);
+  pendingDay = signal('');
 
-  showMoveDialog = false;
-  moveDialogData: any = null;
-  selectedYearDate: Date = new Date();
-  expandedMonthKey: string | null = null;
+  showMoveDialog = signal(false);
+  moveDialogData = signal<any>(null);
+  selectedYearDate = signal<Date>(new Date());
+  expandedMonthKey = signal<string | null>(null);
 
   constructor(
     private calendar: KennelCalendarService,
@@ -60,64 +60,65 @@ export class KennelScheduleComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.loading = true;
-    this.rows = this.calendar.generateRowsForYear(new Date().getFullYear());
-    this.areas = await this.dataService.getAreas();
-    this.allBoxes = await this.dataService.getAllBoxes();
-    if (this.areas.length) await this.loadAreaData(this.areas[0]);
-    this.loading = false;
+    this.loading.set(true);
+    this.rows.set(this.calendar.generateRowsForYear(new Date().getFullYear()));
+    this.areas.set(await this.dataService.getAreas());
+    this.allBoxes.set(await this.dataService.getAllBoxes());
+    if (this.areas().length) await this.loadAreaData(this.areas()[0]);
+    this.loading.set(false);
   }
 
   async loadAreaData(area: any) {
-    this.loading = true;
-    const result = await this.dataService.loadAreaData(area.id, this.rows);
-    this.selectedArea = result.area;
-    this.boxes = result.boxes;
-    this.data = result.data;
-    this.loading = false;
+    this.loading.set(true);
+    const result = await this.dataService.loadAreaData(area.id, this.rows());
+    this.selectedArea.set(result.area);
+    this.boxes.set(result.boxes);
+    this.data.set(result.data);
+    this.loading.set(false);
   }
 
   onAreaChange(areaId: string) {
-    const area = this.areas.find((a) => a.id === areaId);
+    const area = this.areas().find((a) => a.id === areaId);
     if (area) this.loadAreaData(area);
   }
 
   async onSelectCell(event: { day: string; box: any }) {
     if (!event?.box || !event?.day) return;
 
-    this.pendingDay = event.day;
-    this.pendingBox = event.box;
-    this.availableBoxes = this.boxes;
-    this.availableDogs = await this.dataService.getDogs();
+    this.pendingDay.set(event.day);
+    this.pendingBox.set(event.box);
+    this.availableBoxes.set(this.boxes());
+    this.availableDogs.set(await this.dataService.getDogs());
 
-    this.showDialog = true;
+    this.showDialog.set(true);
   }
 
   async onConfirmDialog() {
-    this.showDialog = false;
-    await this.loadAreaData(this.selectedArea);
+    this.showDialog.set(false);
+    await this.loadAreaData(this.selectedArea());
   }
 
   openMoveDialog(payload: any) {
-    this.moveDialogData = payload;
-    this.showMoveDialog = true;
+    this.moveDialogData.set(payload);
+    this.showMoveDialog.set(true);
   }
 
   async onMoveCompleted() {
-    this.showMoveDialog = false;
-    this.showDialog = false;
-    await this.loadAreaData(this.selectedArea);
+    this.showMoveDialog.set(false);
+    this.showDialog.set(false);
+    await this.loadAreaData(this.selectedArea());
   }
 
   async onYearSelected(date: Date) {
     if (!date) return;
     const year = date.getFullYear();
-    this.loading = true;
-    this.rows = this.calendar.generateRowsForYear(year);
-    if (this.selectedArea) {
-      await this.loadAreaData(this.selectedArea);
+    this.selectedYearDate.set(date);
+    this.loading.set(true);
+    this.rows.set(this.calendar.generateRowsForYear(year));
+    if (this.selectedArea()) {
+      await this.loadAreaData(this.selectedArea());
     }
 
-    this.loading = false;
+    this.loading.set(false);
   }
 }

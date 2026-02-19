@@ -9,7 +9,7 @@
         <label>Nome</label>
         <input
           pInputText
-          [(ngModel)]="model.nome"
+          [(ngModel)]="localModel.nome"
           name="nome"
           required
           #nomeD="ngModel"
@@ -23,8 +23,8 @@
       <div class="col-12 md:col-6">
         <label>Sesso</label>
         <p-select
-          [options]="sexOptions"
-          [(ngModel)]="model.sesso"
+          [options]="sexOptions()"
+          [(ngModel)]="localModel.sesso"
           name="sesso"
           required
           #sesso="ngModel"
@@ -39,7 +39,7 @@
         <label>Razza</label>
         <input
           pInputText
-          [(ngModel)]="model.razza"
+          [(ngModel)]="localModel.razza"
           name="razza"
           required
           #razza="ngModel"
@@ -54,7 +54,7 @@
         <label>Microchip</label>
         <input
           pInputText
-          [(ngModel)]="model.chip"
+          [(ngModel)]="localModel.chip"
           name="microchip"
           required
           #microchip="ngModel"
@@ -70,8 +70,8 @@
       <div class="col-12 md:col-6">
         <label>Vaccinato</label>
         <p-select
-          [options]="vaxOptions"
-          [(ngModel)]="model.vax"
+          [options]="vaxOptions()"
+          [(ngModel)]="localModel.vax"
           name="vax"
           required
           #vax="ngModel"
@@ -86,8 +86,8 @@
       <div class="col-12 md:col-6">
         <label>Spaventato</label>
         <p-select
-          [options]="pauraOptions"
-          [(ngModel)]="model.paura"
+          [options]="pauraOptions()"
+          [(ngModel)]="localModel.paura"
           name="paura"
           placeholder="Spaventato?"
           class="w-full"
@@ -97,8 +97,8 @@
       <div class="col-12 md:col-6">
         <label>Taglia</label>
         <p-select
-          [options]="tagliaOptions"
-          [(ngModel)]="model.taglia"
+          [options]="tagliaOptions()"
+          [(ngModel)]="localModel.taglia"
           name="taglia"
           required
           #taglia="ngModel"
@@ -113,10 +113,10 @@
       <div class="col-12 md:col-6">
         <label>Proprietario</label>
         <p-select
-          [options]="ownerOptions"
+          [options]="ownerOptions()"
           optionLabel="nomeCompleto"
           optionValue="id"
-          [(ngModel)]="model.id_proprietario"
+          [(ngModel)]="localModel.id_proprietario"
           name="id_proprietario"
           required
           #owner_id="ngModel"
@@ -133,7 +133,7 @@
         <label>Note</label>
         <textarea
           pInputTextarea
-          [(ngModel)]="model.note"
+          [(ngModel)]="localModel.note"
           name="note"
           rows="4"
           class="w-full"

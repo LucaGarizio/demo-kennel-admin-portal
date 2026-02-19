@@ -1,9 +1,10 @@
 <p-dialog
-  [(visible)]="show"
+  [visible]="show()"
+  (visibleChange)="!$event && close.emit()"
   [modal]="true"
   [closable]="false"
   [style]="{ width: '35rem', borderRadius: '12px' }"
-  [header]="'Sposta ' + (conflictDog?.name || '')"
+  [header]="'Sposta ' + (conflictDog()?.name || '')"
   contentStyle="padding: 2rem; background: #1e1e1e; color: #fff"
   (onHide)="close.emit()"
 >
@@ -11,7 +12,7 @@
     <div>
       <label class="font-semibold mb-2 block">Area</label>
       <p-select
-        [options]="availableAreas"
+        [options]="availableAreas()"
         [(ngModel)]="selectedArea"
         optionLabel="nome_area"
         dataKey="id"
@@ -35,8 +36,8 @@
     <div>
       <label class="font-semibold mb-2 block">Cane da spostare</label>
       <p-select
-        [options]="[conflictDog]"
-        [(ngModel)]="conflictDog"
+        [options]="conflictDog() ? [conflictDog()] : []"
+        [ngModel]="conflictDog()"
         optionLabel="name"
         class="w-full"
         disabled="true"

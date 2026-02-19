@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { IndexTable } from './index-table';
+import { IndexTableComponent } from './index-table';
 
-describe('IndexTable', () => {
-  let component: IndexTable;
-  let fixture: ComponentFixture<IndexTable>;
+describe('IndexTableComponent', () => {
+  let component: IndexTableComponent;
+  let fixture: ComponentFixture<IndexTableComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [IndexTable]
+      imports: [IndexTableComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(IndexTable);
+    fixture = TestBed.createComponent(IndexTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

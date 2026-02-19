@@ -1,6 +1,7 @@
 <p-dialog
-  [header]="dialogTitle"
-  [(visible)]="showDialog"
+  [header]="dialogTitle()"
+  [visible]="showDialog()"
+  (visibleChange)="!$event && close.emit()"
   [modal]="true"
   [closable]="false"
   [style]="{ width: '35rem', borderRadius: '12px' }"
@@ -11,7 +12,7 @@
     <div>
       <label class="font-semibold mb-2 block">Area</label>
       <p-select
-        [options]="availableAreas"
+        [options]="availableAreas()"
         [(ngModel)]="selectedArea"
         (onChange)="filterBoxes()"
         optionLabel="nome_area"
@@ -39,7 +40,7 @@
 
       @if(!isMultiMode) {
       <p-select
-        [options]="availableDogs"
+        [options]="availableDogs()"
         [(ngModel)]="selectedDog"
         optionLabel="name"
         class="w-full"
@@ -48,7 +49,7 @@
       ></p-select>
       } @if(isMultiMode) {
       <p-multiSelect
-        [options]="availableDogs"
+        [options]="availableDogs()"
         [(ngModel)]="selectedDogs"
         optionLabel="name"
         display="chip"

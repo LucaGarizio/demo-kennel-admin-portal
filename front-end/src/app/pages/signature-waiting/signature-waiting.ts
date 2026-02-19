@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { PocketbaseService } from '../../shared/service/pocket-base-services/pocketbase.service';
 import { CommonModule } from '@angular/common';
@@ -11,20 +11,20 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./signature-waiting.scss'],
 })
 export class SignatureWaiting {
-  isFading = false;
-  showSuccess = false;
+  isFading = signal(false);
+  showSuccess = signal(false);
   successTimeout: any;
 
   constructor(private pb: PocketbaseService, private router: Router) {}
 
   ngOnInit() {
     if (sessionStorage.getItem('signature_done') === '1') {
-      this.showSuccess = true;
+      this.showSuccess.set(true);
 
       sessionStorage.removeItem('signature_done');
 
       setTimeout(() => {
-        this.showSuccess = false;
+        this.showSuccess.set(false);
       }, 3000);
     }
 
@@ -37,7 +37,7 @@ export class SignatureWaiting {
 
       if (record['signature']) return;
 
-      this.isFading = true;
+      this.isFading.set(true);
 
       setTimeout(() => {
         this.router.navigate(['/kiosk', sessionId]);
@@ -46,11 +46,11 @@ export class SignatureWaiting {
   }
 
   private showSuccessMessage() {
-    this.showSuccess = true;
+    this.showSuccess.set(true);
 
     clearTimeout(this.successTimeout);
     this.successTimeout = setTimeout(() => {
-      this.showSuccess = false;
+      this.showSuccess.set(false);
     }, 3000);
   }
 }

@@ -1,10 +1,10 @@
 import {
   Component,
-  EventEmitter,
-  Input,
-  Output,
   ChangeDetectorRef,
-  OnChanges,
+  effect,
+  input,
+  output,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -45,49 +45,54 @@ import { ConfirmDialogComponent } from '../../../shared/component/dialogs/confir
   templateUrl: './owner-form.html',
   styleUrls: ['./owner-form.scss'],
 })
-export class OwnerFormComponent implements OnChanges {
-  @Input() model: any = {};
+export class OwnerFormComponent {
+  model = input<any>({});
 
-  @Output() save = new EventEmitter<any>();
-  @Output() filesSelected = new EventEmitter<File[]>();
-  @Output() deleteDocument = new EventEmitter<string>();
+  save = output<any>();
+  filesSelected = output<File[]>();
+  deleteDocument = output<string>();
 
-  previewVisible = false;
-  today = new Date();
-  existingFiles: File[] = [];
-  uploadNeeded = false;
-  signatureUrl: string | null = null;
-  displayDate!: Date;
-  showDocsDialog = false;
-  currentDocs: string[] = [];
-  confirmVisible = false;
-  docToDelete: string | null = null;
+  previewVisible = signal(false);
+  today = signal(new Date());
+  existingFiles = signal<File[]>([]);
+  uploadNeeded = signal(false);
+  signatureUrl = signal<string | null>(null);
+  displayDate = signal<Date>(new Date());
+  showDocsDialog = signal(false);
+  currentDocs = signal<string[]>([]);
+  confirmVisible = signal(false);
+  docToDelete = signal<string | null>(null);
+
+  localModel: any = {};
 
   constructor(
     private pb: PocketbaseService,
     private router: Router,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    effect(async () => {
+      const parentModel = this.model();
+      this.localModel = { ...parentModel };
 
-  async ngOnChanges() {
-    if (this.model?.['signature']) {
-      this.signatureUrl = this.getFileUrl(this.model, this.model['signature']);
-    } else {
-      this.signatureUrl = null;
-    }
+      if (parentModel?.['signature']) {
+        this.signatureUrl.set(this.getFileUrl(parentModel, parentModel['signature']));
+      } else {
+        this.signatureUrl.set(null);
+      }
 
-    if (this.model?.documents?.length) {
-      this.existingFiles = await this.loadExistingFiles();
-    } else {
-      this.existingFiles = [];
-    }
+      if (parentModel?.documents?.length) {
+        this.existingFiles.set(await this.loadExistingFiles(parentModel));
+      } else {
+        this.existingFiles.set([]);
+      }
 
-    if (this.model?.id && this.model?.created) {
-      this.displayDate = new Date(this.model.created);
-    } else {
-      this.displayDate = new Date();
-    }
-    this.uploadNeeded = false;
+      if (parentModel?.id && parentModel?.created) {
+        this.displayDate.set(new Date(parentModel.created));
+      } else {
+        this.displayDate.set(new Date());
+      }
+      this.uploadNeeded.set(false);
+    });
   }
 
   getFileUrl(model: any, file: string) {
@@ -96,14 +101,14 @@ export class OwnerFormComponent implements OnChanges {
   }
 
   get firmaUrl(): string | null {
-    if (!this.model?.id || !this.model?.signature) return null;
-    return this.pb.pb.getFileUrl(this.model, this.model.signature);
+    if (!this.localModel?.id || !this.localModel?.signature) return null;
+    return this.pb.pb.getFileUrl(this.localModel, this.localModel.signature);
   }
 
-  async loadExistingFiles(): Promise<File[]> {
+  async loadExistingFiles(model: any): Promise<File[]> {
     const files: File[] = [];
-    for (const name of this.model.documents) {
-      const url = `/api/files/owner/${this.model.id}/${name}`;
+    for (const name of model.documents) {
+      const url = `/api/files/owner/${model.id}/${name}`;
       const blob = await fetch(url).then((r) => r.blob());
 
       files.push(new File([blob], name, { type: blob.type }));
@@ -114,16 +119,16 @@ export class OwnerFormComponent implements OnChanges {
 
   onFilesPicked(files: File[]) {
     this.filesSelected.emit(files);
-    this.uploadNeeded = true;
+    this.uploadNeeded.set(true);
   }
 
   onDeleteDocument(doc: string) {
     this.deleteDocument.emit(doc);
-    this.uploadNeeded = false;
+    this.uploadNeeded.set(false);
   }
 
   onSubmit() {
-    this.save.emit(this.model);
+    this.save.emit(this.localModel);
   }
 
   ngAfterViewInit() {
@@ -140,20 +145,20 @@ export class OwnerFormComponent implements OnChanges {
 
         if (!filename) return;
 
-        if (Array.isArray(this.model.documents)) {
-          this.model.documents = this.model.documents.filter((d: string) => d !== filename);
+        if (Array.isArray(this.localModel.documents)) {
+          this.localModel.documents = this.localModel.documents.filter((d: string) => d !== filename);
         }
 
         this.deleteDocument.emit(filename);
-        this.uploadNeeded = false;
+        this.uploadNeeded.set(false);
       },
       true
     );
   }
 
   async requestSign() {
-    if (!this.model.id) {
-      const payload = toBackendOwner(this.model);
+    if (!this.localModel.id) {
+      const payload = toBackendOwner(this.localModel);
 
       const fd = new FormData();
       for (const [k, v] of Object.entries(payload)) {
@@ -161,10 +166,10 @@ export class OwnerFormComponent implements OnChanges {
       }
 
       const created = await this.pb.pb.collection('owner').create(fd);
-      Object.assign(this.model, created);
+      Object.assign(this.localModel, created);
     }
 
-    const payload = JSON.parse(JSON.stringify(this.model));
+    const payload = JSON.parse(JSON.stringify(this.localModel));
     payload.tempId = payload.tempId ?? crypto.randomUUID();
 
     const session = await this.pb.pb.collection('sign_session').create({
@@ -192,16 +197,16 @@ export class OwnerFormComponent implements OnChanges {
         const blob = await fetch(urlSignSession).then((r) => r.blob());
         const file = new File([blob], sign, { type: blob.type });
 
-        const updatedOwner = await this.pb.pb.collection('owner').update(this.model.id, {
+        const updatedOwner = await this.pb.pb.collection('owner').update(this.localModel.id, {
           signature: file,
         });
 
-        this.model.signature = updatedOwner['signature'];
+        this.localModel.signature = updatedOwner['signature'];
 
         const finalUrl = this.pb.pb.getFileUrl(updatedOwner, updatedOwner['signature']);
 
         setTimeout(() => {
-          this.signatureUrl = finalUrl;
+          this.signatureUrl.set(finalUrl);
           this.cdr.detectChanges();
         }, 0);
 
@@ -214,22 +219,22 @@ export class OwnerFormComponent implements OnChanges {
   }
 
   openDocumentsDialog(): void {
-    this.currentDocs = this.model.documents || [];
-    this.showDocsDialog = true;
+    this.currentDocs.set(this.localModel.documents || []);
+    this.showDocsDialog.set(true);
   }
 
   askDeleteDocument(doc: string) {
-    this.docToDelete = doc;
-    this.confirmVisible = true;
+    this.docToDelete.set(doc);
+    this.confirmVisible.set(true);
   }
 
   onConfirmDelete(result: boolean) {
-    if (result && this.docToDelete) {
-      this.onDeleteDocument(this.docToDelete);
+    if (result && this.docToDelete()) {
+      this.onDeleteDocument(this.docToDelete()!);
     }
 
-    this.docToDelete = null;
-    this.confirmVisible = false;
+    this.docToDelete.set(null);
+    this.confirmVisible.set(false);
   }
 
   // openPreview() {

@@ -1,8 +1,8 @@
 <div class="page-container">
   <app-page-header title="Modifica Proprietario"></app-page-header>
-  @if (!loading) {
+  @if (!loading()) {
   <app-owner-form
-    [model]="model"
+    [model]="model()"
     (save)="onSubmit($event)"
     (filesSelected)="onFilesSelected($event)"
     (deleteDocument)="onDeleteDoc($event)"

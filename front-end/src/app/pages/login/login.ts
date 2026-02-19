@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
@@ -25,23 +25,23 @@ import { PocketbaseService } from '../../shared/service/pocket-base-services/poc
   styleUrls: ['./login.scss'],
 })
 export class Login {
-  email = '';
-  password = '';
-  loading = false;
-  showPassword = false;
+  email = signal('');
+  password = signal('');
+  loading = signal(false);
+  showPassword = signal(false);
 
   constructor(private pb: PocketbaseService, private router: Router) {}
 
   async onLogin() {
-    if (!this.email || !this.password) return;
-    this.loading = true;
+    if (!this.email() || !this.password()) return;
+    this.loading.set(true);
     try {
-      await this.pb.login(this.email, this.password);
+      await this.pb.login(this.email(), this.password());
       this.router.navigate(['/lista-proprietari']);
     } catch (err) {
       console.error('Errore login:', err);
     } finally {
-      this.loading = false;
+      this.loading.set(false);
     }
   }
 }

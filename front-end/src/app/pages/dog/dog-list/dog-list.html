@@ -20,10 +20,10 @@
 
 <p-card class="custom-card">
   <app-index-table
-    [data]="records"
+    [data]="records()"
     [columns]="columns"
     [columnLabels]="columnLabels"
-    [loading]="loading"
+    [loading]="loading()"
     (create)="onCreate()"
     (edit)="onEdit($event)"
     (delete)="openConfirm($event)"
@@ -34,14 +34,15 @@
 </p-card>
 
 <app-confirm-dialog
-  [(visible)]="confirmVisible"
+  [visible]="confirmVisible()"
+  (visibleChange)="confirmVisible.set($event)"
   [title]="'Conferma eliminazione'"
-  [message]="confirmMessage"
+  [message]="confirmMessage()"
   (confirmed)="onConfirmResult($event)"
 ></app-confirm-dialog>
 
 <app-details-dialog
-  [visible]="showOwnerPreview"
-  [owner]="hoverOwnerData"
-  (close)="showOwnerPreview = false"
+  [visible]="showOwnerPreview()"
+  [owner]="hoverOwnerData()"
+  (close)="showOwnerPreview.set(false)"
 ></app-details-dialog>

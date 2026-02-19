@@ -9,7 +9,7 @@
         <label>Nome</label>
         <input
           pInputText
-          [(ngModel)]="model.nome"
+          [(ngModel)]="localModel.nome"
           name="nome"
           required
           #nome="ngModel"
@@ -24,7 +24,7 @@
         <label>Cognome</label>
         <input
           pInputText
-          [(ngModel)]="model.cognome"
+          [(ngModel)]="localModel.cognome"
           name="cognome"
           required
           #cognome="ngModel"
@@ -39,7 +39,7 @@
         <label>Codice fiscale</label>
         <input
           pInputText
-          [(ngModel)]="model.codice_fiscale"
+          [(ngModel)]="localModel.codice_fiscale"
           name="codice_fiscale"
           required
           #codice_fiscale="ngModel"
@@ -54,7 +54,7 @@
         <label>Luogo di nascita</label>
         <input
           pInputText
-          [(ngModel)]="model.luogo_di_nascita"
+          [(ngModel)]="localModel.luogo_di_nascita"
           name="luogo_di_nascita"
           required
           #luogo_di_nascita="ngModel"
@@ -69,7 +69,7 @@
         <label>Data di nascita</label>
         <p-datePicker
           class="date"
-          [(ngModel)]="model.data_di_nascita"
+          [(ngModel)]="localModel.data_di_nascita"
           name="data_di_nascita"
           required
           #data_di_nascita="ngModel"
@@ -84,7 +84,7 @@
         <label>Provincia</label>
         <input
           pInputText
-          [(ngModel)]="model.provincia"
+          [(ngModel)]="localModel.provincia"
           name="provincia"
           required
           #provincia="ngModel"
@@ -99,7 +99,7 @@
         <label>Residenza</label>
         <input
           pInputText
-          [(ngModel)]="model.residenza"
+          [(ngModel)]="localModel.residenza"
           name="residenza"
           required
           #residenza="ngModel"
@@ -114,7 +114,7 @@
         <label>Indirizzo</label>
         <input
           pInputText
-          [(ngModel)]="model.indirizzo"
+          [(ngModel)]="localModel.indirizzo"
           name="indirizzo"
           required
           #indirizzo="ngModel"
@@ -129,7 +129,7 @@
         <label>N° carta identità</label>
         <input
           pInputText
-          [(ngModel)]="model.n_carta_identita"
+          [(ngModel)]="localModel.n_carta_identita"
           name="n_carta_identita"
           required
           #n_carta_identita="ngModel"
@@ -144,7 +144,7 @@
         <label>Rilascio carta</label>
         <p-datePicker
           class="date"
-          [(ngModel)]="model.rilascio_carta"
+          [(ngModel)]="localModel.rilascio_carta"
           name="rilascio_carta"
           required
           #rilascio_carta="ngModel"
@@ -159,13 +159,13 @@
         <label>Scadenza carta</label>
         <p-datePicker
           class="date"
-          [(ngModel)]="model.scadenza_carta"
+          [(ngModel)]="localModel.scadenza_carta"
           name="scadenza_carta"
           required
           #scadenza_carta="ngModel"
           dateFormat="dd/mm/yy"
-          [disabled]="!model.rilascio_carta"
-          [minDate]="model.rilascio_carta"
+          [disabled]="!localModel.rilascio_carta"
+          [minDate]="localModel.rilascio_carta"
         />
         @if(scadenza_carta.invalid && scadenza_carta.touched) {
         <small class="p-error">Questo campo è obbligatorio</small>
@@ -176,7 +176,7 @@
         <label>Cellulare</label>
         <input
           pInputText
-          [(ngModel)]="model.cell"
+          [(ngModel)]="localModel.cell"
           name="cell"
           required
           #cell="ngModel"
@@ -191,7 +191,7 @@
         <label>Email</label>
         <input
           pInputText
-          [(ngModel)]="model.email"
+          [(ngModel)]="localModel.email"
           name="email"
           required
           email
@@ -207,7 +207,7 @@
         <label>Note</label>
         <textarea
           pInputTextarea
-          [(ngModel)]="model.note"
+          [(ngModel)]="localModel.note"
           name="extra"
           rows="5"
           class="w-full"
@@ -217,13 +217,13 @@
       <div class="col-12 md:col-12 mb-5">
         <label>Documenti (PDF/JPG/PNG)</label>
 
-        <div class="upload-wrapper" [class.needs-upload]="uploadNeeded">
+        <div class="upload-wrapper" [class.needs-upload]="uploadNeeded()">
           <p-fileUpload
             #fu
             name="documents"
             mode="advanced"
             [customUpload]="true"
-            (uploadHandler)="onFilesPicked($event.files); fu.clear(); uploadNeeded = false"
+            (uploadHandler)="onFilesPicked($event.files); fu.clear(); uploadNeeded.set(false)"
             (onSelect)="onFilesPicked($event.files)"
             [multiple]="true"
             chooseLabel="Scegli file"
@@ -233,10 +233,10 @@
           />
         </div>
       </div>
-      @if( model.documents?.length){
+      @if( localModel.documents?.length){
 
       <div class="col-12 mb-5">
-        @for (doc of model.documents; track doc) {
+        @for (doc of localModel.documents; track doc) {
         <div class="existing-wrapper">
           <div class="url cursor-pointer" (click)="openDocumentsDialog()">
             {{ doc }}
@@ -261,7 +261,7 @@
           type="button"
           pButton
           label="Anteprima PDF"
-          (click)="previewVisible = true"
+          (click)="previewVisible.set(true)"
         ></button>
       </div>
 
@@ -284,11 +284,11 @@
     <div class="grid">
       <div class="col-12">
         <p class="text my-5">
-          Io sottoscritto/a <strong>{{ model.nome }} {{ model.cognome }}</strong
-          >, nato/a a <strong>{{ model.luogo_di_nascita }}</strong> il
-          <strong>{{ model.data_di_nascita | date : 'dd/MM/yyyy' }}</strong
-          >, residente a <strong>{{ model.residenza }}</strong
-          >, <strong> {{ model.indirizzo }}</strong
+          Io sottoscritto/a <strong>{{ localModel.nome }} {{ localModel.cognome }}</strong
+          >, nato/a a <strong>{{ localModel.luogo_di_nascita }}</strong> il
+          <strong>{{ localModel.data_di_nascita | date : 'dd/MM/yyyy' }}</strong
+          >, residente a <strong>{{ localModel.residenza }}</strong
+          >, <strong> {{ localModel.indirizzo }}</strong
           >, dichiaro di aver letto, compreso e accettato il seguente regolamento relativo
           all'ospitalità del mio animale presso la struttura.
         </p>
@@ -336,7 +336,7 @@
       </div>
 
       <div class="col-6">
-        <div class="data-box"><strong>Data:</strong> {{ displayDate | date : 'dd/MM/yyyy' }}</div>
+        <div class="data-box"><strong>Data:</strong> {{ displayDate() | date : 'dd/MM/yyyy' }}</div>
       </div>
 
       <div class="col-6">
@@ -353,22 +353,25 @@
 </p-card>
 
 <app-documents-dialog
-  [(showDocsDialog)]="showDocsDialog"
-  [currentDocs]="currentDocs"
-  [currentRow]="model"
+  [showDocsDialog]="showDocsDialog()"
+  (showDocsDialogChange)="showDocsDialog.set($event)"
+  [currentDocs]="currentDocs()"
+  [currentRow]="localModel"
   [getDocumentUrl]="getFileUrl.bind(this)"
 ></app-documents-dialog>
 
 <app-confirm-dialog
-  [(visible)]="confirmVisible"
+  [visible]="confirmVisible()"
+  (visibleChange)="confirmVisible.set($event)"
   title="Conferma eliminazione"
   [message]="'Sei sicuro di voler cancellare questo documento?'"
   (confirmed)="onConfirmDelete($event)"
 ></app-confirm-dialog>
 
 <app-preview-dialog
-  [(visible)]="previewVisible"
-  [model]="model"
-  [displayDate]="displayDate"
+  [visible]="previewVisible()"
+  (visibleChange)="previewVisible.set($event)"
+  [model]="localModel"
+  [displayDate]="displayDate()"
   [firmaUrl]="firmaUrl"
 ></app-preview-dialog>

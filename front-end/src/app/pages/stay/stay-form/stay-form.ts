@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, effect, input, output } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -28,22 +28,30 @@ import { StayFormModel } from '../../../shared/types/stay.types';
   styleUrls: ['./stay-form.scss'],
 })
 export class StayFormComponent {
-  @Input() model: any = {};
+  model = input<any>({});
 
-  @Input() ownerOptions: any[] = [];
-  @Input() dogOptions: any[] = [];
-  @Input() areaOptions: any[] = [];
-  @Input() blockSave = false;
+  ownerOptions = input<any[]>([]);
+  dogOptions = input<any[]>([]);
+  areaOptions = input<any[]>([]);
+  blockSave = input<boolean>(false);
+  boxOptions = input<any[]>([]);
 
-  @Output() save = new EventEmitter<any>();
-  @Output() ownerChange = new EventEmitter<string>();
-  @Output() dogsChange = new EventEmitter<string[]>();
-  @Output() areaChange = new EventEmitter<{ index: number; area: string | null }>();
-  @Output() boxChange = new EventEmitter<{ index: number; box: string | null }>();
-  @Output() arrivalChange = new EventEmitter<Date>();
-  @Output() departureChange = new EventEmitter<Date>();
-  @Output() depositChange = new EventEmitter<void>();
-  @Input() boxOptions: any[] = [];
+  save = output<any>();
+  ownerChange = output<string>();
+  dogsChange = output<string[]>();
+  areaChange = output<{ index: number; area: string | null }>();
+  boxChange = output<{ index: number; box: string | null }>();
+  arrivalChange = output<Date>();
+  departureChange = output<Date>();
+  depositChange = output<void>();
+
+  localModel: any = {};
+
+  constructor() {
+    effect(() => {
+      this.localModel = this.model();
+    });
+  }
 
   tenderOptions = [
     { label: 'Contante', value: 'cash' },
@@ -56,11 +64,11 @@ export class StayFormComponent {
   ];
 
   getDogName(id: string): string {
-    return this.dogOptions.find((d) => d.id === id)?.nome ?? '';
+    return this.dogOptions().find((d) => d.id === id)?.nome ?? '';
   }
 
   getEmptyMessage(index: number): string {
-    const cane = this.model.cani[index];
+    const cane = this.localModel.cani[index];
 
     if (!cane.id_area) {
       return "Seleziona un'area per vedere i box disponibili";
@@ -74,12 +82,12 @@ export class StayFormComponent {
   }
 
   onSubmit() {
-    this.save.emit(this.model);
+    this.save.emit(this.localModel);
   }
 
   onPickedUpChange(value: boolean) {
     if (value === true) {
-      this.model.cani.forEach((c: StayFormModel['cani'][number]) => {
+      this.localModel.cani.forEach((c: StayFormModel['cani'][number]) => {
         c.id_area = null;
         c.id_box = null;
         c.boxOptions = [];

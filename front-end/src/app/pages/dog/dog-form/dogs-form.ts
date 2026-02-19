@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, effect, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -25,18 +25,26 @@ import { InputNumberModule } from 'primeng/inputnumber';
   styleUrls: ['./dogs-form.scss'],
 })
 export class DogsFormComponent {
-  @Input() model: any = {};
+  model = input<any>({});
 
-  @Input() sexOptions: any[] = [];
-  @Input() vaxOptions: any[] = [];
-  @Input() pauraOptions: any[] = [];
-  @Input() tagliaOptions: any[] = [];
-  @Input() ownerOptions: any[] = [];
+  sexOptions = input<any[]>([]);
+  vaxOptions = input<any[]>([]);
+  pauraOptions = input<any[]>([]);
+  tagliaOptions = input<any[]>([]);
+  ownerOptions = input<any[]>([]);
 
-  @Output() save = new EventEmitter<any>();
+  save = output<any>();
+
+  localModel: any = {};
+
+  constructor() {
+    effect(() => {
+      this.localModel = { ...this.model() };
+    });
+  }
 
   onSubmit() {
-    this.save.emit(this.model);
+    this.save.emit(this.localModel);
   }
 
   onBeforeInput(e: InputEvent) {

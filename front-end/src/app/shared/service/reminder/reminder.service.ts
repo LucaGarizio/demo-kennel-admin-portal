@@ -33,7 +33,7 @@ export class ReminderService {
   }
 
   async loadStaysWithReminder() {
-    if (!this.pb.isAuth) return;
+    if (!this.pb.isAuth()) return;
 
     try {
       const stays = (await this.pb.getAll('stays', 200, {

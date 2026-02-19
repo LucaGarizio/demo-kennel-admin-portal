@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -17,15 +17,15 @@ import { PageHeaderComponent } from '../../../shared/component/page-header/page-
 })
 export class DogEditComponent {
   id!: string;
-  model!: DogFormModel;
-  loading = true;
+  model = signal<DogFormModel | null>(null);
+  loading = signal(true);
 
-  ownerOptions: OwnerOption[] = [];
+  ownerOptions = signal<OwnerOption[]>([]);
 
-  tagliaOptions = ['Piccola', 'Media', 'Grande'];
-  sexOptions = ['M', 'F'];
-  vaxOptions = ['Si', 'No'];
-  pauraOptions = ['Si', 'No'];
+  tagliaOptions = signal(['Piccola', 'Media', 'Grande']);
+  sexOptions = signal(['M', 'F']);
+  vaxOptions = signal(['Si', 'No']);
+  pauraOptions = signal(['Si', 'No']);
 
   constructor(
     private dogService: DogService,
@@ -38,10 +38,10 @@ export class DogEditComponent {
 
     const owners = await this.dogService.loadOwners();
     const mapped = owners.map((o: any) => fromBackendOwner(o));
-    this.ownerOptions = mapped.map((o: any) => ({
+    this.ownerOptions.set(mapped.map((o: any) => ({
       id: o.id,
       nomeCompleto: `${o.nome} ${o.cognome}`,
-    }));
+    })));
 
     await this.loadDog();
   }
@@ -49,8 +49,8 @@ export class DogEditComponent {
   async loadDog() {
     try {
       const back = await this.dogService.loadDog(this.id);
-      this.model = fromBackendDog(back);
-      this.loading = false;
+      this.model.set(fromBackendDog(back));
+      this.loading.set(false);
     } catch (err) {
       console.error('Errore caricamento cane:', err);
     }

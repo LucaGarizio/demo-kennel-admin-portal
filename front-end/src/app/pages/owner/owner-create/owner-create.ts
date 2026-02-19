@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -15,7 +15,7 @@ import { PageHeaderComponent } from '../../../shared/component/page-header/page-
   styleUrls: ['./owner-create.scss'],
 })
 export class OwnerCreateComponent {
-  model: OwnerFormModel = {
+  model = signal<OwnerFormModel>({
     nome: '',
     cognome: '',
     luogo_di_nascita: '',
@@ -32,22 +32,22 @@ export class OwnerCreateComponent {
     note: '',
     accettazione_regolamento: true,
     documents: [],
-  };
+  });
 
-  selectedFiles: File[] = [];
+  selectedFiles = signal<File[]>([]);
 
   constructor(private ownerSvc: OwnerService, private router: Router) {}
 
   onFilesSelected(files: File[]) {
-    this.selectedFiles = files;
+    this.selectedFiles.set(files);
   }
 
   async onSubmit(front: OwnerFormModel) {
     try {
       if (front.id) {
-        await this.ownerSvc.updateOwner(front.id, front, this.selectedFiles);
+        await this.ownerSvc.updateOwner(front.id, front, this.selectedFiles());
       } else {
-        await this.ownerSvc.createOwner(front, this.selectedFiles);
+        await this.ownerSvc.createOwner(front, this.selectedFiles());
       }
 
       this.router.navigate(['/lista-proprietari']);
@@ -57,7 +57,7 @@ export class OwnerCreateComponent {
   }
 
   async createTempOwner() {
-    const result = await this.ownerSvc.createOwner(this.model, []);
-    this.model.id = result.id;
+    const result = await this.ownerSvc.createOwner(this.model(), []);
+    this.model.update(m => ({ ...m, id: result.id }));
   }
 }

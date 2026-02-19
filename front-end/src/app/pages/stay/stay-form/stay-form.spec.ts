@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StayForm } from './stay-form';
+import { StayFormComponent } from './stay-form';
 
-describe('StayForm', () => {
-  let component: StayForm;
-  let fixture: ComponentFixture<StayForm>;
+describe('StayFormComponent', () => {
+  let component: StayFormComponent;
+  let fixture: ComponentFixture<StayFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StayForm]
+      imports: [StayFormComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(StayForm);
+    fixture = TestBed.createComponent(StayFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

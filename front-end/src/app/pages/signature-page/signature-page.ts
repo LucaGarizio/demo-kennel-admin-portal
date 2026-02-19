@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewChecked, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PocketbaseService } from '../../shared/service/pocket-base-services/pocketbase.service';
@@ -13,9 +13,9 @@ import { ButtonModule } from 'primeng/button';
   styleUrls: ['./signature-page.scss'],
 })
 export class SignaturePage implements AfterViewChecked {
-  model: any = null;
-  loading = true;
-  displayDate!: Date;
+  model = signal<any>(null);
+  loading = signal(true);
+  displayDate = signal<Date>(new Date());
 
   @ViewChild('signatureCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
@@ -41,22 +41,22 @@ export class SignaturePage implements AfterViewChecked {
       const session = await this.pb.pb
         .collection('sign_session')
         .getFirstListItem(`session_id="${sessionId}"`);
-      this.model = session['model_json'];
-      this.model._pbId = session.id;
-      if (this.model?.created) {
-        this.displayDate = new Date(this.model.created);
+      this.model.set(session['model_json']);
+      this.model()._pbId = session.id;
+      if (this.model()?.created) {
+        this.displayDate.set(new Date(this.model().created));
       } else {
-        this.displayDate = new Date();
+        this.displayDate.set(new Date());
       }
 
-      this.loading = false;
+      this.loading.set(false);
     } catch (err) {
       console.error('[SIGNATURE PAGE] Errore nel recupero sessione:', err);
     }
   }
 
   ngAfterViewChecked() {
-    if (!this.canvasInitialized && !this.loading && this.canvasRef) {
+    if (!this.canvasInitialized && !this.loading() && this.canvasRef) {
       this.initCanvas();
       this.canvasInitialized = true;
       this.loadSignatureFromModel();
@@ -138,7 +138,7 @@ export class SignaturePage implements AfterViewChecked {
 
     const file = new File([blob], 'firma.png', { type: 'image/png' });
 
-    const sessionId = this.model?._pbId;
+    const sessionId = this.model()?._pbId;
     if (!sessionId) return;
 
     await this.pb.pb.collection('sign_session').update(sessionId, {
@@ -156,15 +156,15 @@ export class SignaturePage implements AfterViewChecked {
   }
 
   private async loadSignatureFromModel() {
-    if (!this.model?.signature) {
+    if (!this.model()?.signature) {
       return;
     }
     const ownerRecord = {
-      id: this.model.id,
+      id: this.model().id,
       collectionName: 'owner',
     } as any;
 
-    const url = this.pb.pb.getFileUrl(ownerRecord, this.model.signature);
+    const url = this.pb.pb.getFileUrl(ownerRecord, this.model().signature);
     const blob = await fetch(url).then((r) => r.blob());
     const objectUrl = URL.createObjectURL(blob);
 

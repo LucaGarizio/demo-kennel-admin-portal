@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -15,8 +15,7 @@ import { ReminderService } from './shared/service/reminder/reminder.service';
   templateUrl: './app.html',
 })
 export class App implements OnDestroy {
-  isLoginPage = false;
-  private authCheckTimer: any;
+  readonly isLoginPage = signal(false);
 
   constructor(
     private router: Router,
@@ -24,37 +23,25 @@ export class App implements OnDestroy {
     public reminder: ReminderService
   ) {
     const initialUrl = this.router.url;
-    this.isLoginPage =
-      initialUrl === '/' || initialUrl === '/kiosk' || initialUrl.startsWith('/kiosk');
+    this.isLoginPage.set(
+      initialUrl === '/' || initialUrl === '/kiosk' || initialUrl.startsWith('/kiosk')
+    );
 
     this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe((e: any) => {
       const url = e.urlAfterRedirects;
-      this.isLoginPage = url === '/' || url === '/kiosk' || url.startsWith('/kiosk');
-      this.updateReminderWatcher();
+      this.isLoginPage.set(url === '/' || url === '/kiosk' || url.startsWith('/kiosk'));
     });
 
-    this.pb.pb.authStore.onChange(() => {
-      this.updateReminderWatcher();
+    effect(() => {
+      if (this.pb.isAuth() && !this.isLoginPage()) {
+        this.reminder.startReminderWatcher();
+      } else {
+        this.reminder.stopReminderWatcher();
+      }
     });
-
-    this.updateReminderWatcher();
-    this.authCheckTimer = setInterval(() => {
-      this.updateReminderWatcher();
-    }, 10_000);
-  }
-
-  private updateReminderWatcher() {
-    if (this.pb.isAuth && !this.isLoginPage) {
-      this.reminder.startReminderWatcher();
-    } else {
-      this.reminder.stopReminderWatcher();
-    }
   }
 
   ngOnDestroy() {
     this.reminder.stopReminderWatcher();
-    if (this.authCheckTimer) {
-      clearInterval(this.authCheckTimer);
-    }
   }
 }

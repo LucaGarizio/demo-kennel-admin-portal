@@ -3,11 +3,11 @@
 
   <app-stay-form
     [model]="model"
-    [ownerOptions]="ownerOptions"
-    [dogOptions]="dogOptions"
-    [areaOptions]="areaOptions"
-    [boxOptions]="boxOptions"
-    [blockSave]="hasBlockingConflict"
+    [ownerOptions]="ownerOptions()"
+    [dogOptions]="dogOptions()"
+    [areaOptions]="areaOptions()"
+    [boxOptions]="boxOptions()"
+    [blockSave]="hasBlockingConflict()"
     (areaChange)="onAreaSelected($event)"
     (boxChange)="onBoxSelected($event)"
     (ownerChange)="onOwnerSelected($event)"
@@ -19,7 +19,8 @@
   ></app-stay-form>
 </div>
 <p-dialog
-  [(visible)]="showConflictDialog"
+  [visible]="showConflictDialog()"
+  (visibleChange)="showConflictDialog.set($event)"
   [modal]="true"
   [closable]="false"
   [draggable]="false"
@@ -28,7 +29,7 @@
 >
   <div class="p-fluid">
     <h2 class="mt-0 mb-4 text-center">
-      {{ isDoubleBoxConflict ? 'Box doppio parzialmente occupato da:' : 'Box occupato da:' }}
+      {{ isDoubleBoxConflict() ? 'Box doppio parzialmente occupato da:' : 'Box occupato da:' }}
     </h2>
 
     <div class="field mb-3">
@@ -47,7 +48,7 @@
         <p-select
           class="w-full"
           [options]="[{ label: getConflictFrom(), value: 'x' }]"
-          [(ngModel)]="conflictSelectValue"
+          [ngModel]="conflictSelectValue"
           disabled
         ></p-select>
       </div>
@@ -57,14 +58,14 @@
         <p-select
           class="w-full"
           [options]="[{ label: getConflictTo(), value: 'x' }]"
-          [(ngModel)]="conflictSelectValue"
+          [ngModel]="conflictSelectValue"
           disabled
         ></p-select>
       </div>
     </div>
 
     <div class="text-center mt-4">
-      @if (isDoubleBoxConflict) {
+      @if (isDoubleBoxConflict()) {
       <p class="text-lg">
         Il box è doppio. Vuoi inserire comunque <strong>{{ getIncomingDogName() }}</strong
         >?
@@ -77,7 +78,7 @@
 
   <ng-template pTemplate="footer">
     <div class="flex justify-content-end gap-2">
-      @if (isDoubleBoxConflict) {
+      @if (isDoubleBoxConflict()) {
       <p-button
         class="p-button-text"
         label="No, annulla"

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, effect, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
@@ -41,18 +41,18 @@ interface Occupation {
   styleUrls: ['./kennel-move-dialog.scss'],
 })
 export class KennelMoveDialogComponent {
-  @Input() show = false;
-  @Input() conflictOccupation: Occupation | null = null;
-  @Input() conflictDog: Dog | null = null;
-  @Input() availableBoxes: Box[] = [];
-  @Input() availableAreas: any[] = [];
-  @Input() targetBox: Box | null = null;
-  @Input() targetDog: Dog | null = null;
-  @Input() targetStart: Date | null = null;
-  @Input() targetEnd: Date | null = null;
+  show = input(false);
+  conflictOccupation = input<Occupation | null>(null);
+  conflictDog = input<Dog | null>(null);
+  availableBoxes = input<Box[]>([]);
+  availableAreas = input<any[]>([]);
+  targetBox = input<Box | null>(null);
+  targetDog = input<Dog | null>(null);
+  targetStart = input<Date | null>(null);
+  targetEnd = input<Date | null>(null);
 
-  @Output() close = new EventEmitter<void>();
-  @Output() moved = new EventEmitter<void>();
+  close = output<void>();
+  moved = output<void>();
 
   selectedArea: any = null;
   filteredBoxes: Box[] = [];
@@ -60,20 +60,23 @@ export class KennelMoveDialogComponent {
   newStart: Date | null = null;
   newEnd: Date | null = null;
 
-  constructor(private pb: PocketbaseService) {}
+  constructor(private pb: PocketbaseService) {
+    effect(() => {
+      const conflictOcc = this.conflictOccupation();
+      const targetB = this.targetBox();
+      if (!conflictOcc || !targetB) return;
 
-  ngOnChanges() {
-    if (!this.conflictOccupation || !this.targetBox) return;
-    this.availableBoxes = this.availableBoxes.map((b) => ({
-      ...b,
-      label: this.formatBoxLabel(b),
-    }));
+      this.filteredBoxes = this.availableBoxes().map((b) => ({
+        ...b,
+        label: this.formatBoxLabel(b),
+      }));
 
-    this.selectedArea = this.targetBox?.area || null;
-    this.filterBoxes();
-    this.newStart = normalizeDate(this.conflictOccupation.arrival_date);
-    this.newEnd = normalizeDate(this.conflictOccupation.departure_date);
-    this.newBox = null;
+      this.selectedArea = targetB.area || null;
+      this.filterBoxes();
+      this.newStart = normalizeDate(conflictOcc.arrival_date);
+      this.newEnd = normalizeDate(conflictOcc.departure_date);
+      this.newBox = null;
+    });
   }
 
   get canSubmit(): boolean {
@@ -81,18 +84,21 @@ export class KennelMoveDialogComponent {
   }
 
   async confirmMove() {
-    if (!this.canSubmit || !this.conflictOccupation || !this.conflictDog) return;
+    const conflictOcc = this.conflictOccupation();
+    const conflictD = this.conflictDog();
+
+    if (!this.canSubmit || !conflictOcc || !conflictD) return;
 
     try {
-      await this.pb.updateRecord('occupations', this.conflictOccupation.id, {
-        dog: this.conflictDog.id,
+      await this.pb.updateRecord('occupations', conflictOcc.id, {
+        dog: conflictD.id,
         box: this.newBox!.id,
         arrival_date: toPocketDate(this.newStart!),
         departure_date: toPocketDate(this.newEnd!),
       });
 
       const stays = await this.pb.getAll('stays', 10, {
-        filter: `dog_ids.id = "${this.conflictDog.id}"`,
+        filter: `dog_ids.id = "${conflictD.id}"`,
       });
 
       if (stays.length) {
@@ -101,13 +107,14 @@ export class KennelMoveDialogComponent {
           id_box: this.newBox?.id ?? null,
         });
       }
-      if (this.targetDog && this.targetStart && this.targetEnd) {
-        const startKey = formatYmdLocal(this.targetStart);
-        const endKey = formatYmdLocal(this.targetEnd);
+      if (this.targetDog() && this.targetStart() && this.targetEnd()) {
+        const startKey = formatYmdLocal(this.targetStart()!);
+        const endKey = formatYmdLocal(this.targetEnd()!);
+        const tDog = this.targetDog()!;
 
         const existingTarget = await this.pb.getAll('occupations', 20, {
           filter: `
-          dog.id = "${this.targetDog.id}" &&
+          dog.id = "${tDog.id}" &&
           arrival_date <= "${endKey} 23:59:59" &&
           departure_date >= "${startKey} 00:00:00"
         `,
@@ -118,20 +125,20 @@ export class KennelMoveDialogComponent {
         }
 
         const newOcc = await this.pb.createRecord('occupations', {
-          dog: this.targetDog.id,
-          box: this.targetBox!.id,
-          arrival_date: toPocketDate(this.targetStart),
-          departure_date: toPocketDate(this.targetEnd),
+          dog: tDog.id,
+          box: this.targetBox()!.id,
+          arrival_date: toPocketDate(this.targetStart()!),
+          departure_date: toPocketDate(this.targetEnd()!),
         });
 
         const targetStays = await this.pb.getAll('stays', 10, {
-          filter: `dog_ids.id = "${this.targetDog.id}"`,
+          filter: `dog_ids.id = "${tDog.id}"`,
         });
 
         if (targetStays.length) {
           await this.pb.updateRecord('stays', targetStays[0].id, {
-            id_area: this.targetBox?.area?.id ?? null,
-            id_box: this.targetBox?.id ?? null,
+            id_area: this.targetBox()?.area?.id ?? null,
+            id_box: this.targetBox()?.id ?? null,
           });
         }
       }
@@ -144,9 +151,9 @@ export class KennelMoveDialogComponent {
 
   filterBoxes() {
     if (!this.selectedArea) {
-      this.filteredBoxes = this.availableBoxes;
+      this.filteredBoxes = this.availableBoxes();
     } else {
-      this.filteredBoxes = this.availableBoxes.filter((b) => b.area?.id === this.selectedArea.id);
+      this.filteredBoxes = this.availableBoxes().filter((b) => b.area?.id === this.selectedArea.id);
     }
   }
 
