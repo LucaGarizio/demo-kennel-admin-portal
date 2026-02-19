@@ -75,7 +75,9 @@ export class KennelMoveDialogComponent {
       this.filterBoxes();
       this.newStart = normalizeDate(conflictOcc.arrival_date);
       this.newEnd = normalizeDate(conflictOcc.departure_date);
-      this.newBox = null;
+      
+      const matchedBox = this.filteredBoxes.find(b => b.id === targetB.id) || null;
+      this.newBox = matchedBox;
     });
   }
 
@@ -150,10 +152,14 @@ export class KennelMoveDialogComponent {
   }
 
   filterBoxes() {
+    const mapBox = (b: Box) => ({ ...b, label: this.formatBoxLabel(b) });
+      
     if (!this.selectedArea) {
-      this.filteredBoxes = this.availableBoxes();
+      this.filteredBoxes = this.availableBoxes().map(mapBox);
     } else {
-      this.filteredBoxes = this.availableBoxes().filter((b) => b.area?.id === this.selectedArea.id);
+      this.filteredBoxes = this.availableBoxes()
+        .filter((b) => b.area?.id === this.selectedArea.id)
+        .map(mapBox);
     }
   }
 

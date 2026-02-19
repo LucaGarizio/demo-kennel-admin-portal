@@ -1,6 +1,7 @@
 <div class="page-container">
-  <app-page-header title="Modifica Soggiorno"></app-page-header>
+  <app-page-header [title]="isEdit() ? 'Modifica Soggiorno' : 'Aggiungi Nuovo Soggiorno'"></app-page-header>
 
+  @if (!loading() && model) {
   <app-stay-form
     [model]="model"
     [ownerOptions]="ownerOptions()"
@@ -17,6 +18,9 @@
     (depositChange)="onDepositChange()"
     (save)="onSubmit($event)"
   ></app-stay-form>
+  } @else {
+    <p class="text-center mt-4">Caricamento...</p>
+  }
 </div>
 <p-dialog
   [visible]="showConflictDialog()"

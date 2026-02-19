@@ -1,9 +1,9 @@
 <div class="page-container">
-  <app-page-header title="Modifica Cane"></app-page-header>
+  <app-page-header [title]="isEdit() ? 'Modifica Cane' : 'Aggiungi Nuovo Cane'"></app-page-header>
 
-  @if (!loading()) {
+  @if (!loading() && model()) {
   <app-dogs-form
-    [model]="model()"
+    [model]="model()!"
     [ownerOptions]="ownerOptions()"
     [tagliaOptions]="tagliaOptions()"
     [vaxOptions]="vaxOptions()"

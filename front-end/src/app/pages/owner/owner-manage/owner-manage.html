@@ -1,0 +1,15 @@
+<div class="page-container">
+  <app-page-header [title]="isEdit() ? 'Modifica Proprietario' : 'Aggiungi Nuovo Proprietario'"></app-page-header>
+
+  @if (!loading() && model()) {
+  <app-owner-form
+    [model]="model()!"
+    (save)="onSubmit($event)"
+    (filesSelected)="onFilesSelected($event)"
+    (deleteDocument)="onDeleteDoc($event)"
+    (forceCreateOwner)="createTempOwner()"
+  ></app-owner-form>
+  } @else {
+    <p class="text-center mt-4">Caricamento...</p>
+  }
+</div>

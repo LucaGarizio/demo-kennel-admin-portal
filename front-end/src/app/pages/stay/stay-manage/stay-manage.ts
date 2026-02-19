@@ -25,7 +25,7 @@ import { normalizeDate, toPocketDateTime, formatDateTime } from '../../../shared
 import { calculateRemaining } from '../../../shared/service/stay-service/stay-price.service';
 
 @Component({
-  selector: 'app-stay-edit',
+  selector: 'app-stay-manage',
   standalone: true,
   imports: [
     CommonModule,
@@ -36,11 +36,13 @@ import { calculateRemaining } from '../../../shared/service/stay-service/stay-pr
     FormsModule,
     ButtonModule,
   ],
-  templateUrl: './stay-edit.html',
-  styleUrls: ['./stay-edit.scss'],
+  templateUrl: './stay-manage.html',
+  styleUrls: ['./stay-manage.scss'],
 })
-export class StayEditComponent implements OnInit {
-  id!: string;
+export class StayManageComponent implements OnInit {
+  id: string | null = null;
+  isEdit = signal(false);
+
   model: StayFormModel;
 
   ownerOptions = signal<OwnerOption[]>([]);
@@ -61,6 +63,7 @@ export class StayEditComponent implements OnInit {
   isDoubleBoxConflict = signal(false);
   allowDespiteConflict = signal(false);
   dogInConflictName = signal('');
+  loading = signal(true);
 
   constructor(
     private route: ActivatedRoute,
@@ -73,7 +76,10 @@ export class StayEditComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.id = this.route.snapshot.paramMap.get('id')!;
+    this.id = this.route.snapshot.paramMap.get('id');
+    this.isEdit.set(this.id !== 'creazione' && !!this.id);
+    this.id = this.isEdit() ? this.id : null;
+
     const opts = await this.logic.loadAllOptions();
     this.ownerOptions.set(opts.owners);
     this.allDogs = opts.dogs;
@@ -82,44 +88,60 @@ export class StayEditComponent implements OnInit {
     this.allBoxes = opts.boxes;
     this.boxOptions.set(opts.boxes);
 
-    await this.loadStay();
+    if (this.isEdit() && this.id) {
+        await this.loadStay();
+    } else {
+        this.loading.set(false);
+    }
   }
 
   async loadStay() {
-    const stay = await this.pb.getOne('stays', this.id, { expand: 'owner_id,dog_ids' });
-    const stayModel = fromBackendStay(stay);
-    const dogIds = stayModel.id_cani;
-
-    const occupations = await this.pb.getAll('occupations', 200, {
-      expand: 'dog,box,box.area',
-      filter: dogIds.map((id: string) => `dog="${id}"`).join(' || '),
-    });
-
-    this.existingOccupation = occupations;
-
-    const cani = dogIds.map((cid: string) => {
-      const occ = occupations.find((o) => o.expand?.['dog']?.id === cid);
-      const areaId = occ?.expand?.['box']?.expand?.area?.id ?? null;
-      return {
-        dog_id: cid,
-        id_area: areaId,
-        id_box: occ?.expand?.['box']?.id ?? null,
-        boxOptions: areaId ? this.stayForm.filterBoxes(areaId, this.allBoxes) : [],
-      };
-    });
-
-    this.model = { ...stayModel, cani };
-
-    this.originalArrival = normalizeDate(this.model.data_arrivo);
-    this.originalDeparture = normalizeDate(this.model.data_uscita);
-
-    this.onOwnerSelected(this.model.id_proprietario!);
-    this.updateAll();
+    if (!this.id) return;
+    try {
+        const stay = await this.pb.getOne('stays', this.id, { expand: 'owner_id,dog_ids' });
+        const stayModel = fromBackendStay(stay);
+        const dogIds = stayModel.id_cani;
+    
+        const occupations = await this.pb.getAll('occupations', 200, {
+          expand: 'dog,box,box.area',
+          filter: dogIds.map((id: string) => `dog="${id}"`).join(' || '),
+        });
+    
+        this.existingOccupation = occupations;
+    
+        const cani = dogIds.map((cid: string) => {
+          const occ = occupations.find((o) => o.expand?.['dog']?.id === cid);
+          const areaId = occ?.expand?.['box']?.expand?.area?.id ?? null;
+          return {
+            dog_id: cid,
+            id_area: areaId,
+            id_box: occ?.expand?.['box']?.id ?? null,
+            boxOptions: areaId ? this.stayForm.filterBoxes(areaId, this.allBoxes) : [],
+          };
+        });
+    
+        this.model = { ...stayModel, cani };
+    
+        this.originalArrival = normalizeDate(this.model.data_arrivo);
+        this.originalDeparture = normalizeDate(this.model.data_uscita);
+    
+        this.onOwnerSelected(this.model.id_proprietario!);
+        this.updateAll();
+    } catch(err) {
+        console.error(err);
+    } finally {
+        this.loading.set(false);
+    }
   }
 
   onOwnerSelected(ownerId: string) {
     this.model.id_proprietario = ownerId;
     this.dogOptions.set(ownerId ? this.stayForm.filterDogs(ownerId, this.allDogs) : this.allDogs);
+    if (!this.isEdit()) {
+        this.model.id_cani = this.model.id_cani.filter((cid) =>
+          this.dogOptions().some((d) => d.id === cid)
+        );
+    }
     this.updateAll();
   }
 
@@ -177,6 +199,12 @@ export class StayEditComponent implements OnInit {
     const result = await this.logic.checkConflicts(this.model, this.allBoxes, this.allDogs);
 
     if (result) {
+      if (this.isEdit() && this.id) {
+         result.conflicts = result.conflicts.filter((c: any) => c.stay !== this.id);
+         result.hasBlocking = result.conflicts.length > 0;
+         if (result.conflicts.length === 0) return this.resetConflictState();
+      }
+
       this.conflictOccupations.set(result.conflicts);
       this.conflictOccupation.set(result.conflicts[0]);
       this.hasBlockingConflict.set(result.hasBlocking);
@@ -206,8 +234,10 @@ export class StayEditComponent implements OnInit {
 
   onConflictCancel() {
     this.resetConflictState();
-    this.model.data_arrivo = this.originalArrival;
-    this.model.data_uscita = this.originalDeparture;
+    if (this.isEdit()) {
+        this.model.data_arrivo = this.originalArrival;
+        this.model.data_uscita = this.originalDeparture;
+    }
     this.updateAll();
   }
 
@@ -219,25 +249,53 @@ export class StayEditComponent implements OnInit {
     if (this.hasBlockingConflict()) return;
     if (this.isDoubleBoxConflict() && !this.allowDespiteConflict()) return;
 
-    const payload = toBackendStay(frontModel);
-    await this.pb.updateRecord('stays', this.id, payload);
-    for (const occ of this.existingOccupation) {
-      await this.pb.deleteRecord('occupations', occ.id);
-    }
-
     const arrival = normalizeDate(frontModel.data_arrivo)!;
     const departure = normalizeDate(frontModel.data_uscita)!;
 
-    for (const entry of frontModel.cani) {
-      if (!entry.id_area || !entry.id_box) continue;
-      await this.pb.createRecord('occupations', {
-        dog: entry.dog_id,
-        box: entry.id_box,
-        area: entry.id_area,
-        arrival_date: toPocketDateTime(arrival),
-        departure_date: toPocketDateTime(departure),
-        stay: this.id,
-      });
+    if (this.isEdit() && this.id) {
+        const payload = toBackendStay(frontModel);
+        await this.pb.updateRecord('stays', this.id, payload);
+        for (const occ of this.existingOccupation) {
+          await this.pb.deleteRecord('occupations', occ.id);
+        }
+    
+        for (const entry of frontModel.cani) {
+          if (!entry.id_area || !entry.id_box) continue;
+          await this.pb.createRecord('occupations', {
+            dog: entry.dog_id,
+            box: entry.id_box,
+            area: entry.id_area,
+            arrival_date: toPocketDateTime(arrival),
+            departure_date: toPocketDateTime(departure),
+            stay: this.id,
+          });
+        }
+    } else {
+        const stay = await this.pb.createRecord('stays', {
+            owner_id: frontModel.id_proprietario,
+            dog_ids: frontModel.id_cani,
+            arrival_date: toPocketDateTime(arrival),
+            departure_date: toPocketDateTime(departure),
+            boarding_fee: frontModel.retta,
+            deposit: frontModel.acconto,
+            outstanding_balance: frontModel.rimanente,
+            total_due: frontModel.totale_dovuto,
+            payment_type: frontModel.tipo_pagamento,
+            notes: frontModel.note || '',
+          });
+      
+          for (const entry of frontModel.cani) {
+            if (!entry.id_area || !entry.id_box) continue;
+      
+            await this.pb.createRecord('occupations', {
+              dog: entry.dog_id,
+              box: entry.id_box,
+              area: entry.id_area,
+              arrival_date: toPocketDateTime(arrival),
+              departure_date: toPocketDateTime(departure),
+              stay: stay.id,
+            });
+          }
     }
 
     this.router.navigate(['/lista-soggiorni']);

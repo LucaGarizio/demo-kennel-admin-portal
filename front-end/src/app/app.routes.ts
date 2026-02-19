@@ -2,15 +2,12 @@ import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
 import { DogList } from './pages/dog/dog-list/dog-list';
 import { OwnerList } from './pages/owner/owner-list/owner-list';
-import { OwnerCreateComponent } from './pages/owner/owner-create/owner-create';
-import { DogCreateComponent } from './pages/dog/dog-create/dog-create';
+import { OwnerManageComponent } from './pages/owner/owner-manage/owner-manage';
+import { DogManageComponent } from './pages/dog/dog-manage/dog-manage';
 import { StayList } from './pages/stay/stay-list/stay-list';
-import { StayCreateComponent } from './pages/stay/stay-create/stay-create';
-import { StayEditComponent } from './pages/stay/stay-edit/stay-edit';
+import { StayManageComponent } from './pages/stay/stay-manage/stay-manage';
 import { AuthGuard } from './auth.guard';
 import { KennelScheduleComponent } from './pages/kennel-schedule/kennel-schedule';
-import { OwnerEditComponent } from './pages/owner/owner-edit/owner-edit';
-import { DogEditComponent } from './pages/dog/dog-edit/dog-edit';
 import { SignaturePage } from './pages/signature-page/signature-page';
 import { SignatureWaiting } from './pages/signature-waiting/signature-waiting';
 
@@ -18,16 +15,13 @@ export const routes: Routes = [
   { path: '', component: Login },
 
   { path: 'lista-cani', component: DogList, canActivate: [AuthGuard] },
-  { path: 'cane/creazione', component: DogCreateComponent, canActivate: [AuthGuard] },
-  { path: 'cane/:id', component: DogEditComponent, canActivate: [AuthGuard] },
+  { path: 'cane/:id', component: DogManageComponent, canActivate: [AuthGuard] },
 
   { path: 'lista-proprietari', component: OwnerList, canActivate: [AuthGuard] },
-  { path: 'proprietario/creazione', component: OwnerCreateComponent, canActivate: [AuthGuard] },
-  { path: 'proprietario/:id', component: OwnerEditComponent, canActivate: [AuthGuard] },
+  { path: 'proprietario/:id', component: OwnerManageComponent, canActivate: [AuthGuard] },
 
   { path: 'lista-soggiorni', component: StayList, canActivate: [AuthGuard] },
-  { path: 'soggiorno/creazione', component: StayCreateComponent, canActivate: [AuthGuard] },
-  { path: 'soggiorno/:id', component: StayEditComponent, canActivate: [AuthGuard] },
+  { path: 'soggiorno/:id', component: StayManageComponent, canActivate: [AuthGuard] },
 
   { path: 'box', component: KennelScheduleComponent, canActivate: [AuthGuard] },
   { path: 'kiosk', component: SignatureWaiting },

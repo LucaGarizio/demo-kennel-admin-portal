@@ -54,6 +54,8 @@ export class KennelDialogComponent {
   conflictMessage = '';
   isMultiMode = false;
 
+  localBox: any = null;
+
   constructor(private pb: PocketbaseService) {
     effect(async () => {
       if (!this.showDialog()) return;
@@ -70,6 +72,8 @@ export class KennelDialogComponent {
       this.isMultiMode = !!box?.double;
       this.selectedArea = box?.expand?.area || null;
       this.filterBoxes();
+      
+      this.localBox = this.filteredBoxes.find((b) => b.id === box.id) || null;
 
       const occs = await this.pb.getAll('occupations', 5, {
         filter: `box.id="${box.id}" && ${this.buildRangeFilter()}`,
@@ -96,9 +100,9 @@ export class KennelDialogComponent {
   }
 
   async confirmDialog() {
-    if (!this.startDate || !this.pendingBox()) return;
+    if (!this.startDate || !this.localBox) return;
 
-    if (!this.pendingBox().double && this.selectedDog) {
+    if (!this.localBox.double && this.selectedDog) {
       const occ = await this.findCurrentBoxOccupation();
       if (occ && this.isConflict(occ)) {
         this.openConflictDialog(occ);
@@ -112,7 +116,7 @@ export class KennelDialogComponent {
   private async findCurrentBoxOccupation() {
     return (
       await this.pb.getAll('occupations', 10, {
-        filter: `box.id="${this.pendingBox().id}" && ${this.buildRangeFilter()}`,
+        filter: `box.id="${this.localBox.id}" && ${this.buildRangeFilter()}`,
         expand: 'dog,box',
       })
     )[0];
@@ -124,7 +128,7 @@ export class KennelDialogComponent {
   }
 
   private async saveCurrentAssignment() {
-    if (!this.startDate || !this.endDate || !this.pendingBox()) return;
+    if (!this.startDate || !this.endDate || !this.localBox) return;
 
     const payload = {
       arrival_date: toPocketDate(this.startDate),
@@ -141,8 +145,8 @@ export class KennelDialogComponent {
 
           if (stays.length) {
             await this.pb.updateRecord('stays', stays[0].id, {
-              id_area: this.pendingBox().expand?.area?.id ?? null,
-              id_box: this.pendingBox().id,
+              id_area: this.localBox.expand?.area?.id ?? null,
+              id_box: this.localBox.id,
             });
           }
         }
@@ -157,8 +161,8 @@ export class KennelDialogComponent {
 
         if (stays.length) {
           await this.pb.updateRecord('stays', stays[0].id, {
-            id_area: this.pendingBox().expand?.area?.id ?? null,
-            id_box: this.pendingBox().id,
+            id_area: this.localBox.expand?.area?.id ?? null,
+            id_box: this.localBox.id,
           });
         }
       }
@@ -184,13 +188,13 @@ export class KennelDialogComponent {
 
     await this.pb.createRecord('occupations', {
       dog: dogId,
-      box: this.pendingBox().id,
+      box: this.localBox.id,
       ...payload,
     });
   }
 
   private async assignDoubleBox(payload: any) {
-    const boxId = this.pendingBox().id;
+    const boxId = this.localBox.id;
     const selectedIds = this.selectedDogs.map((d) => d.id);
 
     for (const dogId of selectedIds) {
@@ -230,15 +234,16 @@ export class KennelDialogComponent {
       conflictOccupation: this.conflictOccupation,
       conflictDog: this.conflictDog,
       targetDog: this.selectedDog,
-      targetBox: this.pendingBox(),
+      targetBox: this.localBox || this.pendingBox(),
       targetStart: this.startDate,
       targetEnd: this.endDate,
     });
   }
 
   async deleteAssignment() {
+    if (!this.localBox) return;
     const occs = await this.pb.getAll('occupations', 50, {
-      filter: `box.id="${this.pendingBox().id}" && ${this.buildRangeFilter()}`,
+      filter: `box.id="${this.localBox.id}" && ${this.buildRangeFilter()}`,
     });
 
     for (const occ of occs) {
@@ -248,7 +253,7 @@ export class KennelDialogComponent {
   }
 
   canConfirm(): boolean {
-    if (!this.pendingBox() || !this.startDate || !this.endDate) return false;
+    if (!this.localBox || !this.startDate || !this.endDate) return false;
     return this.isMultiMode ? this.selectedDogs.length > 0 : !!this.selectedDog;
   }
 
@@ -278,12 +283,14 @@ export class KennelDialogComponent {
   }
 
   filterBoxes() {
+    const mapBox = (b: any) => ({ ...b, label: this.formatBoxLabel(b) });
+
     if (!this.selectedArea) {
-      this.filteredBoxes = this.availableBoxes();
+      this.filteredBoxes = this.availableBoxes().map(mapBox);
     } else {
-      this.filteredBoxes = this.availableBoxes().filter(
-        (b) => b.expand?.area?.id === this.selectedArea.id
-      );
+      this.filteredBoxes = this.availableBoxes()
+        .filter((b) => b.expand?.area?.id === this.selectedArea.id)
+        .map(mapBox);
     }
   }
 
