@@ -1,0 +1,39 @@
+<div [class.pdf-mode]="isPdf">
+  <p class="text my-5">
+    Io sottoscritto/a <strong>{{ model?.nome }} {{ model?.cognome }}</strong>
+    <span>, nato/a a <strong>{{ model?.luogo_di_nascita }}</strong> il </span>
+    <strong>{{ model?.data_di_nascita | date : 'dd/MM/yyyy' }}</strong>
+    <span>, residente a <strong>{{ model?.residenza }}</strong></span>
+    <span>, <strong> {{ model?.indirizzo }}</strong></span
+    >, dichiaro di aver letto, compreso e accettato il seguente regolamento relativo
+    all’ospitalità del mio animale presso la struttura.
+  </p>
+
+  <ul class="terms-list">
+    <li>
+      Il proprietario è tenuto a presentare il libretto sanitario aggiornato, comprensivo di
+      vaccinazioni obbligatorie e profilassi antiparassitarie valide.
+    </li>
+    <li>
+      I cani devono arrivare puliti e privi di parassiti esterni; in caso contrario, il canile può
+      applicare un trattamento obbligatorio a carico del proprietario.
+    </li>
+    <li>Le visite al proprio animale sono consentite solo previo accordo con il personale.</li>
+    <li>L'orario di ingresso e uscita deve essere concordato; ritardi possono comportare costi.</li>
+    <li>Acconti versati non sono rimborsabili in caso di rinuncia o modifica.</li>
+    <li>La giornata di entrata viene sempre conteggiata come giorno completo.</li>
+    <li>
+      La giornata di uscita non verrà conteggiata se il cane viene ritirato entro le 12, dopo
+      questo orario verrà conteggiata una giornata in piu.
+    </li>
+    <li>
+      Il canile declina ogni responsabilità per malattie, fuga, morte o danni derivanti da
+      condizioni preesistenti o non dichiarate.
+    </li>
+    <li>Foro competente: BIELLA.</li>
+    <li>
+      Dichiaro che le informazioni fornite sono veritiere e mi assumo ogni responsabilità per
+      eventuali omissioni o dichiarazioni scorrette.
+    </li>
+  </ul>
+</div>

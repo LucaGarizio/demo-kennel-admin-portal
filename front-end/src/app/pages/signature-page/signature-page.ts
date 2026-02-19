@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { PocketbaseService } from '../../shared/service/pocket-base-services/pocketbase.service';
 import { ButtonDirective } from 'primeng/button';
 import { ButtonModule } from 'primeng/button';
+import { TermsConditionsComponent } from '../../shared/component/terms-conditions/terms-conditions';
 
 @Component({
   selector: 'app-signature-page',
   standalone: true,
-  imports: [CommonModule, ButtonDirective, ButtonModule],
+  imports: [CommonModule, ButtonDirective, ButtonModule, TermsConditionsComponent],
   templateUrl: './signature-page.html',
   styleUrls: ['./signature-page.scss'],
 })

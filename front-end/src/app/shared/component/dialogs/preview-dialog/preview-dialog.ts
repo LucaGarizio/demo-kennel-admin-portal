@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
+import { TermsConditionsComponent } from '../../terms-conditions/terms-conditions';
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -10,7 +11,7 @@ import jsPDF from 'jspdf';
 @Component({
   selector: 'app-preview-dialog',
   standalone: true,
-  imports: [CommonModule, DialogModule, ButtonModule],
+  imports: [CommonModule, DialogModule, ButtonModule, TermsConditionsComponent],
   templateUrl: './preview-dialog.html',
   styleUrls: ['./preview-dialog.scss'],
 })
@@ -110,7 +111,7 @@ export class PreviewDialogComponent {
       const firmaWidth = 70;
       const firmaHeight = 20;
 
-      const boxTopY = 260;
+      const boxTopY = 250;
       const boxLeftX = 120;
       const offsetX = 2.5;
       const offsetY = 2.5;

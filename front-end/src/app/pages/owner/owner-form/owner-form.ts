@@ -23,6 +23,7 @@ import { toBackendOwner } from '../../../shared/utils/mapper';
 import { PreviewDialogComponent } from '../../../shared/component/dialogs/preview-dialog/preview-dialog';
 import { DocumentsDialogComponent } from '../../../shared/component/dialogs/documents-dialog-component/documents-dialog-component';
 import { ConfirmDialogComponent } from '../../../shared/component/dialogs/confirm-dialog/confirm-dialog';
+import { TermsConditionsComponent } from '../../../shared/component/terms-conditions/terms-conditions';
 @Component({
   selector: 'app-owner-form',
   standalone: true,
@@ -41,6 +42,7 @@ import { ConfirmDialogComponent } from '../../../shared/component/dialogs/confir
     PreviewDialogComponent,
     DocumentsDialogComponent,
     ConfirmDialogComponent,
+    TermsConditionsComponent
   ],
   templateUrl: './owner-form.html',
   styleUrls: ['./owner-form.scss'],
