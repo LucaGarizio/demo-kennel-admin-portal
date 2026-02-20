@@ -71,9 +71,6 @@ export function formatYmdLocal(d: Date): string {
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
 }
-/**
- * Format date as DD/MM
- */
 export function formatShortDateIt(date: Date | string | null | undefined): string {
   if (!date) return '';
   const d = normalizeDate(date);

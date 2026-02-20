@@ -1,16 +1,16 @@
 import { formatYmdLocal } from '../../../shared/utils/date-utils';
 
 const FIXED_HOLIDAYS = [
-  '01-01', // Capodanno
-  '01-06', // Epifania
-  '04-25', // Liberazione
-  '05-01', // Lavoro
-  '06-02', // Repubblica
-  '08-15', // Ferragosto
-  '11-01', // Ognissanti
-  '12-08', // Immacolata
-  '12-25', // Natale
-  '12-26', // Santo Stefano
+  '01-01',
+  '01-06',
+  '04-25',
+  '05-01',
+  '06-02',
+  '08-15',
+  '11-01',
+  '12-08',
+  '12-25',
+  '12-26',
 ];
 
 const HOLIDAY_NAMES: Record<string, string> = {
@@ -27,7 +27,7 @@ const HOLIDAY_NAMES: Record<string, string> = {
 };
 
 function toMmDdLocal(date: Date): string {
-  return formatYmdLocal(date).slice(5, 10); // "MM-DD"
+  return formatYmdLocal(date).slice(5, 10);
 }
 
 function computeEaster(year: number): Date {

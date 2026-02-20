@@ -149,7 +149,6 @@ export class StayList implements OnInit {
       const allRecords = await this.stayListSvc.loadStays('');
       this.buildYearFilterFromRecords(allRecords);
     } catch (err) {
-      // Handled globally
     }
   }
 
@@ -176,7 +175,6 @@ export class StayList implements OnInit {
       this.records.set(result);
       this.totals.set(this.stayListSvc.getTotal(result));
     } catch (err) {
-      // Handled globally
     }
     this.loading.set(false);
   }

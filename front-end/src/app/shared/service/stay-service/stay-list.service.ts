@@ -69,7 +69,6 @@ export class StayListService {
     );
 
     const validOccs = relatedOccs.filter((o: OccupationBackend) => {
-      // Compare ISO strings directly or parse them, Pocketbase standardizes UTC strings so standard str compare works
       return o.arrival_date <= (stay.departure_date || '') && o.departure_date >= (stay.arrival_date || '');
     });
 
@@ -111,7 +110,7 @@ export class StayListService {
       notes: stay.notes || '',
       boarding_fee: stay.boarding_fee,
       deposit: stay.deposit,
-      amount_paid: (stay as any).amount_paid, // Assuming it's coming internally if mixed
+      amount_paid: (stay as any).amount_paid,
       outstanding_balance: stay.outstanding_balance,
       total_due: stay.total_due,
       payment_type: this.formatPayment(stay.payment_type),

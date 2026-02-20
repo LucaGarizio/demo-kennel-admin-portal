@@ -93,12 +93,10 @@ export class PocketbaseService {
     }
   }
 
-  // Backwards compatibility pointer for refactoring without breaking existing references temporarily
   async getRecord<T = any>(collection: string, id: string, options: any = {}): Promise<T> {
     return this.getOne<T>(collection, id, options);
   }
 
-  // Backwards compatibility pointer for refactoring without breaking existing references temporarily
   async getById<T = any>(collection: string, id: string, options: any = {}): Promise<T> {
     return this.getOne<T>(collection, id, options);
   }

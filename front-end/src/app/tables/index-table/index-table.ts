@@ -34,7 +34,6 @@ export class IndexTableComponent {
   @Output() view = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
-  // @Output() cellClick = new EventEmitter<{ column: string; value: any; row: any }>();
   @Output() cellClick = new EventEmitter<{
     column: string;
     value: any;
@@ -46,7 +45,6 @@ export class IndexTableComponent {
     documents: string[];
   }>();
 
-  // expandedRow: any | null = null;
   showDocsDialog = false;
   currentDocs: string[] = [];
   currentRow: any = null;
@@ -74,17 +72,12 @@ export class IndexTableComponent {
   getDogArray(row: any, col: string): string[] {
     const value = this.getCellValue(row, col);
     if (!value) return [];
-    // Split e trim per rimuovere eventuali spazi bianchi accidentali
     return value.split(',').map((name: string) => name.trim());
   }
-  // Aggiungi questo metodo
   handleDogClick(col: string, row: any, index: number) {
-    // Inviamo l'indice del cane cliccato insieme ai dati della riga
     this.cellClick.emit({ column: col, value: row[col], row, index });
   }
 
-  // Opzionale: aggiorna l'interfaccia dell'output se usi TypeScript rigoroso
-  // @Output() cellClick = new EventEmitter<{ column: string; value: any; row: any; index?: number }>();
   getClickableStyle() {
     return { cursor: 'pointer', color: 'rgb(52, 211, 153)' };
   }

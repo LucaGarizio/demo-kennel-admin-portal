@@ -1,4 +1,4 @@
-<app-loading-spinner [visible]="loading" height="72vh" />
+<app-loading-spinner [visible]="loading" height="70vh" />
 @if (!loading) {
 <div class="table-wrapper">
   <p-table
@@ -35,7 +35,6 @@
 
         @for (c of columns; track c) {
 
-        <!-- OWNER CLICK -->
         @if (isOwnerColumn(c)) {
         <td
           class="hover:underline"
@@ -51,7 +50,6 @@
           >@if (!$last) {<span>, </span>} }
         </td>
         }
-        <!-- DOCUMENTS -->
         @else if (isDocumentsColumn(c)) { @let docs = getDocuments(row);
         <td
           class="white-space-nowrap"
@@ -67,7 +65,6 @@
         </td>
         }
 
-        <!-- SIGNATURE -->
         @else if (c === 'signature') {
         <td>
           @if (row.signature) {

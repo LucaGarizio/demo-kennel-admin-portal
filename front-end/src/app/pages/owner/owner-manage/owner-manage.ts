@@ -65,7 +65,6 @@ export class OwnerManageComponent implements OnInit {
       const back = await this.ownerSvc.loadOwner(this.id);
       this.model.set({ ...back, ...fromBackendOwner(back) });
     } catch (err) {
-      // Handled globally
     } finally {
       this.loading.set(false);
     }
@@ -84,7 +83,6 @@ export class OwnerManageComponent implements OnInit {
       }
       this.router.navigate(['/lista-proprietari']);
     } catch (err) {
-      // Handled globally
     }
   }
 

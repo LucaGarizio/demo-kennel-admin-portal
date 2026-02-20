@@ -71,24 +71,20 @@ export class DashboardComponent implements OnInit {
     try {
       const today = formatYmdLocal(new Date());
       
-      // Load arrivals for today
       const arrivals = await this.stayService.loadStays(`arrival_date >= "${today} 00:00:00" && arrival_date <= "${today} 23:59:59"`);
       this.todayArrivals.set(arrivals);
 
-      // Load departures for today OR past un-picked-up stays
       const departures = await this.stayService.loadStays(
         `(departure_date >= "${today} 00:00:00" && departure_date <= "${today} 23:59:59") || (departure_date < "${today} 00:00:00" && is_picked_up = false)`
       );
       this.todayDepartures.set(departures);
 
-      // Presence: occupations active now
       const currentOccs = await this.pb.pb.collection('occupations').getList(1, 1, {
         filter: `arrival_date <= "${today} 23:59:59" && departure_date >= "${today} 00:00:00"`,
       });
       this.totalPresence.set(currentOccs.totalItems);
 
     } catch (err) {
-      // Handled globally
     } finally {
       this.loading.set(false);
     }

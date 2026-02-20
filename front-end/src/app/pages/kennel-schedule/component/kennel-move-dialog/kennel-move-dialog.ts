@@ -147,7 +147,6 @@ export class KennelMoveDialogComponent {
 
       this.moved.emit();
     } catch (err) {
-      // Handled globally
     }
   }
 

@@ -2,10 +2,8 @@
   animation: fadeInTable 0.5s ease-in;
 }
 :host ::ng-deep .p-datatable-wrapper {
-  /* mantiene lo scroll */
   overflow-y: auto;
 
-  /* Firefox */
   scrollbar-width: none;
 
   -ms-overflow-style: none;

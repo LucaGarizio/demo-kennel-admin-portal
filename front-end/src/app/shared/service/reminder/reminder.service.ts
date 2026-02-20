@@ -76,7 +76,6 @@ export class ReminderService {
         this.tryOpenNext();
       }
     } catch (err) {
-      // Handled globally
     }
   }
 

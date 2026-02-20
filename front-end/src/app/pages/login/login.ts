@@ -39,7 +39,6 @@ export class Login {
       await this.pb.login(this.email(), this.password());
       this.router.navigate(['/dashboard']);
     } catch (err) {
-      // Handled globally
     } finally {
       this.loading.set(false);
     }

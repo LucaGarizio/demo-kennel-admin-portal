@@ -128,7 +128,6 @@ export class StayManageComponent implements OnInit {
         this.onOwnerSelected(this.model.id_proprietario!);
         this.updateAll();
     } catch(err) {
-        // Handled globally
     } finally {
         this.loading.set(false);
     }
@@ -145,7 +144,7 @@ export class StayManageComponent implements OnInit {
     this.updateAll();
   }
 
-  onDogsChanged() {
+  async onDogsChanged() {
     const selected = this.model.id_cani;
     this.model.cani = this.model.cani.filter((c) => selected.includes(c.dog_id));
     selected.forEach((cid) => {
@@ -154,6 +153,7 @@ export class StayManageComponent implements OnInit {
       }
     });
     this.updateAll();
+    await this.checkBoxConflictsOnDates();
   }
 
   onAreaSelected(e: { index: number; area: string | null }) {
@@ -173,9 +173,10 @@ export class StayManageComponent implements OnInit {
     }
   }
 
-  onArrivalDateChange() {
+  async onArrivalDateChange() {
     this.resetConflictState();
     this.updateAll();
+    await this.checkBoxConflictsOnDates();
   }
 
   async onDepartureDateChange() {
@@ -246,6 +247,7 @@ export class StayManageComponent implements OnInit {
   }
 
   async onSubmit(frontModel: StayFormModel) {
+    await this.checkBoxConflictsOnDates();
     if (this.hasBlockingConflict()) return;
     if (this.isDoubleBoxConflict() && !this.allowDespiteConflict()) return;
 

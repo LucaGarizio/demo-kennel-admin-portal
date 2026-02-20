@@ -52,7 +52,6 @@ export class SignaturePage implements AfterViewChecked {
 
       this.loading.set(false);
     } catch (err) {
-      // Handled globally
     }
   }
 

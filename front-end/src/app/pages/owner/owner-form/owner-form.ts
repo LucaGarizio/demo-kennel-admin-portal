@@ -245,10 +245,4 @@ export class OwnerFormComponent {
     this.confirmVisible.set(false);
   }
 
-  // openPreview() {
-  //   this.previewVisible = true;
-  // }
-  // closePdfPreview() {
-  //   this.previewVisible = false;
-  // }
 }

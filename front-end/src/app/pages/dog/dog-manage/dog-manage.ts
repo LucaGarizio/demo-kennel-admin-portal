@@ -75,7 +75,6 @@ export class DogManageComponent implements OnInit {
       const back = await this.dogService.loadDog(this.id);
       this.model.set(fromBackendDog(back) as any);
     } catch (err) {
-      // Handled globally
     } finally {
       this.loading.set(false);
     }
@@ -90,7 +89,6 @@ export class DogManageComponent implements OnInit {
       }
       this.router.navigate(['/lista-cani']);
     } catch (err) {
-      // Handled globally
     }
   }
 }

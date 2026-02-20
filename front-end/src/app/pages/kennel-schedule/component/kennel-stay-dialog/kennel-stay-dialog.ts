@@ -169,7 +169,6 @@ export class KennelDialogComponent {
 
       this.confirm.emit();
     } catch (err) {
-      // Handled globally
     }
   }
 
