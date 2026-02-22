@@ -76,13 +76,17 @@ export class OwnerManageComponent implements OnInit {
 
   async onSubmit(front: OwnerFormModel) {
     try {
-      if (this.isEdit() && this.id) {
-          await this.ownerSvc.updateOwner(this.id, front, this.selectedFiles());
+
+      const currentId = this.id || front.id;
+      
+      if (currentId) {
+          await this.ownerSvc.updateOwner(currentId, front, this.selectedFiles());
       } else {
           await this.ownerSvc.createOwner(front, this.selectedFiles());
       }
       this.router.navigate(['/lista-proprietari']);
     } catch (err) {
+      console.error('Error saving owner:', err);
     }
   }
 
