@@ -25,8 +25,8 @@ import { PocketbaseService } from '../../shared/service/pocket-base-services/poc
   styleUrls: ['./login.scss'],
 })
 export class Login {
-  email = signal('');
-  password = signal('');
+  email = signal('demo.example@gmail.com');
+  password = signal('Demo1234');
   loading = signal(false);
   showPassword = signal(false);
 
