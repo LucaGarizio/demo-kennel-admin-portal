@@ -4,6 +4,8 @@ import { KennelScheduleComponent } from './kennel-schedule';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 
+import { MessageService } from 'primeng/api';
+
 describe('KennelScheduleComponent', () => {
   let component: KennelScheduleComponent;
   let fixture: ComponentFixture<KennelScheduleComponent>;
@@ -11,7 +13,7 @@ describe('KennelScheduleComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [KennelScheduleComponent],
-      providers: [provideHttpClient(), provideRouter([])]
+      providers: [provideHttpClient(), provideRouter([]), MessageService]
     })
     .compileComponents();
 

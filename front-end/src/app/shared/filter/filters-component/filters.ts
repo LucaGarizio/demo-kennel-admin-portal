@@ -19,16 +19,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   @Input() label: string = '';
   @Input() placeholder: string = '';
 
-  @Input() field?:
-    | 'year'
-    | 'month'
-    | 'dog_name'
-    | 'owner_name'
-    | 'owner_surname'
-    | 'phone_number'
-    | 'microchip'
-    | 'payment_type'
-    | 'period';
+  @Input() field?: string;
 
   @Input() config: FilterConfig[] = [];
 

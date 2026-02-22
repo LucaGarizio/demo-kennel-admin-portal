@@ -2,27 +2,32 @@ import { Injectable } from '@angular/core';
 import { PocketbaseService } from '../pocket-base-services/pocketbase.service';
 import { OwnerListRecord, OwnerListRow } from '../../types/owner-list.types';
 import { formatDateIt } from '../../utils/date-utils';
+import { OwnerBackend } from '../../utils/mapper';
 
 @Injectable({ providedIn: 'root' })
 export class OwnerListService {
   constructor(private pb: PocketbaseService) {}
 
   async loadOwners(filter: string = ''): Promise<OwnerListRecord[]> {
-    const data = await this.pb.getAll('owner', 200, { filter });
+    const data = await this.pb.getAll<OwnerBackend>('owner', 200, { filter });
 
-    data.sort((a: any, b: any) => Date.parse(b.created) - Date.parse(a.created));
+    data.sort((a, b) => {
+      const dateA = (a as any).created ? Date.parse((a as any).created) : 0;
+      const dateB = (b as any).created ? Date.parse((b as any).created) : 0;
+      return dateB - dateA;
+    });
 
-    return data.map((r: any) => this.mapOwner(r));
+    return data.map((r) => this.mapOwner(r));
   }
 
   async loadOwner(id: string): Promise<OwnerListRecord> {
-    const record = await this.pb.getRecord('owner', id);
+    const record = await this.pb.getOne<OwnerBackend>('owner', id);
     return this.mapOwner(record);
   }
 
-  private mapOwner(r: any): OwnerListRecord {
+  private mapOwner(r: OwnerBackend): OwnerListRecord {
     return {
-      id: r.id,
+      id: r.id || '',
       name: r.name,
       surname: r.surname,
       place_of_birth: r.place_of_birth,

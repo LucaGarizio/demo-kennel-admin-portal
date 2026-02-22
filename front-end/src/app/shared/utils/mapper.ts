@@ -55,6 +55,7 @@ export function toBackendOwner(front: Partial<OwnerFrontend>): Partial<OwnerBack
     phone_number: front.cell,
     email: front.email,
     notes: front.note || '',
+    accettazione_regolamento: (front as any).accettazione_regolamento,
     signature: front.signature || null,
   };
 }

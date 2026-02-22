@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
 import { SignatureWaiting } from './signature-waiting';
+
+import { MessageService } from 'primeng/api';
 
 describe('SignatureWaiting', () => {
   let component: SignatureWaiting;
@@ -8,7 +12,8 @@ describe('SignatureWaiting', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SignatureWaiting]
+      imports: [SignatureWaiting],
+      providers: [provideHttpClient(), provideRouter([]), MessageService]
     })
     .compileComponents();
 

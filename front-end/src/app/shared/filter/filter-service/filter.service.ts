@@ -2,15 +2,7 @@ import { Injectable, signal, inject, Injector } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 export interface FiltersState {
-  year?: string;
-  month?: string;
-  period?: string;
-  dog_name?: string;
-  owner_name?: string;
-  owner_surname?: string;
-  phone_number?: string;
-  microchip?: string;
-  payment_type?: string;
+  [key: string]: any;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -23,7 +15,7 @@ export class FiltersService {
     return toObservable(this.state, { injector: this.injector });
   }
 
-  set(key: keyof FiltersState, value: any) {
+  set(key: string, value: any) {
     const currentYear = new Date().getFullYear().toString();
 
     this.state.update(state => {

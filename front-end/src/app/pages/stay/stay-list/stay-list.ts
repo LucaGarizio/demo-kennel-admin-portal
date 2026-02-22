@@ -154,74 +154,15 @@ export class StayList implements OnInit {
 
   async loadRecords(filters: Record<string, any> = {}) {
     this.loading.set(true);
-    const clauses: string[] = [];
-
-    const dogClause = await this.buildDogFilter(filters);
-    if (dogClause) clauses.push(dogClause);
-
-    const periodClause = this.buildPeriodFilter(filters);
-    if (periodClause) clauses.push(periodClause);
-
-    const yearMonthClause = this.buildYearMonthFilter(filters);
-    if (yearMonthClause) clauses.push(yearMonthClause);
-
-    const paymentClause = this.buildPaymentFilter(filters);
-    if (paymentClause) clauses.push(paymentClause);
-
-    const filter = clauses.join(' && ');
 
     try {
+      const filter = await this.stayListSvc.buildFilterClause(filters);
       const result = await this.stayListSvc.loadStays(filter);
       this.records.set(result);
       this.totals.set(this.stayListSvc.getTotal(result));
     } catch (err) {
     }
     this.loading.set(false);
-  }
-
-  private async buildDogFilter(filters: Record<string, any>): Promise<string | null> {
-    if (!filters['dog_name']) return null;
-    const dogIds = await this.stayListSvc.searchDogsByName(filters['dog_name']);
-    if (dogIds.length === 0) return `dog_ids = ""`;
-    const clause = dogIds.map((id) => `dog_ids ?~ "${id}"`).join(' || ');
-    return `(${clause})`;
-  }
-
-  private buildPeriodFilter(filters: Record<string, any>): string | null {
-    const today = new Date().toISOString().split('T')[0];
-    switch (filters['period']) {
-      case 'arrivi_oggi':
-        return `arrival_date ~ "${today}"`;
-      case 'uscite_oggi':
-        return `departure_date ~ "${today}"`;
-      default:
-        return null;
-    }
-  }
-
-  private buildPaymentFilter(filters: Record<string, any>): string | null {
-    if (!filters['payment_type'] || filters['payment_type'] === 'all') return null;
-    return `payment_type = "${filters['payment_type']}"`;
-  }
-
-  private buildYearMonthFilter(filters: Record<string, any>): string | null {
-    const year = filters['year'];
-    const month = filters['month'];
-
-    if (!year || year === 'all') return null;
-
-    if (!month || month === 'all') {
-      return `arrival_date ~ "${year}"`;
-    }
-
-    const y = Number(year);
-    const m = Number(month) - 1;
-    const start = new Date(y, m, 1);
-    const end = new Date(y, m + 1, 0, 23, 59, 59);
-    const startStr = start.toISOString().split('T')[0];
-    const endStr = end.toISOString().split('T')[0];
-
-    return `(arrival_date >= "${startStr}" && arrival_date <= "${endStr}")`;
   }
 
   private buildYearFilterFromRecords(records: StayListRecord[]) {

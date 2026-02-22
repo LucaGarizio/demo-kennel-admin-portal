@@ -14,9 +14,9 @@
     <ng-template pTemplate="header">
       <tr class="white-space-nowrap">
         <th></th>
-        @for (col of columns; track col) {
+        @for (col of activeConfigs; track col.key) {
         <th>
-          {{ columnLabels[col] || col }}
+          {{ col.label }}
         </th>
         }
       </tr>
@@ -33,24 +33,24 @@
           ></button>
         </td>
 
-        @for (c of columns; track c) {
+        @for (c of activeConfigs; track c.key) {
 
-        @if (isOwnerColumn(c)) {
+        @if (c.type === 'link') {
         <td
           class="hover:underline"
           (click)="handleCellClick(c, row)"
           [ngStyle]="getClickableStyle()"
         >
-          {{ getCellValue(row, c) }}
+          {{ getCellValue(row, c.key) }}
         </td>
-        } @else if (isDogsColumn(c)) {
+        } @else if (c.type === 'array_link') {
         <td [ngStyle]="getClickableStyle()">
-          @for (dogName of getDogArray(row, c); track $index) {
-          <span (click)="handleDogClick(c, row, $index)" class="hover:underline">{{ dogName }}</span
+          @for (itemName of getDogArray(row, c.key); track $index) {
+          <span (click)="handleDogClick(c, row, $index)" class="hover:underline">{{ itemName }}</span
           >@if (!$last) {<span>, </span>} }
         </td>
         }
-        @else if (isDocumentsColumn(c)) { @let docs = getDocuments(row);
+        @else if (c.type === 'documents') { @let docs = getDocuments(row);
         <td
           class="white-space-nowrap"
           [class.cursor-pointer]="docs.length > 0"
@@ -65,28 +65,28 @@
         </td>
         }
 
-        @else if (c === 'signature') {
+        @else if (c.type === 'signature') {
         <td>
-          @if (row.signature) {
+          @if (row[c.key]) {
           <img [src]="getSignatureUrl(row)" class="signature-thumb" alt="Firma" />
           } @else {
           <span></span>
           }
         </td>
-        } @else if (c === 'notes') {
+        } @else if (c.type === 'boolean') {
         <td>
-          @if (row.notes && row.notes.trim().length > 0) {
+          @if (isTruthyBoolean(row, c.key)) {
           <span>Sì</span>
           } @else {
           <span>No</span>
           }
         </td>
         } @else {
-        <td class="white-space-nowrap" [ngClass]="{ 'paid-cell': isPaidCell(c, row) }">
-          @if (isCurrencyColumn(c)) {
-          {{ getCellValue(row, c) | currency : 'EUR' : 'symbol' : '1.2-2' : 'it-IT' }}
+        <td class="white-space-nowrap" [ngClass]="{ 'paid-cell': isPaidCell(c.key, row) }">
+          @if (c.type === 'currency') {
+          {{ getCellValue(row, c.key) | currency : 'EUR' : 'symbol' : '1.2-2' : 'it-IT' }}
           } @else {
-          {{ getCellValue(row, c) }}
+          {{ getCellValue(row, c.key) }}
           }
         </td>
         } }

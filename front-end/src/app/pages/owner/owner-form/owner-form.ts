@@ -170,7 +170,14 @@ export class OwnerFormComponent {
 
       const fd = new FormData();
       for (const [k, v] of Object.entries(payload)) {
-        fd.append(k, v !== null && v !== undefined ? String(v) : '');
+        if (v !== null && v !== undefined) {
+          if (k === 'signature') continue;
+          fd.append(k, String(v));
+        }
+      }
+
+      if ((this.localModel as any).accettazione_regolamento !== undefined) {
+        fd.append('accettazione_regolamento', String((this.localModel as any).accettazione_regolamento));
       }
 
       const created = await this.pb.pb.collection('owner').create(fd);

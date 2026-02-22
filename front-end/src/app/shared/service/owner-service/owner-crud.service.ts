@@ -16,7 +16,10 @@ export class OwnerService {
 
     const fd = new FormData();
     for (const [k, v] of Object.entries(payload)) {
-      fd.append(k, v !== null && v !== undefined ? String(v) : '');
+      if (v !== null && v !== undefined) {
+        if (k === 'signature' && typeof v === 'string') continue;
+        fd.append(k, String(v));
+      }
     }
     for (const f of files) fd.append('documents', f);
 
@@ -29,7 +32,10 @@ export class OwnerService {
     const fd = new FormData();
 
     Object.entries(toBackendOwner(model)).forEach(([k, v]) => {
-      fd.append(k, v !== null && v !== undefined ? String(v) : '');
+      if (v !== null && v !== undefined) {
+        if (k === 'signature' && typeof v === 'string' && v.startsWith('http')) return;
+        fd.append(k, String(v));
+      }
     });
 
     if (Array.isArray(record['documents'])) {

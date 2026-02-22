@@ -37,11 +37,44 @@ export class PocketbaseService {
 
   private handleError(contextMsg: string, err: any) {
     console.error(contextMsg, err);
+
+    let detail = 'Si è verificato un errore imprevisto.';
+    const originalMsg = err?.message || '';
+
+    // Mappatura errori PocketBase -> Italiano user-friendly
+    const lowMsg = originalMsg.toLowerCase();
+
+    if (lowMsg.includes('failed to authenticate')) {
+      detail = 'Credenziali non valide o sessione scaduta.';
+    } else if (lowMsg.includes('identity or password')) {
+      detail = 'Email o password errati.';
+    } else if (lowMsg.includes('not found')) {
+      detail = 'Risorsa non trovata.';
+    } else if (lowMsg.includes('missing or invalid credentials')) {
+      detail = 'Accesso negato: credenziali mancanti o non valide.';
+    } else if (lowMsg.includes('validation failed')) {
+      detail = 'I dati inseriti non sono validi. Controlla i campi e riprova.';
+    } else if (lowMsg.includes('failed to create record')) {
+      detail = 'Impossibile creare il record. Verifica i dati inseriti.';
+    } else if (lowMsg.includes('failed to update record')) {
+      detail = 'Impossibile aggiornare il record.';
+    } else if (lowMsg.includes('something went wrong')) {
+      detail = 'Si è verificato un errore sul server.';
+    } else if (err?.status === 0) {
+      detail = 'Impossibile connettersi al server. Controlla la tua connessione.';
+    } else if (err?.status === 403) {
+      detail = 'Non hai i permessi necessari per eseguire questa operazione.';
+    } else if (originalMsg) {
+      // Se non abbiamo una traduzione specifica, cerchiamo di non mostrare messaggi troppo tecnici
+      // ma lasciamo un fallback se utile al debug (facoltativo)
+      detail = originalMsg; 
+    }
+
     this.messageService.add({
       severity: 'error',
-      summary: 'Si è verificato un errore',
-      detail: err?.message || 'Errore di connessione al database.',
-      life: 5000
+      summary: 'Errore',
+      detail: detail,
+      life: 5000,
     });
     throw err;
   }
@@ -91,14 +124,6 @@ export class PocketbaseService {
       this.handleError(`Errore recupero record ${id} da ${collection}:`, err);
       throw err;
     }
-  }
-
-  async getRecord<T = any>(collection: string, id: string, options: any = {}): Promise<T> {
-    return this.getOne<T>(collection, id, options);
-  }
-
-  async getById<T = any>(collection: string, id: string, options: any = {}): Promise<T> {
-    return this.getOne<T>(collection, id, options);
   }
 
   async createRecord<T = any>(collection: string, data: any): Promise<T> {

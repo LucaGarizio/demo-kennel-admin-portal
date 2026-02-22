@@ -4,6 +4,7 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { LoadingSpinnerComponent } from '../../shared/component/loading-spinner/loading-spinner-component';
 import { DocumentsDialogComponent } from '../../shared/component/dialogs/documents-dialog-component/documents-dialog-component';
+import { ColumnConfig, ColumnType } from './index-table.types';
 
 @Component({
   selector: 'app-index-table',
@@ -45,37 +46,46 @@ export class IndexTableComponent {
     documents: string[];
   }>();
 
+  @Input() columnConfigs: ColumnConfig[] = [];
+
   showDocsDialog = false;
   currentDocs: string[] = [];
   currentRow: any = null;
-  currencyColumns = ['boarding_fee', 'deposit', 'amount_paid', 'outstanding_balance', 'total_due'];
 
   constructor() {}
-  isOwnerColumn(col: string): boolean {
-    return col === 'owner' || col === 'owner_id';
-  }
-  isDogsColumn(col: string): boolean {
-    return col === 'dogs' || col === 'dog_ids';
+
+  get activeConfigs(): ColumnConfig[] {
+    if (this.columnConfigs.length > 0) {
+      return this.columnConfigs;
+    }
+    return this.columns.map(key => ({
+      key,
+      label: this.columnLabels[key] || key,
+      type: this.inferColumnType(key)
+    }));
   }
 
-  isDocumentsColumn(col: string): boolean {
-    return col === 'documents';
+  private inferColumnType(key: string): ColumnType {
+    if (key === 'owner' || key === 'owner_id') return 'link';
+    if (key === 'dogs' || key === 'dog_ids') return 'array_link';
+    if (key === 'documents') return 'documents';
+    if (key === 'signature') return 'signature';
+    if (['boarding_fee', 'deposit', 'amount_paid', 'outstanding_balance', 'total_due'].includes(key)) return 'currency';
+    return 'text';
   }
 
-  isCurrencyColumn(col: string): boolean {
-    return this.currencyColumns.includes(col);
+  handleCellClick(col: ColumnConfig, row: any) {
+    this.cellClick.emit({ column: col.key, value: row[col.key], row });
   }
 
-  handleCellClick(col: string, row: any) {
-    this.cellClick.emit({ column: col, value: row[col], row });
-  }
-  getDogArray(row: any, col: string): string[] {
-    const value = this.getCellValue(row, col);
+  getDogArray(row: any, colKey: string): string[] {
+    const value = this.getCellValue(row, colKey);
     if (!value) return [];
-    return value.split(',').map((name: string) => name.trim());
+    return String(value).split(',').map(name => name.trim());
   }
-  handleDogClick(col: string, row: any, index: number) {
-    this.cellClick.emit({ column: col, value: row[col], row, index });
+
+  handleDogClick(col: ColumnConfig, row: any, index: number) {
+    this.cellClick.emit({ column: col.key, value: row[col.key], row, index });
   }
 
   getClickableStyle() {
@@ -86,8 +96,8 @@ export class IndexTableComponent {
     return row.documents || [];
   }
 
-  getCellValue(row: any, col: string) {
-    return row[col];
+  getCellValue(row: any, colKey: string) {
+    return row[colKey];
   }
 
   openDocumentsDialog(row: any) {
@@ -100,14 +110,18 @@ export class IndexTableComponent {
     return this.getFileUrl(row, fileName);
   }
 
-  isPaidCell(column: string, row: any): boolean {
+  isPaidCell(columnKey: string, row: any): boolean {
     if (!row) return false;
     const paid = row.outstanding_balance === 0;
-    return paid && (column === 'outstanding_balance' || column === 'total_due');
+    return paid && (columnKey === 'outstanding_balance' || columnKey === 'total_due');
   }
 
-  isSignatureColumn(col: string): boolean {
-    return col === 'signature';
+  isTruthyBoolean(row: any, key: string): boolean {
+    const value = row[key];
+    if (value === undefined || value === null || value === false || value === 'No') {
+      return false;
+    }
+    return String(value).trim().length > 0;
   }
 
   getSignatureUrl(row: any): string {
