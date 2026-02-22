@@ -52,6 +52,25 @@
               ],
               "outputHashing": "all"
             },
+            "demo": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.demo.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "3mb",
+                  "maximumError": "5MB"
+                }
+              ]
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -65,6 +84,9 @@
           "configurations": {
             "production": {
               "buildTarget": "pioppeto-portal:build:production"
+            },
+            "demo": {
+              "buildTarget": "pioppeto-portal:build:demo"
             },
             "development": {
               "buildTarget": "pioppeto-portal:build:development"

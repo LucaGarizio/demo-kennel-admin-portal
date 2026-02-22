@@ -8,7 +8,7 @@ import { PocketbaseService } from '../../shared/service/pocket-base-services/poc
 import { StayListRecord } from '../../shared/types/stay-list.types';
 import { StayListService } from '../../shared/service/stay-service/stay-list.service';
 import { formatYmdLocal } from '../../shared/utils/date-utils';
-import { PageHeaderComponent } from '../../shared/component/page-header/page-headercomponent';
+
 import { LoadingSpinnerComponent } from '../../shared/component/loading-spinner/loading-spinner-component';
 
 @Component({
@@ -19,7 +19,7 @@ import { LoadingSpinnerComponent } from '../../shared/component/loading-spinner/
     CardModule,
     ButtonModule,
     TableModule,
-    PageHeaderComponent,
+
     LoadingSpinnerComponent
   ],
   templateUrl: './dashboard.html',

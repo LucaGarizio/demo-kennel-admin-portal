@@ -41,7 +41,6 @@ export class PocketbaseService {
     let detail = 'Si è verificato un errore imprevisto.';
     const originalMsg = err?.message || '';
 
-    // Mappatura errori PocketBase -> Italiano user-friendly
     const lowMsg = originalMsg.toLowerCase();
 
     if (lowMsg.includes('failed to authenticate')) {
@@ -65,8 +64,6 @@ export class PocketbaseService {
     } else if (err?.status === 403) {
       detail = 'Non hai i permessi necessari per eseguire questa operazione.';
     } else if (originalMsg) {
-      // Se non abbiamo una traduzione specifica, cerchiamo di non mostrare messaggi troppo tecnici
-      // ma lasciamo un fallback se utile al debug (facoltativo)
       detail = originalMsg; 
     }
 
