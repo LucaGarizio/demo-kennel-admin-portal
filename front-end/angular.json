@@ -31,27 +31,6 @@
             "styles": ["src/styles.scss"]
           },
           "configurations": {
-            "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "3mb",
-                  "maximumError": "5MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "10kB",
-                  "maximumError": "60kB"
-                }
-              ],
-              "outputHashing": "all"
-            },
             "demo": {
               "fileReplacements": [
                 {
@@ -77,14 +56,11 @@
               "sourceMap": true
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "demo"
         },
         "serve": {
           "builder": "@angular/build:dev-server",
           "configurations": {
-            "production": {
-              "buildTarget": "pioppeto-portal:build:production"
-            },
             "demo": {
               "buildTarget": "pioppeto-portal:build:demo"
             },
