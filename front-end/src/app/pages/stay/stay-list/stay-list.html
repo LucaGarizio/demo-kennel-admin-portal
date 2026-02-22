@@ -1,17 +1,15 @@
 <app-page-header
   title="Lista Soggiorni"
   [showCreate]="true"
-  [showExport]="true"
   (create)="onCreate()"
-  (export)="exportData()"
 ></app-page-header>
 
-<div class="grid">
-  <app-filter type="text" field="dog_name" label="Cane" placeholder="Nome cane"></app-filter>
-  <app-filter type="select" field="period" [config]="periodFiltersConfig"></app-filter>
-  <app-filter type="select" field="year" [config]="yearFilterConfig()"> </app-filter>
-  <app-filter type="select" field="month" [config]="monthFilterConfig"> </app-filter>
-  <app-filter type="select" field="payment_type" [config]="paymentFilterConfig"> </app-filter>
+<div class="grid mobile-compact-grid mb-4">
+  <app-filter class="col-6 md:col" type="text" field="dog_name" label="Cane" placeholder="Nome cane"></app-filter>
+  <app-filter class="col-6 md:col" type="select" field="period" [config]="periodFiltersConfig"></app-filter>
+  <app-filter class="col-6 md:col" type="select" field="year" [config]="yearFilterConfig()"> </app-filter>
+  <app-filter class="col-6 md:col" type="select" field="month" [config]="monthFilterConfig"> </app-filter>
+  <app-filter class="col-12 md:col" type="select" field="payment_type" [config]="paymentFilterConfig"> </app-filter>
 </div>
 
 <p-card class="custom-card">
@@ -20,13 +18,15 @@
     [columns]="columns"
     [columnLabels]="columnLabels"
     [loading]="loading()"
+    [showExport]="true"
+    (export)="exportData()"
     (create)="onCreate()"
     (edit)="onEdit($event)"
     [showFooter]="true"
     [totals]="totals()"
     (delete)="openConfirm($event)"
     (cellClick)="onCellClick($event)"
-    tableHeight="70vh"
+    tableHeight="69vh"
     [tableScrollHeight]="'63vh'"
   ></app-index-table>
 </p-card>

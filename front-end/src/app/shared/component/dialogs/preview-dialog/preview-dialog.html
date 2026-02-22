@@ -5,7 +5,8 @@
   [dismissableMask]="true"
   [closeOnEscape]="true"
   styleClass="preview-dialog"
-  [style]="{ width: 'auto' }"
+  [style]="{ width: 'auto', 'max-width': '100vw' }"
+  [breakpoints]="{ '960px': '95vw', '640px': '100vw' }"
   (onHide)="visibleChange.emit(false)"
 >
   <ng-template pTemplate="header">

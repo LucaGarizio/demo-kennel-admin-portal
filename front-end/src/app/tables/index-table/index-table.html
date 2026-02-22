@@ -1,4 +1,4 @@
-<app-loading-spinner [visible]="loading" height="70vh" />
+<app-loading-spinner [visible]="loading" [height]="tableHeight || '70vh'" />
 @if (!loading) {
 <div class="table-wrapper">
   <p-table
@@ -13,7 +13,17 @@
   >
     <ng-template pTemplate="header">
       <tr class="white-space-nowrap">
-        <th></th>
+        <th>
+          @if (showExport) {
+          <button
+            pButton
+            icon="pi pi-download"
+            class="p-button-text p-button-sm p-button-success"
+            (click)="export.emit()"
+            title="Esporta PDF"
+          ></button>
+          }
+        </th>
         @for (col of activeConfigs; track col.key) {
         <th>
           {{ col.label }}

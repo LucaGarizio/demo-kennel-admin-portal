@@ -1,24 +1,28 @@
 :host ::ng-deep .p-menubar {
   border-radius: 0;
   border: none;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: medium;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
   background-color: #212121;
   height: 8vh;
+  padding: 0 1.5rem;
+
+  /* Nascondiamo eventuali blocchi vuoti extra di PrimeNG che sballerebbero lo space-between */
+  .p-menubar-end {
+    display: none !important;
+  }
 }
 
-.nav-link {
+// Stile per le voci di menu generate dal [model]
+:host ::ng-deep .nav-link .p-menuitem-link {
   color: #26a69a;
   text-decoration: none;
   font-weight: 500;
   transition: all 0.1s ease;
-  display: inline-block;
-}
 
-.active-link {
-  color: #fff;
-  transform: scale(1.1);
-  font-size: 18px;
+  &:hover {
+    color: #fff;
+    transform: scale(1.1);
+  }
 }

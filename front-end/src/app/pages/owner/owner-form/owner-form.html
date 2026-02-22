@@ -257,23 +257,24 @@
       }
     </div>
 
-    <div class="grid align-items-center mb-4">
-      <div class="col-4">
+    <div class="grid align-items-center justify-content-between mb-4">
+      <div class="col-6 md:col-4">
         <button
           type="button"
           pButton
           label="Anteprima PDF"
+          class="white-space-nowrap w-full md:w-auto"
           (click)="previewVisible.set(true)"
         ></button>
       </div>
 
-      <div class="col-4 col-offset-4 text-right">
+      <div class="col-6 md:col-4 text-right">
         <button
           style="font-size: 0.9rem"
           type="button"
           pButton
           label="Richiedi firma"
-          class="p-button-sm"
+          class="p-button-sm white-space-nowrap w-full md:w-auto"
           (click)="requestSign()"
         ></button>
       </div>
@@ -288,11 +289,11 @@
         <app-terms-conditions [model]="localModel"></app-terms-conditions>
       </div>
 
-      <div class="col-6">
+      <div class="col-12 md:col-6">
         <div class="data-box"><strong>Data:</strong> {{ displayDate() | date : 'dd/MM/yyyy' }}</div>
       </div>
 
-      <div class="col-6">
+      <div class="col-12 md:col-6 flex justify-content-center md:justify-content-end mt-3 md:mt-0">
         <div class="firma-box">
           @if (firmaUrl) {
           <img [src]="firmaUrl" class="firma-img" />

@@ -85,6 +85,7 @@ li {
   background: #2b2b2b;
   padding: 0;
   overflow-y: auto;
+  overflow-x: auto;
 }
 
 :host ::ng-deep .p-dialog-header {
@@ -95,4 +96,10 @@ li {
 
 :host ::ng-deep .p-dialog-header-icon {
   color: #ffffff;
+}
+
+@media screen and (max-width: 768px) {
+  .pdf-page {
+    margin: 0.5rem auto;
+  }
 }

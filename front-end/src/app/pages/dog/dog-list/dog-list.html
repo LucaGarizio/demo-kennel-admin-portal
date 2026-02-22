@@ -1,9 +1,10 @@
 <app-page-header title="Lista Cani" [showCreate]="true" (create)="onCreate()"></app-page-header>
 
-<div class="grid">
-  <app-filter type="text" field="dog_name" label="Cane" placeholder="Nome cane"></app-filter>
+<div class="grid mobile-compact-grid mb-4">
+  <app-filter class="col-12 md:col-6 lg:col-3" type="text" field="dog_name" label="Cane" placeholder="Nome cane"></app-filter>
 
   <app-filter
+    class="col-12 md:col-6 lg:col-3"
     type="text"
     field="owner_name"
     label="Proprietario"
@@ -11,6 +12,7 @@
   ></app-filter>
 
   <app-filter
+    class="col-12 md:col-6 lg:col-3"
     type="text"
     field="microchip"
     label="Microchip"

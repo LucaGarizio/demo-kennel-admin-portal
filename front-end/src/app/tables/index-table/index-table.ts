@@ -31,10 +31,12 @@ export class IndexTableComponent {
   @Input() getSignatureFileUrl?: (row: any) => string;
   @Input() tableHeight: string = '';
   @Input() tableScrollHeight: string = '';
+  @Input() showExport = false;
   @Output() create = new EventEmitter<void>();
   @Output() view = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
+  @Output() export = new EventEmitter<void>();
   @Output() cellClick = new EventEmitter<{
     column: string;
     value: any;

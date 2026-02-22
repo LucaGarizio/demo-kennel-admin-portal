@@ -8,11 +8,8 @@
 .card {
   height: fit-content;
   overflow-y: auto;
-  min-height: 80vh;
-  max-height: 81vh;
-
+  height: 80vh;
   scrollbar-width: none;
-
   -ms-overflow-style: none;
 }
 
@@ -73,22 +70,13 @@
 }
 
 // INPUT STYLE
-.p-select .p-select-label {
-  color: #ffffff;
-}
-
-.p-select .p-select-dropdown {
+.p-select .p-select-label,
+.p-select .p-select-dropdown,
+.p-multiselect .p-multiselect-label,
+.p-multiselect.p-multiselect-filled .p-multiselect-label {
   color: #ffffff;
 }
 
 .p-select .p-select-dropdown svg {
   fill: #ffffff;
-}
-
-.p-multiselect .p-multiselect-label {
-  color: #ffffff;
-}
-
-.p-multiselect.p-multiselect-filled .p-multiselect-label {
-  color: #ffffff;
 }

@@ -1,11 +1,11 @@
-<div class="page-header-container">
+<div class="my-1 md:my-5">
   <div class="grid align-items-center">
     <div class="col-4">
       @if(showExport){
       <button pButton label="Esporta" icon="pi pi-download" (click)="export.emit()"></button>
       }
     </div>
-    <div class="col-4 text-center">
+    <div class="col-12 md:col-4 text-center">
       <h2 class="title">{{ title }}</h2>
     </div>
 
@@ -15,7 +15,7 @@
         pButton
         icon="pi pi-plus"
         [label]="createLabel"
-        class="p-button-sm"
+        class="p-button-sm create-btn"
         (click)="create.emit()"
       ></button>
       }

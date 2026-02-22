@@ -4,8 +4,9 @@
   (create)="onCreate()"
 ></app-page-header>
 
-<div class="grid">
+<div class="grid mobile-compact-grid mb-4">
   <app-filter
+    class="col-12 md:col-6 lg:col-4"
     type="text"
     field="owner_surname"
     label="Proprietario"
@@ -13,6 +14,7 @@
   ></app-filter>
 
   <app-filter
+    class="col-12 md:col-6 lg:col-4"
     type="text"
     field="phone_number"
     label="Numero di telefono"

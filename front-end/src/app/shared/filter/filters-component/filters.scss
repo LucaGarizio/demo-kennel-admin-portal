@@ -1,7 +1,13 @@
 .filters-container {
   display: flex;
   flex-wrap: wrap;
-  padding: 1rem;
+  width: 100%;
+}
+
+:host ::ng-deep {
+  p-select {
+    width: 100%;
+  }
 }
 
 .b {
@@ -10,6 +16,7 @@
 .filter-item {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 label {
